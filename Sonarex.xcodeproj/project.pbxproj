@@ -66,6 +66,11 @@
 			path = Persistent;
 			sourceTree = "<group>";
 		};
+		A17C09D62FB2000000000002 /* Remote */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Remote;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXGroup section */
@@ -128,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				A17C09D52FB2000000000001 /* Persistent */,
+				A17C09D62FB2000000000002 /* Remote */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -174,6 +180,7 @@
 				0620BD522FB1BEB10022D673 /* Search */,
 				0620BD5D2FB1BF2D0022D673 /* Library */,
 				A17C09D52FB2000000000001 /* Persistent */,
+				A17C09D62FB2000000000002 /* Remote */,
 			);
 			name = Sonarex;
 			packageProductDependencies = (

@@ -11,7 +11,17 @@ import SwiftData
 struct LibraryHomeView: View {
     @Environment(PlayerController.self) private var player
     @Query(sort: \Playlist.title) private var playlists: [Playlist]
+    @Query(sort: \Track.title) private var tracks: [Track]
     @State private var selectedPlaylist: Playlist?
+    @State private var isShowingFavoriteSongs = false
+
+    private var savedPlaylists: [Playlist] {
+        playlists.filter(\.isOwnedByUser)
+    }
+
+    private var favoriteTracks: [Track] {
+        tracks.filter(\.isFavorite)
+    }
 
     var body: some View {
         NavigationStack {
@@ -19,7 +29,20 @@ struct LibraryHomeView: View {
                 VStack(alignment: .leading, spacing: 26) {
                     header
 
-                    ForEach(playlists) { playlist in
+                    AlbumRowView(
+                        title: "Favourite Songs",
+                        subtitle: "\(favoriteTracks.count) Songs",
+                        tracks: Array(favoriteTracks.prefix(4)),
+                        onSelectTrack: { track in
+                            player.play(track, in: favoriteTracks)
+                            player.isPlayerPresented = true
+                        },
+                        onShowAll: {
+                            isShowingFavoriteSongs = true
+                        }
+                    )
+
+                    ForEach(savedPlaylists) { playlist in
                         AlbumRowView(
                             title: playlist.title,
                             subtitle: "\(playlist.subtitle) - \(playlist.trackCountText)",
@@ -39,6 +62,9 @@ struct LibraryHomeView: View {
             .background(Color("AppBackground"))
             .navigationDestination(item: $selectedPlaylist) { playlist in
                 PlaylistDetailView(playlist: playlist)
+            }
+            .navigationDestination(isPresented: $isShowingFavoriteSongs) {
+                FavoriteSongsDetailView()
             }
         }
     }

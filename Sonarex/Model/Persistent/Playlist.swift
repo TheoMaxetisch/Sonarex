@@ -13,7 +13,7 @@ final class Playlist {
     var artworkSymbol: String = "music.note.list"
     var createdAt: Date = Date()
     var changedAt: Date = Date()
-    var isOwnedByUser: Bool = true
+    var isOwnedByUser: Bool = false
     var server: ServerProfile?
 
     @Relationship(deleteRule: .cascade, inverse: \PlaylistEntry.playlist)
@@ -27,6 +27,7 @@ final class Playlist {
         playlistDescription: String = "",
         artworkStyle: Int = 0,
         artworkSymbol: String = "music.note.list",
+        isOwnedByUser: Bool = false,
         server: ServerProfile? = nil
     ) {
         self.id = id
@@ -36,6 +37,7 @@ final class Playlist {
         self.playlistDescription = playlistDescription
         self.artworkStyle = artworkStyle
         self.artworkSymbol = artworkSymbol
+        self.isOwnedByUser = isOwnedByUser
         self.server = server
     }
 

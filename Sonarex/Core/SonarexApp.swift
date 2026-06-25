@@ -30,6 +30,7 @@ struct SonarexApp: App {
 
             let container = try ModelContainer(for: schema, configurations: configuration)
             try DemoMusicSeeder.seedIfNeeded(in: container.mainContext)
+            try LibraryStateMigration.resetAutoSavedPlaylistsIfNeeded(in: container.mainContext)
             self.container = container
         } catch {
             fatalError("ModelContainer konnte nicht erstellt werden: \(error)")

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PlaylistDetailView: View {
     @Environment(PlayerController.self) private var player
@@ -62,8 +63,94 @@ struct PlaylistDetailView: View {
                     .foregroundStyle(Color("SecondaryText"))
             }
 
+            HStack(spacing: 12) {
+                Button {
+                    player.play(playlist.tracks)
+                    player.isPlayerPresented = true
+                } label: {
+                    Label("Abspielen", systemImage: "play.fill")
+                        .font(.headline.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Color("SecondaryAccent"))
+                .accessibilityLabel("\(playlist.title) abspielen")
+
+                Button {
+                    playlist.isOwnedByUser.toggle()
+                } label: {
+                    Image(systemName: playlist.isOwnedByUser ? "heart.fill" : "heart")
+                        .font(.headline.weight(.semibold))
+                        .foregroundStyle(playlist.isOwnedByUser ? Color("FavoriteColor") : Color("PrimaryText"))
+                        .frame(width: 48, height: 48)
+                }
+                .buttonStyle(.bordered)
+                .tint(Color("SecondaryAccent"))
+                .accessibilityLabel(playlist.isOwnedByUser ? "Playlist aus Bibliothek entfernen" : "Playlist in Bibliothek speichern")
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 16)
+    }
+}
+
+struct FavoriteSongsDetailView: View {
+    @Environment(PlayerController.self) private var player
+    @Query(sort: \Track.title) private var tracks: [Track]
+
+    private var favoriteTracks: [Track] {
+        tracks.filter(\.isFavorite)
+    }
+
+    var body: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 24) {
+                header
+
+                VStack(spacing: 10) {
+                    ForEach(Array(favoriteTracks.enumerated()), id: \.element.id) { index, track in
+                        PlaylistTrackRow(track: track, number: index + 1) {
+                            player.play(track, in: favoriteTracks)
+                            player.isPlayerPresented = true
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+            }
+            .padding(.bottom, 28)
+        }
+        .background(Color("AppBackground"))
+        .navigationTitle("Favourite Songs")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(LinearGradient(colors: TrackArtwork.palettes[1], startPoint: .topLeading, endPoint: .bottomTrailing))
+
+                Image(systemName: "heart.fill")
+                    .font(.system(size: 76, weight: .semibold))
+                    .foregroundStyle(Color("InverseText").opacity(0.92))
+            }
+            .aspectRatio(1, contentMode: .fit)
+            .frame(maxWidth: 260)
+            .frame(maxWidth: .infinity)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Favourite Songs")
+                    .font(.largeTitle.weight(.bold))
+                    .foregroundStyle(Color("PrimaryText"))
+
+                Label("\(favoriteTracks.count) Songs", systemImage: "heart.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Color("SecondaryText"))
+            }
+
             Button {
-                player.play(playlist.tracks)
+                player.play(favoriteTracks)
                 player.isPlayerPresented = true
             } label: {
                 Label("Abspielen", systemImage: "play.fill")
@@ -73,7 +160,8 @@ struct PlaylistDetailView: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(Color("SecondaryAccent"))
-            .accessibilityLabel("\(playlist.title) abspielen")
+            .disabled(favoriteTracks.isEmpty)
+            .accessibilityLabel("Favourite Songs abspielen")
         }
         .padding(.horizontal, 20)
         .padding(.top, 16)
@@ -115,6 +203,17 @@ private struct PlaylistTrackRow: View {
             }
 
             Spacer()
+
+            Button {
+                track.isFavorite.toggle()
+            } label: {
+                Image(systemName: track.isFavorite ? "heart.fill" : "heart")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(track.isFavorite ? Color("FavoriteColor") : Color("SecondaryText"))
+                    .frame(width: 32, height: 32)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(track.isFavorite ? "Aus Favourite Songs entfernen" : "Zu Favourite Songs hinzufügen")
 
             Text(track.durationText)
                 .font(.caption.weight(.semibold))

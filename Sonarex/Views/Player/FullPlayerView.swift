@@ -23,6 +23,7 @@ struct FullPlayerView: View {
                     header(track)
                     artwork(track)
                     trackInfo(track)
+                    playbackError
                     progress(track)
                     transportControls
                     volumeControl
@@ -70,7 +71,7 @@ struct FullPlayerView: View {
 
     private func artwork(_ track: Track) -> some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(track.artworkGradient)
 
             VStack(spacing: 18) {
@@ -127,6 +128,19 @@ struct FullPlayerView: View {
             }
             .font(.caption.monospacedDigit())
             .foregroundStyle(Color("SecondaryText"))
+        }
+    }
+
+    @ViewBuilder
+    private var playbackError: some View {
+        if let message = player.playbackError {
+            Label(message, systemImage: "exclamationmark.triangle.fill")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(Color.red)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .background(Color("GlassSurface"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
     }
 

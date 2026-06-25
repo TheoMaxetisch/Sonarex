@@ -2,11 +2,15 @@ import SwiftUI
 import SwiftData
 
 struct SettingsView: View {
+    @Environment(\.modelContext) private var modelContext
     @AppStorage("prefersDarkMode") private var prefersDarkMode = false
     @Query private var serverProfiles: [ServerProfile]
     @State private var serverPassword = ""
     @State private var credentialMessage: String?
     @State private var credentialSaveSucceeded = false
+    @State private var syncMessage: String?
+    @State private var syncSucceeded = false
+    @State private var isSyncingLibrary = false
 
     private let email = "support@example.com"
     private let subject = "Sonarex Feedback"
@@ -43,6 +47,16 @@ struct SettingsView: View {
                             saveSucceeded: credentialSaveSucceeded,
                             isEnabled: activeServer != nil,
                             saveAction: saveCredentials
+                        )
+
+                        SettingsDivider()
+
+                        ServerSyncRow(
+                            message: syncMessage,
+                            syncSucceeded: syncSucceeded,
+                            isSyncing: isSyncingLibrary,
+                            isEnabled: activeServer != nil,
+                            syncAction: syncLibrary
                         )
                     }
 
@@ -179,6 +193,30 @@ struct SettingsView: View {
         }
     }
 
+    private func syncLibrary() {
+        guard let activeServer else { return }
+        isSyncingLibrary = true
+        syncMessage = "Bibliothek wird synchronisiert..."
+        syncSucceeded = false
+
+        Task {
+            do {
+                try KeychainCredentialStore.savePassword(serverPassword, for: activeServer.id)
+                let result = try await NavidromeLibrarySyncService.sync(
+                    server: activeServer,
+                    password: serverPassword,
+                    context: modelContext
+                )
+                syncSucceeded = true
+                syncMessage = "\(result.albumCount) Alben und \(result.trackCount) Songs importiert."
+            } catch {
+                syncSucceeded = false
+                syncMessage = error.localizedDescription
+            }
+            isSyncingLibrary = false
+        }
+    }
+
     private var mailURL: URL {
         var components = URLComponents()
         components.scheme = "mailto"
@@ -245,6 +283,54 @@ private struct ServerCredentialsRow: View {
                     )
                     .font(.caption)
                     .foregroundStyle(saveSucceeded ? Color.green : Color.red)
+                    .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+        .padding(14)
+    }
+}
+
+private struct ServerSyncRow: View {
+    let message: String?
+    let syncSucceeded: Bool
+    let isSyncing: Bool
+    let isEnabled: Bool
+    let syncAction: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            SettingsIcon(systemImage: "arrow.triangle.2.circlepath")
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Navidrome-Bibliothek")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color("PrimaryText"))
+
+                Text("Alben und Songs ueber die Subsonic API abrufen.")
+                    .font(.caption)
+                    .foregroundStyle(Color("SecondaryText"))
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Button(action: syncAction) {
+                    Label(
+                        isSyncing ? "Synchronisiere..." : "Bibliothek synchronisieren",
+                        systemImage: isSyncing ? "hourglass" : "square.and.arrow.down"
+                    )
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Color("SecondaryAccent"))
+                .disabled(!isEnabled || isSyncing)
+
+                if let message {
+                    Label(
+                        message,
+                        systemImage: syncSucceeded ? "checkmark.circle.fill" : "exclamationmark.triangle.fill"
+                    )
+                    .font(.caption)
+                    .foregroundStyle(syncSucceeded ? Color.green : Color.red)
                     .fixedSize(horizontal: false, vertical: true)
                 }
             }
