@@ -13,7 +13,7 @@ struct HeroHeaderView: View {
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            RoundedRectangle(cornerRadius: 32)
+            RoundedRectangle(cornerRadius: 45)
                 .fill(featuredTrack.heroGradient)
 
             VStack(alignment: .leading, spacing: 18) {
