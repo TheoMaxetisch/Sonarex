@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+
+# Xcode user settings
+xcuserdata/
+*.xcuserstate
+
+# Build products
+DerivedData/
+Build/
+.build/
+
+# Swift Package Manager
+.swiftpm/
+
+# App exports / debug symbols
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Secrets / certificates
+.env
+*.p8
+*.p12
+*.cer
+*.mobileprovision
+
+# Fastlane generated files
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+Unterlagen/

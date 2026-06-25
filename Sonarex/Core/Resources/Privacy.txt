@@ -1,0 +1,30 @@
+Datenschutzerklärung (Beispieltext)
+
+Dies ist ein Platzhalter für die Datenschutzerklärung. Studierende ersetzen
+den Inhalt durch die tatsächlich erforderlichen Angaben gemäß DSGVO.
+
+1. Verantwortlicher
+Name, Anschrift und Kontaktdaten der für die Verarbeitung verantwortlichen
+Stelle bitte hier eintragen.
+
+2. Verarbeitete Daten
+Die App "Sonarex" speichert Notizen, Tags, Reminder und Bildanhänge
+ausschließlich lokal auf dem Gerät. Wenn CloudKit aktiviert wird, werden
+diese Daten in die private iCloud-Datenbank des jeweiligen Nutzers
+synchronisiert; ein Zugriff durch den App-Anbieter erfolgt nicht.
+
+3. Kamera
+Die Kamera-Berechtigung wird ausschließlich verwendet, um auf Wunsch des
+Nutzers Fotos für Notizen aufzunehmen. Die aufgenommenen Bilder verbleiben
+lokal bzw. in der privaten iCloud des Nutzers.
+
+4. Fotos
+Über den PhotosPicker greift die App ausschließlich auf vom Nutzer
+explizit ausgewählte Bilder zu. Es wird keine Zugriffsberechtigung auf
+die gesamte Fotomediathek angefragt.
+
+5. Rechte
+Die Rechte aus Art. 15–22 DSGVO können jederzeit durch Löschung der
+Notizen bzw. Deaktivierung des CloudKit-Containers wahrgenommen werden.
+
+— Stand: Lehr-Template, bitte ersetzen.

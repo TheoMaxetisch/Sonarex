@@ -1,0 +1,26 @@
+Allgemeine Geschäftsbedingungen (Beispieltext)
+
+Dies ist ein Platzhalter für die AGB. Studierende ersetzen den Inhalt dieser
+Datei durch die echten Bedingungen ihrer App.
+
+§1 Geltungsbereich
+Diese Bedingungen gelten für die Nutzung der App "Sonarex".
+
+§2 Leistungen
+Die App stellt Lehr- und Demozwecke bereit. Es besteht kein Anspruch auf
+Verfügbarkeit oder bestimmte Funktionen.
+
+§3 Haftung
+Die Nutzung erfolgt auf eigenes Risiko. Eine Haftung für Schäden, die aus
+der Nutzung entstehen, ist im Rahmen der gesetzlichen Vorschriften
+ausgeschlossen.
+
+§4 Änderungen
+Diese AGB können angepasst werden. Die jeweils aktuelle Version ist in der
+App einsehbar.
+
+§5 Schlussbestimmungen
+Sollten einzelne Bestimmungen unwirksam sein, bleibt die Wirksamkeit der
+übrigen Bestimmungen unberührt.
+
+— Stand: Lehr-Template, bitte ersetzen.

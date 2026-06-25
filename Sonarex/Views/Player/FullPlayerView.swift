@@ -1,0 +1,257 @@
+import SwiftUI
+
+struct FullPlayerView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(PlayerController.self) private var player
+
+    var body: some View {
+        Group {
+            if let track = player.currentTrack {
+                playerContent(track)
+            } else {
+                ContentUnavailableView("Nichts wird abgespielt", systemImage: "music.note")
+            }
+        }
+    }
+
+    private func playerContent(_ track: Track) -> some View {
+        ZStack {
+            PlayerBackground(accent: track.artworkColors.first ?? Color("SecondaryAccent"))
+
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 28) {
+                    header(track)
+                    artwork(track)
+                    trackInfo(track)
+                    progress(track)
+                    transportControls
+                    volumeControl
+                    playbackOptions
+                    upcomingQueue
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 18)
+                .padding(.bottom, 36)
+            }
+        }
+    }
+
+    private func header(_ track: Track) -> some View {
+        HStack {
+            Button {
+                player.isPlayerPresented = false
+                dismiss()
+            } label: {
+                Image(systemName: "chevron.down")
+                    .font(.title3.weight(.semibold))
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Player schließen")
+
+            Spacer()
+
+            VStack(spacing: 2) {
+                Text("Jetzt läuft")
+                    .font(.caption)
+                    .foregroundStyle(Color("SecondaryText"))
+                Text(track.album.isEmpty ? "Sonarex" : track.album)
+                    .font(.footnote.weight(.semibold))
+                    .lineLimit(1)
+            }
+
+            Spacer()
+
+            Image(systemName: "ellipsis")
+                .font(.title3.weight(.semibold))
+                .frame(width: 44, height: 44)
+        }
+    }
+
+    private func artwork(_ track: Track) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .fill(track.artworkGradient)
+
+            VStack(spacing: 18) {
+                Image(systemName: track.artworkSymbol)
+                    .font(.system(size: 78, weight: .medium))
+                VStack(spacing: 6) {
+                    Text("SONAREX").font(.headline.weight(.bold))
+                    Text(track.album.isEmpty ? track.title : track.album)
+                        .font(.subheadline)
+                        .foregroundStyle(Color("InverseText").opacity(0.78))
+                }
+            }
+            .foregroundStyle(Color("InverseText"))
+        }
+        .aspectRatio(1, contentMode: .fit)
+        .shadow(color: (track.artworkColors.first ?? .clear).opacity(0.36), radius: 34, y: 18)
+        .padding(.top, 6)
+    }
+
+    private func trackInfo(_ track: Track) -> some View {
+        HStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(track.title).font(.title2.weight(.bold)).lineLimit(2)
+                Text(track.artist).foregroundStyle(Color("SecondaryText"))
+            }
+            Spacer(minLength: 12)
+            Button {
+                track.isFavorite.toggle()
+            } label: {
+                Image(systemName: track.isFavorite ? "heart.fill" : "heart")
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(track.isFavorite ? Color("FavoriteColor") : Color("InverseText"))
+                    .frame(width: 46, height: 46)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(track.isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen")
+        }
+    }
+
+    private func progress(_ track: Track) -> some View {
+        VStack(spacing: 8) {
+            Slider(
+                value: Binding(
+                    get: { player.progress },
+                    set: { value in player.seek(to: value) }
+                ),
+                in: 0...1
+            )
+                .tint(Color("InverseText"))
+            HStack {
+                Text(formattedTime(player.elapsedTime))
+                Spacer()
+                Text(track.durationText)
+            }
+            .font(.caption.monospacedDigit())
+            .foregroundStyle(Color("SecondaryText"))
+        }
+    }
+
+    private var transportControls: some View {
+        HStack(spacing: 30) {
+            Button { player.isShuffleEnabled.toggle() } label: {
+                Image(systemName: "shuffle")
+                    .foregroundStyle(player.isShuffleEnabled ? Color("SecondaryAccent") : Color("InverseText").opacity(0.72))
+            }
+            Button(action: player.playPrevious) { Image(systemName: "backward.fill") }
+            Button(action: player.togglePlayback) {
+                Image(systemName: player.isPlaying ? "pause.fill" : "play.fill")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundStyle(Color("FeedBlack"))
+                    .frame(width: 74, height: 74)
+                    .background(Color("InverseText"), in: Circle())
+            }
+            Button(action: player.playNext) { Image(systemName: "forward.fill") }
+            Button { player.repeatMode = player.repeatMode.next } label: {
+                Image(systemName: player.repeatMode.symbol)
+                    .foregroundStyle(player.repeatMode == .off ? Color("InverseText").opacity(0.72) : Color("SecondaryAccent"))
+            }
+        }
+        .font(.title2.weight(.semibold))
+        .buttonStyle(.plain)
+    }
+
+    private var volumeControl: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "speaker.fill")
+            Slider(
+                value: Binding(
+                    get: { player.volume },
+                    set: { value in player.volume = value }
+                ),
+                in: 0...1
+            )
+                .tint(Color("InverseText"))
+            Image(systemName: "speaker.wave.3.fill")
+        }
+        .font(.footnote)
+        .foregroundStyle(Color("SecondaryText"))
+    }
+
+    private var playbackOptions: some View {
+        HStack(spacing: 12) {
+            PlayerActionButton(title: "AirPlay", symbol: "airplayaudio")
+            PlayerActionButton(title: "Lyrics", symbol: "quote.bubble")
+            PlayerActionButton(title: "Teilen", symbol: "square.and.arrow.up")
+        }
+    }
+
+    private var upcomingQueue: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Als Nächstes").font(.headline)
+            VStack(spacing: 0) {
+                ForEach(upcomingTracks) { track in
+                    QueueRow(track: track) { player.play(track, in: player.queue) }
+                    if track.id != upcomingTracks.last?.id {
+                        Divider().overlay(Color("GlassDivider")).padding(.leading, 56)
+                    }
+                }
+            }
+            .padding(12)
+            .background(Color("GlassSurface").opacity(0.8), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        }
+    }
+
+    private var upcomingTracks: [Track] {
+        guard let index = player.currentIndex else { return [] }
+        return Array(player.queue.dropFirst(index + 1))
+    }
+
+    private func formattedTime(_ seconds: Double) -> String {
+        let value = Int(seconds.rounded())
+        return "\(value / 60):\(String(format: "%02d", value % 60))"
+    }
+}
+
+private struct PlayerBackground: View {
+    let accent: Color
+    var body: some View {
+        LinearGradient(colors: [accent.opacity(0.72), Color("PlayerBackgroundMiddle"), Color("PlayerBackgroundBottom")], startPoint: .top, endPoint: .bottom)
+            .ignoresSafeArea()
+            .overlay { Color("FeedBlack").opacity(0.18).ignoresSafeArea() }
+    }
+}
+
+private struct PlayerActionButton: View {
+    let title: String
+    let symbol: String
+    var body: some View {
+        Button {} label: {
+            VStack(spacing: 8) {
+                Image(systemName: symbol).font(.headline)
+                Text(title).font(.caption.weight(.semibold))
+            }
+            .foregroundStyle(Color("InverseText"))
+            .frame(maxWidth: .infinity)
+            .frame(height: 66)
+            .background(Color("GlassSurface"), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct QueueRow: View {
+    let track: Track
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(track.artworkGradient)
+                    .frame(width: 44, height: 44)
+                    .overlay { Image(systemName: track.artworkSymbol).foregroundStyle(Color("InverseText")) }
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(track.title).font(.subheadline.weight(.semibold)).lineLimit(1)
+                    Text(track.artist).font(.caption).foregroundStyle(Color("SecondaryText")).lineLimit(1)
+                }
+                Spacer()
+                Text(track.durationText).font(.caption.monospacedDigit()).foregroundStyle(Color("SecondaryText"))
+            }
+            .frame(height: 58)
+        }
+        .buttonStyle(.plain)
+    }
+}

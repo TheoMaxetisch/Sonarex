@@ -1,0 +1,524 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0551F6FEB61584474F7B9AE9 /* NoteModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC654866AF1A11BFB6FCED7 /* NoteModelTests.swift */; };
+		1BF80E45054029D0CCAF08EF /* LegalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E83CF3A6C7143E5188535 /* LegalTextView.swift */; };
+		1CCAF4A5FB16F39521EF793C /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08C9EC90671AB8B4F40EC20 /* RootTabView.swift */; };
+		4C9AF41DCCC316B944C86B92 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E871CD9359DF16461170B72C /* SettingsView.swift */; };
+		71923A409FB7E21EA82365E5 /* AGB.txt in Resources */ = {isa = PBXBuildFile; fileRef = D0057ADE666215143BAF9464 /* AGB.txt */; };
+		8AAA2792FB0F826AFB367B1F /* SonarexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59FEEF1D7939C861D53360A /* SonarexApp.swift */; };
+		A6E104BD2E2F4B8E9D6F3C11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6E104BC2E2F4B8E9D6F3C11 /* Assets.xcassets */; };
+		DD59E76EDF042F39019DA8B3 /* Privacy.txt in Resources */ = {isa = PBXBuildFile; fileRef = 0E8B9C7310C196100CF25204 /* Privacy.txt */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FAD46537F3F776434129FEA6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6DCDE41F7945CC5FD911F1A9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8E75C1A47F24765CD60B2176;
+			remoteInfo = Sonarex;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		09DBCEA173CF4CBD3D4C054B /* Sonarex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sonarex.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E8B9C7310C196100CF25204 /* Privacy.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Privacy.txt; sourceTree = "<group>"; };
+		848E83CF3A6C7143E5188535 /* LegalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalTextView.swift; sourceTree = "<group>"; };
+		A6E104BC2E2F4B8E9D6F3C11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CC56F07B9CD05B9E01F48521 /* SonarexTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SonarexTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D0057ADE666215143BAF9464 /* AGB.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AGB.txt; sourceTree = "<group>"; };
+		D08C9EC90671AB8B4F40EC20 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
+		DDC654866AF1A11BFB6FCED7 /* NoteModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteModelTests.swift; sourceTree = "<group>"; };
+		E871CD9359DF16461170B72C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F59FEEF1D7939C861D53360A /* SonarexApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SonarexApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		0620BD402FB1B90C0022D673 /* Feed */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Feed;
+			sourceTree = "<group>";
+		};
+		0620BD4D2FB1BE5C0022D673 /* Player */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Player;
+			sourceTree = "<group>";
+		};
+		0620BD522FB1BEB10022D673 /* Search */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Search;
+			sourceTree = "<group>";
+		};
+		0620BD5D2FB1BF2D0022D673 /* Library */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Library;
+			sourceTree = "<group>";
+		};
+		A17C09D52FB2000000000001 /* Persistent */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Persistent;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXGroup section */
+		0A5320C345E1DD8267223A8B /* SonarexTests */ = {
+			isa = PBXGroup;
+			children = (
+				DDC654866AF1A11BFB6FCED7 /* NoteModelTests.swift */,
+			);
+			path = SonarexTests;
+			sourceTree = "<group>";
+		};
+		0FC0FA8A1565F8AD69B9445F /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				848E83CF3A6C7143E5188535 /* LegalTextView.swift */,
+				E871CD9359DF16461170B72C /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		0FC51F1F395B2E61483D4698 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D0057ADE666215143BAF9464 /* AGB.txt */,
+				0E8B9C7310C196100CF25204 /* Privacy.txt */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		150116B8D7A0B1D7079B9263 /* Sonarex */ = {
+			isa = PBXGroup;
+			children = (
+				256227AA6A36E13DEA80CCA8 /* Core */,
+				525CF071A5AC8B57C517316E /* Model */,
+				9E3447A4B1111A4739FAB997 /* Views */,
+			);
+			path = Sonarex;
+			sourceTree = "<group>";
+		};
+		256227AA6A36E13DEA80CCA8 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				F59FEEF1D7939C861D53360A /* SonarexApp.swift */,
+				A6E104BC2E2F4B8E9D6F3C11 /* Assets.xcassets */,
+				0FC51F1F395B2E61483D4698 /* Resources */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		4AD12ED55AAF6E6B93B01FBE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				09DBCEA173CF4CBD3D4C054B /* Sonarex.app */,
+				CC56F07B9CD05B9E01F48521 /* SonarexTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		525CF071A5AC8B57C517316E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				A17C09D52FB2000000000001 /* Persistent */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		92D63DF7E607C04BB1E4194D = {
+			isa = PBXGroup;
+			children = (
+				150116B8D7A0B1D7079B9263 /* Sonarex */,
+				0A5320C345E1DD8267223A8B /* SonarexTests */,
+				4AD12ED55AAF6E6B93B01FBE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9E3447A4B1111A4739FAB997 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0620BD5D2FB1BF2D0022D673 /* Library */,
+				0620BD522FB1BEB10022D673 /* Search */,
+				0620BD4D2FB1BE5C0022D673 /* Player */,
+				0620BD402FB1B90C0022D673 /* Feed */,
+				D08C9EC90671AB8B4F40EC20 /* RootTabView.swift */,
+				0FC0FA8A1565F8AD69B9445F /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8E75C1A47F24765CD60B2176 /* Sonarex */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8FBF13C293169CFB41AF6A5A /* Build configuration list for PBXNativeTarget "Sonarex" */;
+			buildPhases = (
+				21EE76A6D7E0CF3433094A63 /* Sources */,
+				DB3C3F79A296B16C153638A9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				0620BD402FB1B90C0022D673 /* Feed */,
+				0620BD4D2FB1BE5C0022D673 /* Player */,
+				0620BD522FB1BEB10022D673 /* Search */,
+				0620BD5D2FB1BF2D0022D673 /* Library */,
+				A17C09D52FB2000000000001 /* Persistent */,
+			);
+			name = Sonarex;
+			packageProductDependencies = (
+			);
+			productName = Sonarex;
+			productReference = 09DBCEA173CF4CBD3D4C054B /* Sonarex.app */;
+			productType = "com.apple.product-type.application";
+		};
+		ABB2004D8FEA39B21C736B3C /* SonarexTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 248CDECE33AE49F88F9B5D5C /* Build configuration list for PBXNativeTarget "SonarexTests" */;
+			buildPhases = (
+				2DC93B84DD5A120821FCD18D /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D568276D02A430EA9F6C0D37 /* PBXTargetDependency */,
+			);
+			name = SonarexTests;
+			packageProductDependencies = (
+			);
+			productName = SonarexTests;
+			productReference = CC56F07B9CD05B9E01F48521 /* SonarexTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6DCDE41F7945CC5FD911F1A9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2650;
+			};
+			buildConfigurationList = 0496BD4194C7A9D248221387 /* Build configuration list for PBXProject "Sonarex" */;
+			developmentRegion = de;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				de,
+			);
+			mainGroup = 92D63DF7E607C04BB1E4194D;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 4AD12ED55AAF6E6B93B01FBE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8E75C1A47F24765CD60B2176 /* Sonarex */,
+				ABB2004D8FEA39B21C736B3C /* SonarexTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DB3C3F79A296B16C153638A9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A6E104BD2E2F4B8E9D6F3C11 /* Assets.xcassets in Resources */,
+				71923A409FB7E21EA82365E5 /* AGB.txt in Resources */,
+				DD59E76EDF042F39019DA8B3 /* Privacy.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		21EE76A6D7E0CF3433094A63 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1BF80E45054029D0CCAF08EF /* LegalTextView.swift in Sources */,
+				1CCAF4A5FB16F39521EF793C /* RootTabView.swift in Sources */,
+				8AAA2792FB0F826AFB367B1F /* SonarexApp.swift in Sources */,
+				4C9AF41DCCC316B944C86B92 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2DC93B84DD5A120821FCD18D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0551F6FEB61584474F7B9AE9 /* NoteModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D568276D02A430EA9F6C0D37 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8E75C1A47F24765CD60B2176 /* Sonarex */;
+			targetProxy = FAD46537F3F776434129FEA6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		01BAAD9534548E372C5BD419 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_KEY_CFBundleDisplayName = Sonarex;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Wird benötigt, um in der Kamera-Demo Fotos aufzunehmen.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudresiliencelab.msd.sonarex;
+				PRODUCT_NAME = Sonarex;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		839599DCD115A822EC2E90C1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		882CD8F32387FEE6CE5AC480 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudresiliencelab.msd.sonarex.tests;
+				PRODUCT_NAME = SonarexTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sonarex.app/Sonarex";
+			};
+			name = Debug;
+		};
+		A65800E88C0D57E5EC957021 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudresiliencelab.msd.sonarex.tests;
+				PRODUCT_NAME = SonarexTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sonarex.app/Sonarex";
+			};
+			name = Release;
+		};
+		BA9CBAEEFEB6403EC8A67481 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_KEY_CFBundleDisplayName = Sonarex;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Wird benötigt, um in der Kamera-Demo Fotos aufzunehmen.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudresiliencelab.msd.sonarex;
+				PRODUCT_NAME = Sonarex;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D47AA85B2E387A6A819C203D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0496BD4194C7A9D248221387 /* Build configuration list for PBXProject "Sonarex" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D47AA85B2E387A6A819C203D /* Debug */,
+				839599DCD115A822EC2E90C1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		248CDECE33AE49F88F9B5D5C /* Build configuration list for PBXNativeTarget "SonarexTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				882CD8F32387FEE6CE5AC480 /* Debug */,
+				A65800E88C0D57E5EC957021 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8FBF13C293169CFB41AF6A5A /* Build configuration list for PBXNativeTarget "Sonarex" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				01BAAD9534548E372C5BD419 /* Debug */,
+				BA9CBAEEFEB6403EC8A67481 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6DCDE41F7945CC5FD911F1A9 /* Project object */;
+}
