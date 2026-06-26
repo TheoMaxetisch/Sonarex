@@ -1,148 +1,236 @@
 import SwiftUI
 import SwiftData
+import MessageUI
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("prefersDarkMode") private var prefersDarkMode = false
     @Query private var serverProfiles: [ServerProfile]
-    @State private var serverPassword = ""
-    @State private var credentialMessage: String?
-    @State private var credentialSaveSucceeded = false
-    @State private var syncMessage: String?
-    @State private var syncSucceeded = false
-    @State private var isSyncingLibrary = false
 
-    private let email = "support@example.com"
+    @State private var serverPassword = ""
+    @State private var credentialMessage: SettingsStatus?
+    @State private var syncMessage: SettingsStatus?
+    @State private var isSyncingLibrary = false
+    @State private var presentedSheet: SettingsSheet?
+    @State private var isMailComposerPresented = false
+
+    private let email = "sonarex@web.de"
     private let subject = "Sonarex Feedback"
 
     var body: some View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 24) {
-                    header
-
-                    SettingsSection(title: "Darstellung") {
-                        SettingsToggleRow(
-                            title: "Dunkles Design",
-                            subtitle: prefersDarkMode ? "Aktiviert" : "Deaktiviert",
-                            systemImage: prefersDarkMode ? "moon.fill" : "sun.max.fill",
-                            isOn: $prefersDarkMode
-                        )
-                    }
-
-                    SettingsSection(title: "Server") {
-                        SettingsTextFieldRow(
-                            title: "Subsonic Server",
-                            placeholder: "https://navidrome.wedel.dev",
-                            systemImage: "server.rack",
-                            text: serverURLBinding
-                        )
-
-                        SettingsDivider()
-
-                        ServerCredentialsRow(
-                            username: serverUsernameBinding,
-                            password: $serverPassword,
-                            message: credentialMessage,
-                            saveSucceeded: credentialSaveSucceeded,
-                            isEnabled: activeServer != nil,
-                            saveAction: saveCredentials
-                        )
-
-                        SettingsDivider()
-
-                        ServerSyncRow(
-                            message: syncMessage,
-                            syncSucceeded: syncSucceeded,
-                            isSyncing: isSyncingLibrary,
-                            isEnabled: activeServer != nil,
-                            syncAction: syncLibrary
-                        )
-                    }
-
-                    SettingsSection(title: "Rechtliches") {
-                        NavigationLink {
-                            LegalTextView(title: "AGB", resource: "AGB")
-                        } label: {
-                            SettingsNavigationRow(
-                                title: "AGB",
-                                subtitle: "Nutzungsbedingungen",
-                                systemImage: "doc.text"
-                            )
-                        }
-                        .buttonStyle(.plain)
-
-                        SettingsDivider()
-
-                        NavigationLink {
-                            LegalTextView(title: "Datenschutz", resource: "Privacy")
-                        } label: {
-                            SettingsNavigationRow(
-                                title: "Datenschutz",
-                                subtitle: "Umgang mit deinen Daten",
-                                systemImage: "hand.raised"
-                            )
-                        }
-                        .buttonStyle(.plain)
-                    }
-
-                    SettingsSection(title: "Kontakt") {
-                        SettingsInfoRow(
-                            title: "E-Mail",
-                            value: email,
-                            systemImage: "envelope"
-                        )
-
-                        SettingsDivider()
-
-                        Link(destination: mailURL) {
-                            SettingsNavigationRow(
-                                title: "E-Mail schreiben",
-                                subtitle: "Feedback an Sonarex senden",
-                                systemImage: "paperplane.fill"
-                            )
-                        }
-                        .buttonStyle(.plain)
-                    }
-
-                    SettingsSection(title: "Ueber") {
-                        SettingsInfoRow(title: "App", value: "Sonarex", systemImage: "music.note")
-                        SettingsDivider()
-                        SettingsInfoRow(title: "Version", value: shortVersion, systemImage: "number")
-                        SettingsDivider()
-                        SettingsInfoRow(title: "Build", value: build, systemImage: "hammer")
-                    }
-
-                    footer
+                VStack(spacing: 22) {
+                    heroHeader
+                    appearanceGroup
+                    serverGroup
+                    legalGroup
+                    contactGroup
                 }
-                .padding(.bottom, 32)
+                .padding(.horizontal, 20)
+                .padding(.top, 18)
+                .padding(.bottom, 34)
             }
             .background(Color("AppBackground"))
+            .navigationBarTitleDisplayMode(.inline)
         }
         .task(id: activeServer?.id) {
             loadPassword()
         }
-    }
-
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Einstellungen")
-                .font(.largeTitle.weight(.bold))
-                .foregroundStyle(Color("PrimaryText"))
-
-            Text("App, Design und rechtliche Infos.")
-                .font(.subheadline)
-                .foregroundStyle(Color("SecondaryText"))
+        .sheet(item: $presentedSheet) { sheet in
+            switch sheet {
+            case .server:
+                serverEditor
+            case .login:
+                loginEditor
+            }
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 16)
+        .sheet(isPresented: $isMailComposerPresented) {
+            MailComposerView(recipient: email, subject: subject)
+        }
     }
 
-    private var footer: some View {
-        Text("MSD-Lehr-Template fuer iOS 26 / Swift 6.3.")
-            .font(.footnote)
-            .foregroundStyle(Color("SecondaryText"))
-            .padding(.horizontal, 20)
+    private var heroHeader: some View {
+        HStack(spacing: 16) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [Color("SecondaryAccent"), Color("FeedMint"), Color("FeedRose")],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+
+                Image(systemName: "slider.horizontal.3")
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(Color("InverseText"))
+            }
+            .frame(width: 58, height: 58)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Einstellungen")
+                    .font(.largeTitle.weight(.bold))
+                    .foregroundStyle(Color("PrimaryText"))
+                    .lineLimit(1)
+
+                Text("App, Design und Verbindung")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(Color("SecondaryText"))
+                    .lineLimit(1)
+            }
+
+            Spacer()
+        }
+        .padding(.vertical, 4)
+    }
+
+    private var appearanceGroup: some View {
+        SettingsGroup("Darstellung") {
+            SettingsRow(
+                title: "Dunkles Design",
+                subtitle: prefersDarkMode ? "Aktiviert" : "Deaktiviert",
+                systemImage: prefersDarkMode ? "moon.fill" : "sun.max.fill",
+                tint: prefersDarkMode ? Color("FeedIndigo") : Color("FeedYellow")
+            ) {
+                Toggle("Dunkles Design", isOn: $prefersDarkMode)
+                    .labelsHidden()
+                    .tint(Color("SecondaryAccent"))
+            }
+        }
+    }
+
+    private var serverGroup: some View {
+        SettingsGroup("Navidrome") {
+            Button {
+                presentedSheet = .server
+            } label: {
+                SettingsRow(title: "Server", subtitle: serverURLSubtitle, systemImage: "server.rack", tint: Color("FeedAqua")) {
+                    Chevron()
+                }
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                presentedSheet = .login
+            } label: {
+                SettingsRow(title: "Login", subtitle: loginSubtitle, systemImage: "person.badge.key.fill", tint: Color("FeedGreen")) {
+                    Chevron()
+                }
+            }
+            .buttonStyle(.plain)
+
+            SettingsRow(title: "Bibliothek", subtitle: "Alben und Songs", systemImage: "arrow.triangle.2.circlepath", tint: Color("FeedPurple")) {
+                HStack(spacing: 10) {
+                    if let syncMessage {
+                        SettingsStatusDot(status: syncMessage)
+                    }
+
+                    Button(action: syncLibrary) {
+                        Image(systemName: isSyncingLibrary ? "hourglass" : "arrow.triangle.2.circlepath")
+                            .font(.headline.weight(.semibold))
+                            .foregroundStyle(Color("InverseText"))
+                            .frame(width: 40, height: 40)
+                            .background(Color("SecondaryAccent"), in: Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(activeServer == nil || isSyncingLibrary)
+                    .accessibilityLabel("Bibliothek synchronisieren")
+                }
+            }
+        }
+    }
+
+    private var serverEditor: some View {
+        SettingsSheetView(title: "Server bearbeiten", systemImage: "server.rack", tint: Color("FeedAqua")) {
+            SettingsEditorField(title: "Servername") {
+                TextField("Navidrome", text: serverNameBinding)
+                    .settingsFieldStyle()
+            }
+
+            SettingsEditorField(title: "Server URL") {
+                TextField("https://navidrome.example.com", text: serverURLBinding)
+                    .keyboardType(.URL)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .settingsFieldStyle()
+            }
+        }
+        .presentationDetents([.medium])
+        .presentationDragIndicator(.visible)
+    }
+
+    private var loginEditor: some View {
+        SettingsSheetView(title: "Login bearbeiten", systemImage: "person.badge.key.fill", tint: Color("FeedGreen")) {
+            SettingsEditorField(title: "Benutzername") {
+                TextField("Benutzername", text: serverUsernameBinding)
+                    .textContentType(.username)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .settingsFieldStyle()
+            }
+
+            SettingsEditorField(title: "Passwort") {
+                SecureField("Passwort", text: $serverPassword)
+                    .textContentType(.password)
+                    .settingsFieldStyle()
+                    .onSubmit(saveCredentials)
+            }
+
+            SettingsActionButton(
+                title: "Zugangsdaten speichern",
+                systemImage: "key.fill",
+                isDisabled: activeServer == nil,
+                action: saveCredentials
+            )
+
+            if let credentialMessage {
+                SettingsStatusLabel(status: credentialMessage)
+            }
+        }
+        .presentationDetents([.medium])
+        .presentationDragIndicator(.visible)
+    }
+
+    private var legalGroup: some View {
+        SettingsGroup("Rechtliches") {
+            NavigationLink {
+                LegalTextView(title: "AGB", resource: "AGB")
+            } label: {
+                SettingsRow(title: "AGB", subtitle: "Nutzungsbedingungen", systemImage: "doc.text", tint: Color("FeedGray")) {
+                    Chevron()
+                }
+            }
+            .buttonStyle(.plain)
+
+            NavigationLink {
+                LegalTextView(title: "Datenschutz", resource: "Privacy")
+            } label: {
+                SettingsRow(title: "Datenschutz", subtitle: "Daten und Privatsphäre", systemImage: "hand.raised.fill", tint: Color("FeedMint")) {
+                    Chevron()
+                }
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var contactGroup: some View {
+        SettingsGroup("Kontakt") {
+            SettingsRow(title: "E-Mail", subtitle: email, systemImage: "envelope.fill", tint: Color("FeedOrange")) {
+                Button(action: openMailComposer) {
+                    Image(systemName: "paperplane.fill")
+                        .font(.headline.weight(.semibold))
+                        .foregroundStyle(Color("SecondaryAccent"))
+                        .frame(width: 40, height: 40)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("E-Mail schreiben")
+            }
+
+            SettingsRow(title: "Version", subtitle: "\(shortVersion) (\(build))", systemImage: "info.circle.fill", tint: Color("FeedBlue")) {
+                EmptyView()
+            }
+        }
     }
 
     private var activeServer: ServerProfile? {
@@ -156,6 +244,13 @@ struct SettingsView: View {
         )
     }
 
+    private var serverNameBinding: Binding<String> {
+        Binding(
+            get: { activeServer?.name ?? "" },
+            set: { activeServer?.name = $0 }
+        )
+    }
+
     private var serverUsernameBinding: Binding<String> {
         Binding(
             get: { activeServer?.username ?? "" },
@@ -163,9 +258,16 @@ struct SettingsView: View {
         )
     }
 
+    private var serverURLSubtitle: String {
+        activeServer?.baseURL.isEmpty == false ? "Verbunden ueber Subsonic API" : "Noch keine URL gesetzt"
+    }
+
+    private var loginSubtitle: String {
+        activeServer?.username.isEmpty == false ? "Zugangsdaten gespeichert" : "Noch nicht eingerichtet"
+    }
+
     private func loadPassword() {
         credentialMessage = nil
-        credentialSaveSucceeded = false
         guard let activeServer else {
             serverPassword = ""
             return
@@ -175,7 +277,7 @@ struct SettingsView: View {
             serverPassword = try KeychainCredentialStore.password(for: activeServer.id) ?? ""
         } catch {
             serverPassword = ""
-            credentialMessage = error.localizedDescription
+            credentialMessage = .error(error.localizedDescription)
         }
     }
 
@@ -183,21 +285,16 @@ struct SettingsView: View {
         guard let activeServer else { return }
         do {
             try KeychainCredentialStore.savePassword(serverPassword, for: activeServer.id)
-            credentialSaveSucceeded = true
-            credentialMessage = serverPassword.isEmpty
-                ? "Passwort aus der Keychain entfernt."
-                : "Zugangsdaten sicher gespeichert."
+            credentialMessage = .success(serverPassword.isEmpty ? "Passwort entfernt." : "Zugangsdaten gespeichert.")
         } catch {
-            credentialSaveSucceeded = false
-            credentialMessage = error.localizedDescription
+            credentialMessage = .error(error.localizedDescription)
         }
     }
 
     private func syncLibrary() {
         guard let activeServer else { return }
         isSyncingLibrary = true
-        syncMessage = "Bibliothek wird synchronisiert..."
-        syncSucceeded = false
+        syncMessage = .working("Bibliothek wird synchronisiert...")
 
         Task {
             do {
@@ -207,13 +304,19 @@ struct SettingsView: View {
                     password: serverPassword,
                     context: modelContext
                 )
-                syncSucceeded = true
-                syncMessage = "\(result.albumCount) Alben und \(result.trackCount) Songs importiert."
+                syncMessage = .success("\(result.albumCount) Alben und \(result.trackCount) Songs importiert.")
             } catch {
-                syncSucceeded = false
-                syncMessage = error.localizedDescription
+                syncMessage = .error(error.localizedDescription)
             }
             isSyncingLibrary = false
+        }
+    }
+
+    private func openMailComposer() {
+        if MFMailComposeViewController.canSendMail() {
+            isMailComposerPresented = true
+        } else {
+            UIApplication.shared.open(mailURL)
         }
     }
 
@@ -234,171 +337,56 @@ struct SettingsView: View {
     }
 }
 
-private struct ServerCredentialsRow: View {
-    @Binding var username: String
-    @Binding var password: String
-    let message: String?
-    let saveSucceeded: Bool
-    let isEnabled: Bool
-    let saveAction: () -> Void
+private enum SettingsStatus {
+    case working(String)
+    case success(String)
+    case error(String)
 
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            SettingsIcon(systemImage: "person.badge.key.fill")
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Zugangsdaten")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color("PrimaryText"))
-
-                TextField("Benutzername", text: $username)
-                    .textContentType(.username)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .settingsInputStyle()
-
-                Text("Das Passwort wird sicher in der iOS-Keychain gespeichert und nicht in SwiftData abgelegt.")
-                    .font(.caption)
-                    .foregroundStyle(Color("SecondaryText"))
-                    .fixedSize(horizontal: false, vertical: true)
-
-                SecureField("Passwort", text: $password)
-                    .textContentType(.password)
-                    .settingsInputStyle()
-                    .onSubmit(saveAction)
-
-                Button(action: saveAction) {
-                    Label("Zugangsdaten speichern", systemImage: "key.fill")
-                        .font(.subheadline.weight(.semibold))
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(Color("SecondaryAccent"))
-                .disabled(!isEnabled)
-
-                if let message {
-                    Label(
-                        message,
-                        systemImage: saveSucceeded ? "checkmark.circle.fill" : "exclamationmark.triangle.fill"
-                    )
-                    .font(.caption)
-                    .foregroundStyle(saveSucceeded ? Color.green : Color.red)
-                    .fixedSize(horizontal: false, vertical: true)
-                }
-            }
+    var message: String {
+        switch self {
+        case .working(let message), .success(let message), .error(let message):
+            message
         }
-        .padding(14)
     }
-}
 
-private struct ServerSyncRow: View {
-    let message: String?
-    let syncSucceeded: Bool
-    let isSyncing: Bool
-    let isEnabled: Bool
-    let syncAction: () -> Void
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            SettingsIcon(systemImage: "arrow.triangle.2.circlepath")
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Navidrome-Bibliothek")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color("PrimaryText"))
-
-                Text("Alben und Songs ueber die Subsonic API abrufen.")
-                    .font(.caption)
-                    .foregroundStyle(Color("SecondaryText"))
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Button(action: syncAction) {
-                    Label(
-                        isSyncing ? "Synchronisiere..." : "Bibliothek synchronisieren",
-                        systemImage: isSyncing ? "hourglass" : "square.and.arrow.down"
-                    )
-                    .font(.subheadline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(Color("SecondaryAccent"))
-                .disabled(!isEnabled || isSyncing)
-
-                if let message {
-                    Label(
-                        message,
-                        systemImage: syncSucceeded ? "checkmark.circle.fill" : "exclamationmark.triangle.fill"
-                    )
-                    .font(.caption)
-                    .foregroundStyle(syncSucceeded ? Color.green : Color.red)
-                    .fixedSize(horizontal: false, vertical: true)
-                }
-            }
+    var symbol: String {
+        switch self {
+        case .working:
+            "hourglass"
+        case .success:
+            "checkmark.circle.fill"
+        case .error:
+            "exclamationmark.triangle.fill"
         }
-        .padding(14)
     }
-}
 
-private extension View {
-    func settingsInputStyle() -> some View {
-        self
-            .font(.subheadline)
-            .foregroundStyle(Color("PrimaryText"))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background(
-                Color("GlassSurfaceStrong"),
-                in: RoundedRectangle(cornerRadius: 8, style: .continuous)
-            )
-    }
-}
-
-private struct SettingsTextFieldRow: View {
-    let title: String
-    let placeholder: String
-    let systemImage: String
-    @Binding var text: String
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            SettingsIcon(systemImage: systemImage)
-
-            VStack(alignment: .leading, spacing: 8) {
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color("PrimaryText"))
-
-                TextField(placeholder, text: $text)
-                    .keyboardType(.URL)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .font(.subheadline)
-                    .foregroundStyle(Color("PrimaryText"))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-                    .background(Color("GlassSurfaceStrong"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-            }
-
-            if !text.isEmpty {
-                Button {
-                    text = ""
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.headline)
-                        .foregroundStyle(Color("SecondaryText"))
-                        .frame(width: 30, height: 30)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Server URL leeren")
-            }
+    var color: Color {
+        switch self {
+        case .working:
+            Color("SecondaryText")
+        case .success:
+            Color.green
+        case .error:
+            Color.red
         }
-        .padding(14)
     }
 }
 
-private struct SettingsSection<Content: View>: View {
+private enum SettingsSheet: String, Identifiable {
+    case server
+    case login
+
+    var id: String { rawValue }
+}
+
+private struct SettingsGroup<Content: View>: View {
     let title: String
     @ViewBuilder let content: Content
+
+    init(_ title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -406,119 +394,225 @@ private struct SettingsSection<Content: View>: View {
                 .font(.caption.weight(.bold))
                 .foregroundStyle(Color("SecondaryText"))
                 .textCase(.uppercase)
-                .padding(.horizontal, 20)
 
             VStack(spacing: 0) {
                 content
             }
             .background(Color("GlassSurface"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .padding(.horizontal, 20)
+            .overlay {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(Color("GlassDivider").opacity(0.7), lineWidth: 1)
+            }
         }
     }
 }
 
-private struct SettingsToggleRow: View {
+private struct SettingsSheetView<Content: View>: View {
+    @Environment(\.dismiss) private var dismiss
+
     let title: String
-    let subtitle: String
     let systemImage: String
-    @Binding var isOn: Bool
+    let tint: Color
+    @ViewBuilder let content: Content
 
     var body: some View {
-        HStack(spacing: 12) {
-            SettingsIcon(systemImage: systemImage)
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 18) {
+                HStack(spacing: 12) {
+                    SettingsIcon(systemImage: systemImage, tint: tint)
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color("PrimaryText"))
+                    Text(title)
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(Color("PrimaryText"))
 
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(Color("SecondaryText"))
+                    Spacer()
+                }
+
+                VStack(alignment: .leading, spacing: 14) {
+                    content
+                }
+
+                Spacer(minLength: 0)
             }
-
-            Spacer()
-
-            Toggle(title, isOn: $isOn)
-                .labelsHidden()
-                .tint(Color("SecondaryAccent"))
+            .padding(20)
+            .background(Color("AppBackground"))
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fertig") {
+                        dismiss()
+                    }
+                    .font(.subheadline.weight(.semibold))
+                }
+            }
         }
-        .padding(14)
     }
 }
 
-private struct SettingsNavigationRow: View {
+private struct SettingsEditorField<Content: View>: View {
     let title: String
-    let subtitle: String
-    let systemImage: String
+    @ViewBuilder let content: Content
 
     var body: some View {
-        HStack(spacing: 12) {
-            SettingsIcon(systemImage: systemImage)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color("PrimaryText"))
-
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(Color("SecondaryText"))
-            }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
                 .font(.caption.weight(.bold))
                 .foregroundStyle(Color("SecondaryText"))
+                .textCase(.uppercase)
+
+            content
+        }
+    }
+}
+
+private struct SettingsRow<Accessory: View>: View {
+    let title: String
+    let subtitle: String
+    let systemImage: String
+    let tint: Color
+    @ViewBuilder let accessory: Accessory
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            SettingsIcon(systemImage: systemImage, tint: tint)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color("PrimaryText"))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(Color("SecondaryText"))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .layoutPriority(1)
+
+            Spacer(minLength: 12)
+
+            accessory
+                .fixedSize(horizontal: true, vertical: false)
         }
         .padding(14)
         .contentShape(Rectangle())
     }
 }
 
-private struct SettingsInfoRow: View {
-    let title: String
-    let value: String
-    let systemImage: String
+private struct SettingsStatusDot: View {
+    let status: SettingsStatus
 
     var body: some View {
-        HStack(spacing: 12) {
-            SettingsIcon(systemImage: systemImage)
+        Image(systemName: status.symbol)
+            .font(.caption.weight(.bold))
+            .foregroundStyle(status.color)
+            .frame(width: 22, height: 22)
+            .accessibilityLabel(status.message)
+    }
+}
 
-            Text(title)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(Color("PrimaryText"))
+private struct MailComposerView: UIViewControllerRepresentable {
+    @Environment(\.dismiss) private var dismiss
 
-            Spacer()
+    let recipient: String
+    let subject: String
 
-            Text(value)
-                .font(.subheadline)
-                .foregroundStyle(Color("SecondaryText"))
-                .multilineTextAlignment(.trailing)
+    func makeUIViewController(context: Context) -> MFMailComposeViewController {
+        let controller = MFMailComposeViewController()
+        controller.mailComposeDelegate = context.coordinator
+        controller.setToRecipients([recipient])
+        controller.setSubject(subject)
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(dismiss: dismiss)
+    }
+
+    final class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
+        let dismissAction: @MainActor @Sendable () -> Void
+
+        init(dismiss: DismissAction) {
+            self.dismissAction = { dismiss() }
         }
-        .padding(14)
+
+        func mailComposeController(
+            _ controller: MFMailComposeViewController,
+            didFinishWith result: MFMailComposeResult,
+            error: (any Error)?
+        ) {
+            let dismissAction = dismissAction
+            Task { @MainActor in
+                dismissAction()
+            }
+        }
     }
 }
 
 private struct SettingsIcon: View {
     let systemImage: String
+    let tint: Color
 
     var body: some View {
         Image(systemName: systemImage)
             .font(.headline.weight(.semibold))
             .foregroundStyle(Color("InverseText"))
-            .frame(width: 36, height: 36)
-            .background(Color("SecondaryAccent"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .frame(width: 38, height: 38)
+            .background(tint, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 }
 
-private struct SettingsDivider: View {
+private struct SettingsActionButton: View {
+    let title: String
+    let systemImage: String
+    let isDisabled: Bool
+    let action: () -> Void
+
     var body: some View {
-        Rectangle()
-            .fill(Color("GlassDivider"))
-            .frame(height: 1)
-            .padding(.leading, 62)
+        Button(action: action) {
+            Label(title, systemImage: systemImage)
+                .font(.caption.weight(.bold))
+                .lineLimit(1)
+                .frame(maxWidth: .infinity)
+                .frame(height: 36)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(Color("SecondaryAccent"))
+        .disabled(isDisabled)
+    }
+}
+
+private struct SettingsStatusLabel: View {
+    let status: SettingsStatus
+
+    var body: some View {
+        Label(status.message, systemImage: status.symbol)
+            .font(.caption)
+            .foregroundStyle(status.color)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+private struct Chevron: View {
+    var body: some View {
+        Image(systemName: "chevron.right")
+            .font(.caption.weight(.bold))
+            .foregroundStyle(Color("SecondaryText"))
+    }
+}
+
+private extension View {
+    func settingsFieldStyle() -> some View {
+        self
+            .font(.subheadline)
+            .foregroundStyle(Color("PrimaryText"))
+            .padding(.horizontal, 12)
+            .frame(height: 38)
+            .background(Color("GlassSurfaceStrong"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 }
 
