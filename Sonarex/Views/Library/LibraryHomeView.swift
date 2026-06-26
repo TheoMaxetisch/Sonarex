@@ -70,15 +70,10 @@ struct LibraryHomeView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Bibliothek")
-                .font(.largeTitle.weight(.bold))
-                .foregroundStyle(Color("PrimaryText"))
-
-            Text("Deine Playlists als schnelle Vorschau.")
-                .font(.subheadline)
-                .foregroundStyle(Color("SecondaryText"))
-        }
+        Text("Bibliothek")
+            .font(.largeTitle.weight(.bold))
+            .foregroundStyle(Color("PrimaryText"))
+        
         .padding(.horizontal, 20)
         .padding(.top, 16)
     }

@@ -75,15 +75,10 @@ struct SearchHomeView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Suche")
-                .font(.largeTitle.weight(.bold))
-                .foregroundStyle(Color("PrimaryText"))
+        Text("Suche")
+            .font(.largeTitle.weight(.bold))
+            .foregroundStyle(Color("PrimaryText"))
 
-            Text("Finde Songs, Stimmen und Genres.")
-                .font(.subheadline)
-                .foregroundStyle(Color("SecondaryText"))
-        }
         .padding(.horizontal, 20)
         .padding(.top, 16)
     }

@@ -1,29 +1,127 @@
 import SwiftUI
 
-/// Lädt einen Plaintext aus dem App-Bundle und stellt ihn dar.
-/// `Resources/AGB.txt` und `Resources/Privacy.txt` können ersetzt werden,
-/// ohne Code anzufassen.
 struct LegalTextView: View {
     let title: String
     let resource: String
 
     @State private var text: String = ""
+    @State private var didLoadText = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            Text(text.isEmpty ? "(Kein Text gefunden — bitte Resources/\(resource).txt anlegen.)" : text)
-                .font(.body)
-                .foregroundStyle(Color("PrimaryText"))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(20)
-                .background(Color("GlassSurface"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-                .padding(20)
+            VStack(alignment: .leading, spacing: 22) {
+                header
+                content
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 18)
+            .padding(.bottom, 34)
         }
         .background(Color("AppBackground"))
-        .navigationTitle(title)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .task {
+            guard !didLoadText else { return }
             text = loadResource(resource) ?? ""
+            didLoadText = true
+        }
+    }
+
+    private var header: some View {
+        HStack(spacing: 16) {
+            SettingsIcon(systemImage: iconName, tint: tint)
+                .frame(width: 58, height: 58)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.largeTitle.weight(.bold))
+                    .foregroundStyle(Color("PrimaryText"))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+
+                Text(subtitle)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(Color("SecondaryText"))
+                    .lineLimit(1)
+            }
+
+            Spacer()
+        }
+        .padding(.vertical, 4)
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if text.isEmpty {
+            emptyState
+        } else {
+            legalBody
+        }
+    }
+
+    private var legalBody: some View {
+        Text(text)
+            .font(.body)
+            .lineSpacing(5)
+            .foregroundStyle(Color("PrimaryText"))
+            .textSelection(.enabled)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(18)
+            .background(Color("GlassSurface"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(Color("GlassDivider").opacity(0.7), lineWidth: 1)
+            }
+    }
+
+    private var emptyState: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SettingsIcon(systemImage: "exclamationmark.triangle.fill", tint: Color("FeedRose"))
+
+            Text("Text nicht gefunden")
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(Color("PrimaryText"))
+
+            Text("Bitte lege `Resources/\(resource).txt` im App-Bundle an.")
+                .font(.subheadline)
+                .foregroundStyle(Color("SecondaryText"))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(18)
+        .background(Color("GlassSurface"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(Color("GlassDivider").opacity(0.7), lineWidth: 1)
+        }
+    }
+
+    private var subtitle: String {
+        switch resource {
+        case "AGB":
+            "Nutzungsbedingungen"
+        case "Privacy":
+            "Daten und Privatsphäre"
+        default:
+            "Rechtlicher Hinweis"
+        }
+    }
+
+    private var iconName: String {
+        switch resource {
+        case "Privacy":
+            "hand.raised.fill"
+        default:
+            "doc.text.fill"
+        }
+    }
+
+    private var tint: Color {
+        switch resource {
+        case "Privacy":
+            Color("FeedMint")
+        default:
+            Color("FeedGray")
         }
     }
 
