@@ -23,11 +23,16 @@ struct RootTabView: View {
                     LibraryHomeView()
                 }
             }
-            Tab("Einstellungen", systemImage: "gearshape") {
+            Tab("Setup", systemImage: "gearshape") {
                 PlayerTabContent {
                     SettingsView()
                 }
             }
+        }
+        .toolbarBackground(Color("AppBackground"), for: .tabBar)
+        .toolbarBackground(.visible, for: .tabBar)
+        .overlay(alignment: .top) {
+            StatusBarScrim()
         }
         .animation(.spring(response: 0.36, dampingFraction: 0.86), value: player.currentTrack?.id)
         .sheet(
@@ -47,6 +52,9 @@ private struct PlayerTabContent<Content: View>: View {
 
     var body: some View {
         content
+            .overlay(alignment: .bottom) {
+                BottomContentFade()
+            }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 if let track = player.currentTrack, !player.isPlayerPresented {
                     MiniPlayerView(
@@ -60,6 +68,38 @@ private struct PlayerTabContent<Content: View>: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
+    }
+}
+
+private struct StatusBarScrim: View {
+    var body: some View {
+        GeometryReader { proxy in
+            Color("AppBackground")
+                .frame(height: proxy.safeAreaInsets.top)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .ignoresSafeArea(.container, edges: .top)
+        }
+        .allowsHitTesting(false)
+    }
+}
+
+private struct BottomContentFade: View {
+    var body: some View {
+        GeometryReader { proxy in
+            LinearGradient(
+                colors: [
+                    Color("AppBackground").opacity(0),
+                    Color("AppBackground").opacity(0.82),
+                    Color("AppBackground")
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: proxy.safeAreaInsets.bottom + 72)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            .ignoresSafeArea(.container, edges: .bottom)
+        }
+        .allowsHitTesting(false)
     }
 }
 

@@ -69,8 +69,9 @@ struct MiniPlayerView: View {
         }
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .background(containerTint, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .strokeBorder(accentColor.opacity(0.34), lineWidth: 1)
         }
         .shadow(color: accentColor.opacity(0.18), radius: 28, y: 14)
@@ -103,7 +104,6 @@ struct MiniPlayerView: View {
             }
         }
         .frame(height: 3)
-        .clipShape(.rect(bottomLeadingRadius: 20, bottomTrailingRadius: 20))
     }
 
     private var accentColor: Color {
