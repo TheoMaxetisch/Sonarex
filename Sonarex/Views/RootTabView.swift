@@ -52,6 +52,7 @@ private struct PlayerTabContent<Content: View>: View {
                     MiniPlayerView(
                         track: track,
                         isPlaying: player.isPlaying,
+                        progress: player.progress,
                         openFullPlayer: { player.isPlayerPresented = true },
                         togglePlayback: player.togglePlayback,
                         stopPlayback: player.stop

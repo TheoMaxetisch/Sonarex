@@ -14,15 +14,6 @@ struct SonarexApp: App {
                 ServerProfile.self, Track.self, Playlist.self, PlaylistEntry.self
             ])
 
-            // CloudKit-Aktivierung (siehe README):
-            // 1. iCloud-Capability + CloudKit in den Target-Settings einschalten
-            // 2. Container-ID setzen, z.B.:
-            //    let configuration = ModelConfiguration(
-            //        schema: schema,
-            //        cloudKitDatabase: .private("iCloud.com.cloudresiliencelab.msd.sonarex")
-            //    )
-            // 3. @Attribute(.unique) in Tag.swift entfernen — nicht CloudKit-kompatibel
-            // 4. Alle Relationships müssen optional bleiben (sind sie bereits)
             let configuration = ModelConfiguration(
                 schema: schema,
                 isStoredInMemoryOnly: false

@@ -29,6 +29,7 @@ struct FullPlayerView: View {
                     volumeControl
                     playbackOptions
                     upcomingQueue
+                    continuationPreview
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 18)
@@ -197,15 +198,56 @@ struct FullPlayerView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Als Nächstes").font(.headline)
             VStack(spacing: 0) {
-                ForEach(upcomingTracks) { track in
-                    QueueRow(track: track) { player.play(track, in: player.queue) }
-                    if track.id != upcomingTracks.last?.id {
-                        Divider().overlay(Color("GlassDivider")).padding(.leading, 56)
+                if upcomingTracks.isEmpty {
+                    Label("Danach startet der Mix", systemImage: "sparkles")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color("SecondaryText"))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(height: 58)
+                } else {
+                    ForEach(upcomingTracks) { track in
+                        QueueRow(track: track) { player.play(track, in: player.queue) }
+                        if track.id != upcomingTracks.last?.id {
+                            Divider().overlay(Color("GlassDivider")).padding(.leading, 56)
+                        }
                     }
                 }
             }
             .padding(12)
             .background(Color("GlassSurface").opacity(0.8), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        }
+    }
+
+    @ViewBuilder
+    private var continuationPreview: some View {
+        let tracks = player.continuationPreviewTracks
+        if !tracks.isEmpty {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack {
+                    Text("Weiter im Mix").font(.headline)
+                    Spacer()
+                    Image(systemName: "shuffle")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color("SecondaryAccent"))
+                }
+
+                VStack(spacing: 0) {
+                    ForEach(tracks) { track in
+                        QueueRow(track: track) {
+                            player.playContinuation(track)
+                        }
+                        if track.id != tracks.last?.id {
+                            Divider().overlay(Color("GlassDivider")).padding(.leading, 56)
+                        }
+                    }
+                }
+                .padding(12)
+                .background(Color("GlassSurface").opacity(0.56), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .stroke(Color("SecondaryAccent").opacity(0.24), lineWidth: 1)
+                }
+            }
         }
     }
 

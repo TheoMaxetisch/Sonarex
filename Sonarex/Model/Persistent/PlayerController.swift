@@ -31,6 +31,7 @@ final class PlayerController {
     @ObservationIgnored private var playbackTask: Task<Void, Never>?
     @ObservationIgnored private var playerItemStatusObservation: NSKeyValueObservation?
     @ObservationIgnored private var playerStatusObservation: NSKeyValueObservation?
+    @ObservationIgnored private var continuationQueue: [Track] = []
 
     var currentTrack: Track?
     var queue: [Track] = []
@@ -57,6 +58,10 @@ final class PlayerController {
         return min(max(elapsedTime / Double(currentTrack.duration), 0), 1)
     }
 
+    var continuationPreviewTracks: [Track] {
+        Array(continuationQueue.prefix(4))
+    }
+
     func play(_ track: Track, in tracks: [Track] = []) {
         configureAudioSession()
         queue = tracks.isEmpty ? [track] : tracks
@@ -65,6 +70,12 @@ final class PlayerController {
         elapsedTime = 0
         isPlaying = false
         playbackError = nil
+        if continuationQueue.contains(where: { $0.id == track.id }) {
+            continuationQueue.removeAll { $0.id == track.id }
+        } else {
+            continuationQueue = []
+        }
+        refreshContinuationQueue()
         track.lastPlayedAt = .now
         track.playCount += 1
         updateNowPlayingInfo(for: track, playbackRate: 0)
@@ -102,6 +113,9 @@ final class PlayerController {
             play(queue[next], in: queue)
         } else if repeatMode == .all {
             play(queue[0], in: queue)
+        } else if let continuationTrack = nextContinuationTrack() {
+            queue.append(continuationTrack)
+            play(continuationTrack, in: queue)
         } else {
             isPlaying = false
             audioPlayer?.pause()
@@ -135,9 +149,22 @@ final class PlayerController {
         isPlaying = false
         isPlayerPresented = false
         playbackError = nil
+        continuationQueue = []
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
         MPNowPlayingInfoCenter.default().playbackState = .stopped
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    func continuationPreview(limit: Int = 4) -> [Track] {
+        refreshContinuationQueue(minimumCount: limit)
+        return Array(continuationQueue.prefix(limit))
+    }
+
+    func playContinuation(_ track: Track) {
+        if !queue.contains(where: { $0.id == track.id }) {
+            queue.append(track)
+        }
+        play(track, in: queue)
     }
 
     private func startStreaming(_ track: Track) {
@@ -163,6 +190,47 @@ final class PlayerController {
                 updatePlaybackRate()
             }
         }
+    }
+
+    private func nextContinuationTrack() -> Track? {
+        refreshContinuationQueue(minimumCount: 1)
+        return continuationQueue.first
+    }
+
+    private func refreshContinuationQueue(minimumCount: Int = 6) {
+        guard continuationQueue.count < minimumCount else { return }
+        let existingIDs = Set((queue + continuationQueue).map(\.id))
+        let playlistCandidates = randomizedPlaylistCandidates(excluding: existingIDs)
+
+        for track in playlistCandidates where continuationQueue.count < minimumCount {
+            continuationQueue.append(track)
+        }
+
+        if continuationQueue.count < minimumCount {
+            let fallbackCandidates = shuffledLibraryCandidates(excluding: Set((queue + continuationQueue).map(\.id)))
+            for track in fallbackCandidates where continuationQueue.count < minimumCount {
+                continuationQueue.append(track)
+            }
+        }
+    }
+
+    private func randomizedPlaylistCandidates(excluding existingIDs: Set<UUID>) -> [Track] {
+        guard let playlists = currentTrack?.server?.playlists else { return [] }
+
+        return playlists
+            .shuffled()
+            .compactMap { playlist in
+                playlist.tracks
+                    .filter { !existingIDs.contains($0.id) }
+                    .randomElement()
+            }
+    }
+
+    private func shuffledLibraryCandidates(excluding existingIDs: Set<UUID>) -> [Track] {
+        guard let tracks = currentTrack?.server?.tracks else { return [] }
+        return tracks
+            .filter { !existingIDs.contains($0.id) }
+            .shuffled()
     }
 
     private func configureAudioSession() {
