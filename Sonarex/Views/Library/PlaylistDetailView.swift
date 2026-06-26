@@ -205,7 +205,7 @@ private struct PlaylistTrackRow: View {
             Spacer()
 
             Button {
-                track.isFavorite.toggle()
+                toggleFavorite()
             } label: {
                 Image(systemName: track.isFavorite ? "heart.fill" : "heart")
                     .font(.subheadline.weight(.semibold))
@@ -232,5 +232,20 @@ private struct PlaylistTrackRow: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .background(Color("GlassSurface"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+
+    private func toggleFavorite() {
+        let nextValue = !track.isFavorite
+        track.isFavorite = nextValue
+
+        Task {
+            do {
+                try await NavidromeFavoriteSyncService.setFavorite(nextValue, for: track)
+            } catch {
+                await MainActor.run {
+                    track.isFavorite.toggle()
+                }
+            }
+        }
     }
 }

@@ -99,7 +99,7 @@ struct FullPlayerView: View {
             }
             Spacer(minLength: 12)
             Button {
-                track.isFavorite.toggle()
+                toggleFavorite(track)
             } label: {
                 Image(systemName: track.isFavorite ? "heart.fill" : "heart")
                     .font(.title2.weight(.semibold))
@@ -217,6 +217,21 @@ struct FullPlayerView: View {
     private func formattedTime(_ seconds: Double) -> String {
         let value = Int(seconds.rounded())
         return "\(value / 60):\(String(format: "%02d", value % 60))"
+    }
+
+    private func toggleFavorite(_ track: Track) {
+        let nextValue = !track.isFavorite
+        track.isFavorite = nextValue
+
+        Task {
+            do {
+                try await NavidromeFavoriteSyncService.setFavorite(nextValue, for: track)
+            } catch {
+                await MainActor.run {
+                    track.isFavorite.toggle()
+                }
+            }
+        }
     }
 }
 
