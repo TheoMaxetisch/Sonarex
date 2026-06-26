@@ -34,6 +34,7 @@
 		0E8B9C7310C196100CF25204 /* Privacy.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Privacy.txt; sourceTree = "<group>"; };
 		597BB23489E9112AB9045112 /* MailComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailComposerView.swift; sourceTree = "<group>"; };
 		597BB23589E9112AB9045112 /* SettingsComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsComponents.swift; sourceTree = "<group>"; };
+		597BB23889E9112AB9045112 /* LegalContact.example.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LegalContact.example.txt; sourceTree = "<group>"; };
 		848E83CF3A6C7143E5188535 /* LegalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalTextView.swift; sourceTree = "<group>"; };
 		A6E104BC2E2F4B8E9D6F3C11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CC56F07B9CD05B9E01F48521 /* SonarexTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SonarexTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -103,6 +104,7 @@
 			children = (
 				D0057ADE666215143BAF9464 /* AGB.txt */,
 				0E8B9C7310C196100CF25204 /* Privacy.txt */,
+				597BB23889E9112AB9045112 /* LegalContact.example.txt */,
 			);
 			path = Resources;
 			sourceTree = "<group>";

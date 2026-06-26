@@ -1,30 +1,216 @@
-Datenschutzerklärung (Beispieltext)
+Datenschutzerklärung für Sonarex
 
-Dies ist ein Platzhalter für die Datenschutzerklärung. Studierende ersetzen
-den Inhalt durch die tatsächlich erforderlichen Angaben gemäß DSGVO.
+Stand: 26. Juni 2026
 
-1. Verantwortlicher
-Name, Anschrift und Kontaktdaten der für die Verarbeitung verantwortlichen
-Stelle bitte hier eintragen.
+Hinweis zum öffentlichen Repository:
+Diese Fassung enthält keine private Anschrift und keine persönlichen Betreiberangaben. Für eine Veröffentlichung außerhalb eines privaten Test- oder Studienkontexts müssen die Angaben zum Verantwortlichen lokal ergänzt werden. Eine mögliche lokale Datei heißt `LegalContact.local.txt` und wird nicht in Git aufgenommen.
 
-2. Verarbeitete Daten
-Die App "Sonarex" speichert Notizen, Tags, Reminder und Bildanhänge
-ausschließlich lokal auf dem Gerät. Wenn CloudKit aktiviert wird, werden
-diese Daten in die private iCloud-Datenbank des jeweiligen Nutzers
-synchronisiert; ein Zugriff durch den App-Anbieter erfolgt nicht.
+1. Kontakt
 
-3. Kamera
-Die Kamera-Berechtigung wird ausschließlich verwendet, um auf Wunsch des
-Nutzers Fotos für Notizen aufzunehmen. Die aufgenommenen Bilder verbleiben
-lokal bzw. in der privaten iCloud des Nutzers.
+E-Mail: sonarex@web.de
 
-4. Fotos
-Über den PhotosPicker greift die App ausschließlich auf vom Nutzer
-explizit ausgewählte Bilder zu. Es wird keine Zugriffsberechtigung auf
-die gesamte Fotomediathek angefragt.
+2. Kurzüberblick
 
-5. Rechte
-Die Rechte aus Art. 15–22 DSGVO können jederzeit durch Löschung der
-Notizen bzw. Deaktivierung des CloudKit-Containers wahrgenommen werden.
+Sonarex ist eine Musikplayer-App für eigene Navidrome- bzw. Subsonic-kompatible Musikserver.
 
-— Stand: Lehr-Template, bitte ersetzen.
+Sonarex betreibt kein eigenes Analyse-, Werbe- oder Tracking-System und verwendet kein eigenes Backend für Musikdaten.
+
+Die App speichert Einstellungen, Serverdaten, Musik-Metadaten, Playlists, Favoriten und Wiedergabedaten grundsätzlich lokal auf dem Gerät. Das Passwort für den Musikserver wird im iOS-Keychain gespeichert.
+
+Eine Datenübertragung erfolgt insbesondere dann, wenn die Nutzerin oder der Nutzer einen eigenen Navidrome-Server einträgt, die Bibliothek synchronisiert, Musik streamt, Favoriten synchronisiert oder per E-Mail Kontakt aufnimmt.
+
+3. Begriffe
+
+Personenbezogene Daten sind alle Informationen, die sich auf eine identifizierte oder identifizierbare Person beziehen.
+
+Verarbeitung ist jeder Umgang mit personenbezogenen Daten, zum Beispiel das Speichern, Auslesen, Übermitteln, Ändern oder Löschen.
+
+4. Welche Daten verarbeitet Sonarex?
+
+4.1 Serverprofil
+
+Wenn ein Navidrome-Server eingerichtet wird, verarbeitet Sonarex:
+
+- Servername,
+- Server-URL,
+- Benutzername,
+- aktive Serverauswahl,
+- Erstellungsdatum des Serverprofils.
+
+Diese Daten werden lokal auf dem Gerät gespeichert.
+
+4.2 Zugangsdaten
+
+Das Passwort für den eingetragenen Musikserver wird im iOS-Keychain des Geräts gespeichert.
+
+Das Passwort wird verwendet, um Anfragen an den vom Nutzer eingetragenen Navidrome- bzw. Subsonic-kompatiblen Server zu authentifizieren.
+
+4.3 Musik-Metadaten
+
+Bei der Synchronisation mit dem eingetragenen Musikserver verarbeitet Sonarex Musik-Metadaten, insbesondere:
+
+- Songtitel,
+- Interpret,
+- Album,
+- Dauer,
+- Track- und Discnummer,
+- Jahr,
+- Genre,
+- Dateityp,
+- Bitrate,
+- Cover-Art-ID,
+- Remote-ID des Songs,
+- Favoritenstatus.
+
+Diese Daten stammen vom eingetragenen Musikserver und werden lokal in der App gespeichert, damit die Bibliothek angezeigt und durchsucht werden kann.
+
+4.4 Playlists
+
+Sonarex verarbeitet Playlist-Daten, insbesondere:
+
+- Playlist-Titel,
+- Beschreibung,
+- Cover-Art-ID,
+- Remote-ID,
+- Erstellungs- und Änderungsdatum,
+- Zuordnung von Songs zu Playlists,
+- Information, ob eine Playlist der Nutzerin oder dem Nutzer zugeordnet ist.
+
+4.5 Wiedergabedaten und App-Zustand
+
+Zur Bedienung der App können lokal verarbeitet werden:
+
+- aktuelle Wiedergabe,
+- Warteschlange,
+- zuletzt gespielte Songs,
+- Wiedergabezähler,
+- Favoritenstatus,
+- Design-Einstellung, zum Beispiel dunkles Design.
+
+4.6 Support per E-Mail
+
+Wenn eine Nutzerin oder ein Nutzer über die App eine E-Mail an sonarex@web.de sendet, werden die in der E-Mail enthaltenen Daten verarbeitet. Dazu können insbesondere E-Mail-Adresse, Name, Nachrichtentext, technische Angaben aus der Nachricht und freiwillig mitgeteilte Informationen gehören.
+
+5. Zwecke der Verarbeitung
+
+Sonarex verarbeitet Daten zu folgenden Zwecken:
+
+- Einrichtung und Verwaltung eines Musikservers,
+- Anmeldung am eingetragenen Musikserver,
+- Synchronisation der Musikbibliothek,
+- Anzeige von Songs, Alben, Playlists und Favoriten,
+- Wiedergabe von Musikstreams,
+- Synchronisation von Favoriten mit dem Musikserver,
+- Speicherung von App-Einstellungen,
+- Beantwortung von Support- und Kontaktanfragen,
+- Fehleranalyse, soweit Nutzerinnen oder Nutzer entsprechende Informationen freiwillig mitteilen.
+
+6. Rechtsgrundlagen
+
+Soweit personenbezogene Daten verarbeitet werden, erfolgt dies auf folgenden Rechtsgrundlagen:
+
+- Art. 6 Abs. 1 lit. b DSGVO, soweit die Verarbeitung erforderlich ist, um die App-Funktionen bereitzustellen, die Nutzerinnen und Nutzer verwenden möchten.
+- Art. 6 Abs. 1 lit. f DSGVO, soweit die Verarbeitung zur Sicherstellung eines funktionsfähigen, sicheren und nutzerfreundlichen App-Betriebs erforderlich ist. Das berechtigte Interesse liegt in der Bereitstellung und Verbesserung der App.
+- Art. 6 Abs. 1 lit. a DSGVO, soweit Nutzerinnen oder Nutzer freiwillig Angaben machen, zum Beispiel in einer Support-E-Mail.
+- Art. 6 Abs. 1 lit. c DSGVO, soweit gesetzliche Aufbewahrungs- oder Nachweispflichten bestehen.
+
+7. Lokale Speicherung auf dem Gerät
+
+Ein wesentlicher Teil der Datenverarbeitung findet lokal auf dem Gerät statt.
+
+Sonarex speichert App-Daten mit den von iOS bereitgestellten Speichermechanismen. Das Serverpasswort wird im iOS-Keychain gespeichert. Ein Zugriff auf lokal gespeicherte App-Daten auf dem Gerät erfolgt grundsätzlich nicht.
+
+Nutzerinnen und Nutzer können lokale App-Daten entfernen, indem sie die entsprechenden Daten in der App ändern oder die App vom Gerät löschen. Daten, die auf dem verbundenen Musikserver gespeichert sind, müssen beim jeweiligen Server gelöscht oder geändert werden.
+
+8. Kommunikation mit Navidrome- oder Subsonic-Servern
+
+Sonarex kommuniziert mit dem Server, den die Nutzerin oder der Nutzer selbst in der App einträgt.
+
+Bei der Kommunikation mit diesem Server können insbesondere folgende Daten übertragen werden:
+
+- Server-URL,
+- Benutzername,
+- Authentifizierungsdaten bzw. daraus gebildete Anfragedaten,
+- Anfragen zur Bibliothek, zu Playlists, Covern, Streams und Favoriten,
+- Remote-IDs von Songs, Playlists und Cover-Art,
+- technische Verbindungsdaten, zum Beispiel IP-Adresse, Zeitpunkt und angefragte Ressource.
+
+Der jeweilige Serverbetreiber ist für die Datenverarbeitung auf diesem Server verantwortlich, soweit der Server nicht selbst betrieben wird.
+
+Nutzerinnen und Nutzer sollten nur Server eintragen, denen sie vertrauen. Bei Nutzung einer unverschlüsselten HTTP-Verbindung können Daten auf dem Transportweg leichter eingesehen oder manipuliert werden. Die Nutzung von HTTPS wird empfohlen.
+
+9. Keine Analyse, keine Werbung, kein Tracking
+
+Sonarex verwendet nach aktuellem Stand:
+
+- keine Werbe-SDKs,
+- keine Analytics-Dienste,
+- keine Tracking-Cookies,
+- kein Profiling zu Werbezwecken,
+- keine automatisierten Entscheidungen mit rechtlicher Wirkung.
+
+10. App Store und Betriebssystem
+
+Beim Download und bei der Nutzung der App können Apple bzw. das Betriebssystem eigene Daten verarbeiten, zum Beispiel im Rahmen des App Store, von iOS, iCloud, Diagnosefunktionen oder Geräteverwaltung.
+
+Auf diese Datenverarbeitung hat Sonarex keinen Einfluss. Es gelten die Datenschutzinformationen von Apple.
+
+11. Empfänger von Daten
+
+Empfänger von Daten können sein:
+
+- der von der Nutzerin oder dem Nutzer eingetragene Navidrome- bzw. Subsonic-kompatible Server,
+- der E-Mail-Anbieter, wenn eine Supportanfrage per E-Mail gesendet wird,
+- technische Dienstleister, soweit sie für Betrieb, Kommunikation oder Support erforderlich sind,
+- Behörden oder Gerichte, wenn eine gesetzliche Verpflichtung besteht.
+
+Eine Weitergabe von lokal gespeicherten Musikdaten an ein eigenes Backend findet nach aktuellem Stand nicht statt.
+
+12. Drittlandübermittlung
+
+Sonarex selbst übermittelt Daten nicht gezielt in Drittländer außerhalb der Europäischen Union bzw. des Europäischen Wirtschaftsraums.
+
+Eine Drittlandübermittlung kann jedoch entstehen, wenn die Nutzerin oder der Nutzer einen Musikserver außerhalb der EU bzw. des EWR einträgt oder eine E-Mail über Anbieter verarbeitet wird, die Daten außerhalb der EU bzw. des EWR verarbeiten.
+
+Für den eingetragenen Musikserver ist die Nutzerin oder der Nutzer bzw. der jeweilige Serverbetreiber verantwortlich.
+
+13. Speicherdauer
+
+Lokal gespeicherte App-Daten werden gespeichert, solange sie für die Nutzung der App erforderlich sind oder bis sie gelöscht werden.
+
+Support-E-Mails werden nur so lange aufbewahrt, wie dies für die Bearbeitung der Anfrage und etwaige Nachweispflichten erforderlich ist.
+
+Gesetzliche Aufbewahrungspflichten bleiben unberührt.
+
+14. Rechte der betroffenen Personen
+
+Betroffene Personen haben nach Maßgabe der DSGVO insbesondere folgende Rechte:
+
+- Recht auf Auskunft,
+- Recht auf Berichtigung,
+- Recht auf Löschung,
+- Recht auf Einschränkung der Verarbeitung,
+- Recht auf Datenübertragbarkeit,
+- Recht auf Widerspruch gegen bestimmte Verarbeitungen,
+- Recht auf Widerruf einer erteilten Einwilligung mit Wirkung für die Zukunft,
+- Recht auf Beschwerde bei einer Datenschutzaufsichtsbehörde.
+
+Anfragen können an sonarex@web.de gerichtet werden.
+
+Soweit Daten ausschließlich lokal auf dem Gerät oder auf einem selbst eingetragenen externen Musikserver gespeichert sind, kann möglicherweise kein direkter Zugriff auf diese Daten genommen werden. In diesem Fall müssen Daten lokal in der App, durch Löschen der App oder beim jeweiligen Serverbetreiber geändert oder gelöscht werden.
+
+15. Sicherheit
+
+Sonarex nutzt die von iOS bereitgestellten Sicherheitsmechanismen, insbesondere den iOS-Keychain für gespeicherte Passwörter.
+
+Nutzerinnen und Nutzer sollten ihr Gerät durch geeignete Schutzmaßnahmen sichern, zum Beispiel durch Gerätecode, Face ID oder Touch ID, und für den Musikserver möglichst HTTPS verwenden.
+
+16. Minderjährige
+
+Sonarex richtet sich nicht gezielt an Kinder. Minderjährige sollten die App nur mit Zustimmung ihrer Erziehungsberechtigten verwenden, soweit eine solche Zustimmung gesetzlich erforderlich ist.
+
+17. Änderungen dieser Datenschutzerklärung
+
+Diese Datenschutzerklärung kann angepasst werden, wenn sich Funktionen der App, technische Abläufe oder rechtliche Anforderungen ändern.
+
+Die jeweils aktuelle Fassung ist in der App abrufbar.

@@ -24,6 +24,7 @@ Build/
 *.p12
 *.cer
 *.mobileprovision
+Sonarex/Core/Resources/LegalContact.local.txt
 
 # Fastlane generated files
 fastlane/report.xml

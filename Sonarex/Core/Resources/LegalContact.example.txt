@@ -1,0 +1,24 @@
+Diese Datei ist nur ein Beispiel und enthält keine echten persönlichen Daten.
+
+Wenn du für einen Release-Build echte Anbieter- oder Verantwortlichenangaben brauchst,
+lege lokal diese Datei an:
+
+Sonarex/Core/Resources/LegalContact.local.txt
+
+Diese lokale Datei ist in .gitignore eingetragen und soll nicht committed werden.
+
+Beispielinhalt:
+
+Verantwortlicher / Anbieter:
+[Dein Name oder deine Firma]
+[Straße und Hausnummer]
+[Postleitzahl und Ort]
+[Land]
+
+Kontakt:
+E-Mail: sonarex@web.de
+
+Hinweis:
+Die öffentliche AGB.txt und Privacy.txt enthalten bewusst keine private Adresse.
+Für eine echte Veröffentlichung müssen die rechtlich erforderlichen Angaben
+trotzdem in der veröffentlichten App oder an anderer geeigneter Stelle vorhanden sein.
