@@ -1,10 +1,3 @@
-//
-//  MiniPlayerView.swift
-//  Sonarex
-//
-//  Created by Michael Wedel on 08.06.26.
-//
-
 import SwiftUI
 
 struct MiniPlayerView: View {

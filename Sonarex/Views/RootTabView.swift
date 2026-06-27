@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// Wurzel-View.
-/// Drei Tabs: Notizen (Hauptfeature), Lab (Pattern-Showcase), Einstellungen (rechts).
 struct RootTabView: View {
     @Environment(PlayerController.self) private var player
 

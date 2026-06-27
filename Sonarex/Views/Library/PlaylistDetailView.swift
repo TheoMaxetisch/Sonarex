@@ -1,10 +1,3 @@
-//
-//  PlaylistDetailView.swift
-//  Sonarex
-//
-//  Created by Michael Wedel on 09.06.26.
-//
-
 import SwiftUI
 import SwiftData
 

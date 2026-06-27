@@ -1,10 +1,3 @@
-//
-//  HeroHeaderView.swift
-//  Sonarex
-//
-//  Created by Michael Wedel on 11.05.26.
-//
-
 import SwiftUI
 
 struct HeroHeaderView: View {

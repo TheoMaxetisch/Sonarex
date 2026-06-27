@@ -1,10 +1,3 @@
-//
-//  LibraryHomeView.swift
-//  Sonarex
-//
-//  Created by Michael Wedel on 11.05.26.
-//
-
 import SwiftUI
 import SwiftData
 
