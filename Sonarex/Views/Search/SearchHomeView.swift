@@ -84,13 +84,23 @@ struct SearchHomeView: View {
     }
 
     private var activeServer: ServerProfile? {
-        servers.first(where: \.isActive) ?? servers.first
+        servers.first { $0.isActive && !$0.isDemo } ?? servers.first { !$0.isDemo }
+    }
+
+    private var displayTracks: [Track] {
+        let realTracks = tracks.filter { $0.server?.isDemo != true }
+        return realTracks.isEmpty ? tracks : realTracks
+    }
+
+    private var displayPlaylists: [Playlist] {
+        let realPlaylists = playlists.filter { $0.server?.isDemo != true }
+        return realPlaylists.isEmpty ? playlists : realPlaylists
     }
 
     private var filteredTracks: [Track] {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return [] }
-        return tracks.filter {
+        return displayTracks.filter {
             $0.title.localizedCaseInsensitiveContains(query)
                 || $0.artist.localizedCaseInsensitiveContains(query)
                 || $0.album.localizedCaseInsensitiveContains(query)
@@ -99,19 +109,19 @@ struct SearchHomeView: View {
     }
 
     private var suggestedTracks: [Track] {
-        items(from: tracks, orderedBy: suggestedTrackIDs)
+        items(from: displayTracks, orderedBy: suggestedTrackIDs)
     }
 
     private var suggestedPlaylists: [Playlist] {
-        items(from: playlists, orderedBy: suggestedPlaylistIDs)
+        items(from: displayPlaylists, orderedBy: suggestedPlaylistIDs)
     }
 
     private var trackIDs: [UUID] {
-        tracks.map(\.id)
+        displayTracks.map(\.id)
     }
 
     private var playlistIDs: [UUID] {
-        playlists.map(\.id)
+        displayPlaylists.map(\.id)
     }
 
     private var startContent: some View {
@@ -247,7 +257,7 @@ struct SearchHomeView: View {
 
     private func refreshSuggestions(force: Bool = false) {
         if force || suggestedTrackIDs.isEmpty {
-            suggestedTrackIDs = Array(tracks.shuffled().prefix(8)).map(\.id)
+            suggestedTrackIDs = Array(displayTracks.shuffled().prefix(8)).map(\.id)
         }
 
         if force || suggestedPlaylistIDs.isEmpty {
@@ -257,8 +267,8 @@ struct SearchHomeView: View {
 
     private func playlistSuggestions() -> [Playlist] {
         let candidates = hasUsefulPlaylistCreationDates
-            ? playlists.sorted { $0.createdAt > $1.createdAt }
-            : playlists.shuffled()
+            ? displayPlaylists.sorted { $0.createdAt > $1.createdAt }
+            : displayPlaylists.shuffled()
 
         return Array(candidates.prefix(8))
     }
@@ -268,7 +278,7 @@ struct SearchHomeView: View {
     }
 
     private var hasUsefulPlaylistCreationDates: Bool {
-        Set(playlists.map { $0.createdAt.timeIntervalSinceReferenceDate }).count > 1
+        Set(displayPlaylists.map { $0.createdAt.timeIntervalSinceReferenceDate }).count > 1
     }
 
     private func items<Item: Identifiable>(from source: [Item], orderedBy ids: [Item.ID]) -> [Item] where Item.ID == UUID {

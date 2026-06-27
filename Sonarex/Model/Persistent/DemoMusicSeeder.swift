@@ -4,6 +4,8 @@ import SwiftData
 @MainActor
 enum DemoMusicSeeder {
     static func seedIfNeeded(in context: ModelContext) throws {
+        try markExistingDemoProfiles(in: context)
+
         var descriptor = FetchDescriptor<ServerProfile>()
         descriptor.fetchLimit = 1
         guard try context.fetch(descriptor).isEmpty else { return }
@@ -11,7 +13,8 @@ enum DemoMusicSeeder {
         let server = ServerProfile(
             name: "Navidrome",
             baseURL: "https://navidrome.wedel.dev",
-            isActive: true
+            isActive: true,
+            isDemo: true
         )
 
         let tracks = [
@@ -37,6 +40,22 @@ enum DemoMusicSeeder {
         server.playlists = playlists
         context.insert(server)
         try context.save()
+    }
+
+    private static func markExistingDemoProfiles(in context: ModelContext) throws {
+        let servers = try context.fetch(FetchDescriptor<ServerProfile>())
+        var didUpdate = false
+
+        for server in servers where server.tracks?.contains(where: { $0.remoteID == "golden-hour-static" }) == true {
+            if !server.isDemo {
+                server.isDemo = true
+                didUpdate = true
+            }
+        }
+
+        if didUpdate {
+            try context.save()
+        }
     }
 
     private static func makePlaylist(

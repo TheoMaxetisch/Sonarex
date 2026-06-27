@@ -8,6 +8,7 @@ final class ServerProfile {
     var baseURL: String = ""
     var username: String = ""
     var isActive: Bool = false
+    var isDemo: Bool = false
     var createdAt: Date = Date()
 
     @Relationship(deleteRule: .cascade, inverse: \Track.server)
@@ -22,6 +23,7 @@ final class ServerProfile {
         baseURL: String,
         username: String = "",
         isActive: Bool = false,
+        isDemo: Bool = false,
         createdAt: Date = .now
     ) {
         self.id = id
@@ -29,6 +31,7 @@ final class ServerProfile {
         self.baseURL = baseURL
         self.username = username
         self.isActive = isActive
+        self.isDemo = isDemo
         self.createdAt = createdAt
     }
 

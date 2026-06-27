@@ -99,8 +99,13 @@ struct FavoriteSongsDetailView: View {
     @Environment(PlayerController.self) private var player
     @Query(sort: \Track.title) private var tracks: [Track]
 
+    private var displayTracks: [Track] {
+        let realTracks = tracks.filter { $0.server?.isDemo != true }
+        return realTracks.isEmpty ? tracks : realTracks
+    }
+
     private var favoriteTracks: [Track] {
-        tracks.filter(\.isFavorite)
+        displayTracks.filter(\.isFavorite)
     }
 
     var body: some View {

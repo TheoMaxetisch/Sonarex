@@ -238,7 +238,7 @@ struct SettingsView: View {
     }
 
     private var serverURLSubtitle: String {
-        activeServer?.baseURL.isEmpty == false ? "Verbunden ueber Subsonic API" : "Noch keine URL gesetzt"
+        activeServer?.baseURL.isEmpty == false ? "Verbunden über Subsonic API" : "Noch keine URL gesetzt"
     }
 
     private var loginSubtitle: String {

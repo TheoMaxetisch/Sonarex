@@ -83,6 +83,7 @@ enum NavidromeLibrarySyncService {
 
         server.playlists = importedPlaylists
         server.tracks = importedTracks
+        server.isDemo = false
         try context.save()
 
         return Result(albumCount: importedPlaylists.count, trackCount: importedTracks.count)

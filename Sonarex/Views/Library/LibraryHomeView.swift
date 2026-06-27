@@ -15,12 +15,22 @@ struct LibraryHomeView: View {
     @State private var selectedPlaylist: Playlist?
     @State private var isShowingFavoriteSongs = false
 
+    private var displayTracks: [Track] {
+        let realTracks = tracks.filter { $0.server?.isDemo != true }
+        return realTracks.isEmpty ? tracks : realTracks
+    }
+
+    private var displayPlaylists: [Playlist] {
+        let realPlaylists = playlists.filter { $0.server?.isDemo != true }
+        return realPlaylists.isEmpty ? playlists : realPlaylists
+    }
+
     private var savedPlaylists: [Playlist] {
-        playlists.filter(\.isOwnedByUser)
+        displayPlaylists.filter(\.isOwnedByUser)
     }
 
     private var favoriteTracks: [Track] {
-        tracks.filter(\.isFavorite)
+        displayTracks.filter(\.isFavorite)
     }
 
     var body: some View {
