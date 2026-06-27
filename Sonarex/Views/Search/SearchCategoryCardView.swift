@@ -20,6 +20,7 @@ struct SearchCategoryCardView: View {
                     .foregroundStyle(Color("InverseText").opacity(0.22))
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                     .padding(14)
+                    .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(category.title)
@@ -39,6 +40,8 @@ struct SearchCategoryCardView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Kategorie \(category.title)")
+        .accessibilityValue(category.subtitle)
+        .accessibilityHint("Filtert die Suche nach dieser Kategorie.")
     }
 }
 

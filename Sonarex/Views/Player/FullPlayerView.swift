@@ -66,6 +66,7 @@ struct FullPlayerView: View {
             Image(systemName: "ellipsis")
                 .font(.title3.weight(.semibold))
                 .frame(width: 44, height: 44)
+                .accessibilityHidden(true)
         }
     }
 
@@ -77,6 +78,7 @@ struct FullPlayerView: View {
             VStack(spacing: 18) {
                 Image(systemName: track.artworkSymbol)
                     .font(.system(size: 78, weight: .medium))
+                    .accessibilityHidden(true)
                 VStack(spacing: 6) {
                     Text("SONAREX").font(.headline.weight(.bold))
                     Text(track.album.isEmpty ? track.title : track.album)
@@ -89,6 +91,8 @@ struct FullPlayerView: View {
         .aspectRatio(1, contentMode: .fit)
         .shadow(color: (track.artworkColors.first ?? .clear).opacity(0.36), radius: 34, y: 18)
         .padding(.top, 6)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Artwork für \(track.album.isEmpty ? track.title : track.album)")
     }
 
     private func trackInfo(_ track: Track) -> some View {
@@ -108,6 +112,7 @@ struct FullPlayerView: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel(track.isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen")
+            .accessibilityValue(track.isFavorite ? "Ist Favorit" : "Kein Favorit")
         }
     }
 
@@ -121,6 +126,8 @@ struct FullPlayerView: View {
                 in: 0...1
             )
                 .tint(Color("InverseText"))
+                .accessibilityLabel("Wiedergabeposition")
+                .accessibilityValue("\(formattedTime(player.elapsedTime)) von \(track.durationText)")
             HStack {
                 Text(formattedTime(player.elapsedTime))
                 Spacer()
@@ -150,7 +157,12 @@ struct FullPlayerView: View {
                 Image(systemName: "shuffle")
                     .foregroundStyle(player.isShuffleEnabled ? Color("SecondaryAccent") : Color("InverseText").opacity(0.72))
             }
+            .accessibilityLabel("Zufällige Wiedergabe")
+            .accessibilityValue(player.isShuffleEnabled ? "Ein" : "Aus")
+
             Button(action: player.playPrevious) { Image(systemName: "backward.fill") }
+                .accessibilityLabel("Vorheriger Song")
+
             Button(action: player.togglePlayback) {
                 Image(systemName: player.isPlaying ? "pause.fill" : "play.fill")
                     .font(.system(size: 28, weight: .bold))
@@ -158,11 +170,18 @@ struct FullPlayerView: View {
                     .frame(width: 74, height: 74)
                     .background(Color("InverseText"), in: Circle())
             }
+            .accessibilityLabel(player.isPlaying ? "Pause" : "Abspielen")
+            .accessibilityValue(player.isPlaying ? "Wiedergabe läuft" : "Pausiert")
+
             Button(action: player.playNext) { Image(systemName: "forward.fill") }
+                .accessibilityLabel("Nächster Song")
+
             Button { player.repeatMode = player.repeatMode.next } label: {
                 Image(systemName: player.repeatMode.symbol)
                     .foregroundStyle(player.repeatMode == .off ? Color("InverseText").opacity(0.72) : Color("SecondaryAccent"))
             }
+            .accessibilityLabel("Wiederholen")
+            .accessibilityValue(repeatModeAccessibilityValue)
         }
         .font(.title2.weight(.semibold))
         .buttonStyle(.plain)
@@ -171,6 +190,7 @@ struct FullPlayerView: View {
     private var volumeControl: some View {
         HStack(spacing: 14) {
             Image(systemName: "speaker.fill")
+                .accessibilityHidden(true)
             Slider(
                 value: Binding(
                     get: { player.volume },
@@ -179,7 +199,10 @@ struct FullPlayerView: View {
                 in: 0...1
             )
                 .tint(Color("InverseText"))
+                .accessibilityLabel("Lautstärke")
+                .accessibilityValue("\(Int(player.volume * 100)) Prozent")
             Image(systemName: "speaker.wave.3.fill")
+                .accessibilityHidden(true)
         }
         .font(.footnote)
         .foregroundStyle(Color("SecondaryText"))
@@ -220,6 +243,7 @@ struct FullPlayerView: View {
                     Image(systemName: "shuffle")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(Color("SecondaryAccent"))
+                        .accessibilityHidden(true)
                 }
 
                 VStack(spacing: 0) {
@@ -245,6 +269,17 @@ struct FullPlayerView: View {
     private var upcomingTracks: [Track] {
         guard let index = player.currentIndex else { return [] }
         return Array(player.queue.dropFirst(index + 1))
+    }
+
+    private var repeatModeAccessibilityValue: String {
+        switch player.repeatMode {
+        case .off:
+            "Aus"
+        case .all:
+            "Alle Songs"
+        case .one:
+            "Aktueller Song"
+        }
     }
 
     private func formattedTime(_ seconds: Double) -> String {
@@ -304,7 +339,11 @@ private struct QueueRow: View {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(track.artworkGradient)
                     .frame(width: 44, height: 44)
-                    .overlay { Image(systemName: track.artworkSymbol).foregroundStyle(Color("InverseText")) }
+                    .overlay {
+                        Image(systemName: track.artworkSymbol)
+                            .foregroundStyle(Color("InverseText"))
+                            .accessibilityHidden(true)
+                    }
                 VStack(alignment: .leading, spacing: 3) {
                     Text(track.title).font(.subheadline.weight(.semibold)).lineLimit(1)
                     Text(track.artist).font(.caption).foregroundStyle(Color("SecondaryText")).lineLimit(1)
@@ -315,5 +354,9 @@ private struct QueueRow: View {
             .frame(height: 58)
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(track.title) von \(track.artist)")
+        .accessibilityValue("Dauer \(track.durationText)")
+        .accessibilityHint("Spielt diesen Song ab.")
     }
 }

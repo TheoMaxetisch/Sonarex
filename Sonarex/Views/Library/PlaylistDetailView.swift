@@ -254,6 +254,7 @@ private struct PlaylistTrackRow: View {
                 .font(.caption.weight(.bold))
                 .foregroundStyle(Color("SecondaryText"))
                 .frame(width: 24)
+                .accessibilityLabel("Position \(number)")
 
             ZStack {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -262,8 +263,10 @@ private struct PlaylistTrackRow: View {
                 Image(systemName: track.artworkSymbol)
                     .font(.headline.weight(.semibold))
                     .foregroundStyle(Color("InverseText"))
+                    .accessibilityHidden(true)
             }
             .frame(width: 48, height: 48)
+            .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(track.title)
@@ -289,10 +292,13 @@ private struct PlaylistTrackRow: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel(track.isFavorite ? "Aus Favourite Songs entfernen" : "Zu Favourite Songs hinzufügen")
+            .accessibilityValue(track.isFavorite ? "Ist Favorit" : "Kein Favorit")
+            .accessibilityHint("Ändert den Favoritenstatus dieses Songs.")
 
             Text(track.durationText)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(Color("SecondaryText"))
+                .accessibilityLabel("Dauer \(track.durationText)")
 
             Button(action: playAction) {
                 Image(systemName: "play.fill")
@@ -303,6 +309,7 @@ private struct PlaylistTrackRow: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel("\(track.title) abspielen")
+            .accessibilityValue("\(track.artist), \(track.durationText)")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)

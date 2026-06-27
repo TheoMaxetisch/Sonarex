@@ -15,6 +15,7 @@ struct CardView: View {
                         .font(.system(size: 42, weight: .semibold))
                         .foregroundStyle(Color("InverseText").opacity(0.9))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .accessibilityHidden(true)
 
                     Label(track.durationText, systemImage: "play.fill")
                         .font(.caption2.weight(.bold))
@@ -23,6 +24,7 @@ struct CardView: View {
                         .foregroundStyle(Color("InverseText"))
                         .background(Color("FeedBlack").opacity(0.35), in: Capsule())
                         .padding(8)
+                        .accessibilityHidden(true)
                 }
                 .aspectRatio(1, contentMode: .fit)
 
@@ -43,5 +45,7 @@ struct CardView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(track.title) von \(track.artist) abspielen")
+        .accessibilityValue("\(track.album.isEmpty ? "Unbekanntes Album" : track.album), Dauer \(track.durationText)")
+        .accessibilityHint("Öffnet den Player und startet diesen Song.")
     }
 }

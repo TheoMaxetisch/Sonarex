@@ -15,6 +15,7 @@ struct PlaylistSquareCardView: View {
                         .font(.system(size: 42, weight: .semibold))
                         .foregroundStyle(Color("InverseText").opacity(0.9))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .accessibilityHidden(true)
 
                     Label(playlist.trackCountText, systemImage: "music.note.list")
                         .font(.caption2.weight(.bold))
@@ -23,6 +24,7 @@ struct PlaylistSquareCardView: View {
                         .foregroundStyle(Color("InverseText"))
                         .background(Color("FeedBlack").opacity(0.35), in: Capsule())
                         .padding(8)
+                        .accessibilityHidden(true)
                 }
                 .aspectRatio(1, contentMode: .fit)
 
@@ -43,5 +45,7 @@ struct PlaylistSquareCardView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Playlist \(playlist.title) anzeigen")
+        .accessibilityValue("\(playlist.trackCountText), \(playlist.subtitle.isEmpty ? "ohne Beschreibung" : playlist.subtitle)")
+        .accessibilityHint("Öffnet die Detailansicht dieser Playlist.")
     }
 }

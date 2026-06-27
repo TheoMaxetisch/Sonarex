@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0551F6FEB61584474F7B9AE9 /* NoteModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC654866AF1A11BFB6FCED7 /* NoteModelTests.swift */; };
+		0551F6FEB61584474F7B9AE9 /* SonarexModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC654866AF1A11BFB6FCED7 /* SonarexModelTests.swift */; };
 		1BF80E45054029D0CCAF08EF /* LegalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E83CF3A6C7143E5188535 /* LegalTextView.swift */; };
 		1CCAF4A5FB16F39521EF793C /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08C9EC90671AB8B4F40EC20 /* RootTabView.swift */; };
 		4C9AF41DCCC316B944C86B92 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E871CD9359DF16461170B72C /* SettingsView.swift */; };
@@ -38,7 +38,7 @@
 		CC56F07B9CD05B9E01F48521 /* SonarexTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SonarexTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0057ADE666215143BAF9464 /* AGB.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AGB.txt; sourceTree = "<group>"; };
 		D08C9EC90671AB8B4F40EC20 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
-		DDC654866AF1A11BFB6FCED7 /* NoteModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteModelTests.swift; sourceTree = "<group>"; };
+		DDC654866AF1A11BFB6FCED7 /* SonarexModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SonarexModelTests.swift; sourceTree = "<group>"; };
 		E871CD9359DF16461170B72C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F2E57A0D2FB400000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F59FEEF1D7939C861D53360A /* SonarexApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SonarexApp.swift; sourceTree = "<group>"; };
@@ -86,7 +86,7 @@
 		0A5320C345E1DD8267223A8B /* SonarexTests */ = {
 			isa = PBXGroup;
 			children = (
-				DDC654866AF1A11BFB6FCED7 /* NoteModelTests.swift */,
+				DDC654866AF1A11BFB6FCED7 /* SonarexModelTests.swift */,
 			);
 			path = SonarexTests;
 			sourceTree = "<group>";
@@ -280,7 +280,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0551F6FEB61584474F7B9AE9 /* NoteModelTests.swift in Sources */,
+				0551F6FEB61584474F7B9AE9 /* SonarexModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

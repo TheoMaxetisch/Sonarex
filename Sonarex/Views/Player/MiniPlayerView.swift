@@ -33,6 +33,8 @@ struct MiniPlayerView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Full Player öffnen")
+                .accessibilityValue("\(track.title) von \(track.artist)")
+                .accessibilityHint("Öffnet die vollständige Player-Ansicht.")
 
                 Button(action: togglePlayback) {
                     Image(systemName: isPlaying ? "pause.fill" : "play.fill")
@@ -44,6 +46,7 @@ struct MiniPlayerView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(isPlaying ? "Pause" : "Abspielen")
+                .accessibilityValue(isPlaying ? "Wiedergabe läuft" : "Pausiert")
 
                 Button(action: stopPlayback) {
                     Image(systemName: "xmark")
@@ -81,8 +84,10 @@ struct MiniPlayerView: View {
                 Image(systemName: track.artworkSymbol)
                     .font(.headline.weight(.semibold))
                     .foregroundStyle(Color("InverseText").opacity(0.9))
+                    .accessibilityHidden(true)
             }
             .shadow(color: accentColor.opacity(0.24), radius: 12, y: 6)
+            .accessibilityHidden(true)
     }
 
     private var progressBar: some View {
@@ -97,6 +102,8 @@ struct MiniPlayerView: View {
             }
         }
         .frame(height: 3)
+        .accessibilityLabel("Wiedergabefortschritt")
+        .accessibilityValue("\(Int(max(0, min(progress, 1)) * 100)) Prozent")
     }
 
     private var accentColor: Color {

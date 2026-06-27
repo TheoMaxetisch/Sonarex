@@ -90,7 +90,7 @@ struct SettingsRow<Accessory: View>: View {
                 Text(subtitle)
                     .font(.caption)
                     .foregroundStyle(Color("SecondaryText"))
-                    .lineLimit(1)
+                    .lineLimit(2)
                     .minimumScaleFactor(0.82)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -173,6 +173,7 @@ struct SettingsIcon: View {
             .foregroundStyle(Color("InverseText"))
             .frame(width: 38, height: 38)
             .background(tint, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .accessibilityHidden(true)
     }
 }
 
@@ -225,6 +226,7 @@ struct Chevron: View {
         Image(systemName: "chevron.right")
             .font(.caption.weight(.bold))
             .foregroundStyle(Color("SecondaryText"))
+            .accessibilityHidden(true)
     }
 }
 

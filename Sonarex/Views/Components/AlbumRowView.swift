@@ -39,6 +39,8 @@ struct AlbumRowView: View {
                 }
                 .buttonStyle(.plain)
                 .disabled(onShowAll == nil)
+                .accessibilityAddTraits(onShowAll == nil ? [] : .isButton)
+                .accessibilityHint(onShowAll == nil ? "" : "Öffnet die vollständige Liste.")
 
                 Spacer()
 
@@ -52,6 +54,7 @@ struct AlbumRowView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("\(title) anzeigen")
+                .accessibilityHint("Öffnet die vollständige Liste.")
                 .disabled(onShowAll == nil)
             }
             .padding(.horizontal, 20)

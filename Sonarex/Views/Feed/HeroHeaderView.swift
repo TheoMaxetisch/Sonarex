@@ -38,6 +38,8 @@ struct HeroHeaderView: View {
                             .background(Color("InverseText"), in: Capsule())
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("\(featuredTrack.title) von \(featuredTrack.artist) abspielen")
+                    .accessibilityHint("Startet den Featured Track.")
 
                     Button {
                     } label: {
@@ -49,6 +51,7 @@ struct HeroHeaderView: View {
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Zur Bibliothek hinzufügen")
+                    .accessibilityHint("Diese Aktion ist noch nicht verfügbar.")
                 }
             }
             .foregroundStyle(Color("InverseText"))
@@ -61,7 +64,8 @@ struct HeroHeaderView: View {
                 .foregroundStyle(Color("InverseText").opacity(0.22))
                 .padding(.top, 74)
                 .padding(.trailing, 24)
+                .accessibilityHidden(true)
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
     }
 }
