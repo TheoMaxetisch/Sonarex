@@ -9,10 +9,15 @@ import SwiftUI
 
 struct SearchCategoryCardView: View {
     let category: SearchCategory
+    let action: () -> Void
+
+    init(category: SearchCategory, action: @escaping () -> Void = {}) {
+        self.category = category
+        self.action = action
+    }
 
     var body: some View {
-        Button {
-        } label: {
+        Button(action: action) {
             ZStack(alignment: .bottomLeading) {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .fill(category.gradient)

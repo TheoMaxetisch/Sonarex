@@ -27,7 +27,6 @@ struct FullPlayerView: View {
                     progress(track)
                     transportControls
                     volumeControl
-                    playbackOptions
                     upcomingQueue
                     continuationPreview
                 }
@@ -184,14 +183,6 @@ struct FullPlayerView: View {
         }
         .font(.footnote)
         .foregroundStyle(Color("SecondaryText"))
-    }
-
-    private var playbackOptions: some View {
-        HStack(spacing: 12) {
-            PlayerActionButton(title: "AirPlay", symbol: "airplayaudio")
-            PlayerActionButton(title: "Lyrics", symbol: "quote.bubble")
-            PlayerActionButton(title: "Teilen", symbol: "square.and.arrow.up")
-        }
     }
 
     private var upcomingQueue: some View {

@@ -168,6 +168,83 @@ struct FavoriteSongsDetailView: View {
     }
 }
 
+struct TrackCollectionDetailView: View {
+    @Environment(PlayerController.self) private var player
+    let title: String
+    let subtitle: String
+    let tracks: [Track]
+    let artworkColors: [Color]
+    let artworkSymbol: String
+
+    var body: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 24) {
+                header
+
+                VStack(spacing: 10) {
+                    ForEach(Array(tracks.enumerated()), id: \.element.id) { index, track in
+                        PlaylistTrackRow(track: track, number: index + 1) {
+                            player.play(track, in: tracks)
+                            player.isPlayerPresented = true
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+            }
+            .padding(.bottom, 28)
+        }
+        .background(Color("AppBackground"))
+        .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(LinearGradient(colors: artworkColors, startPoint: .topLeading, endPoint: .bottomTrailing))
+
+                Image(systemName: artworkSymbol)
+                    .font(.system(size: 76, weight: .semibold))
+                    .foregroundStyle(Color("InverseText").opacity(0.92))
+            }
+            .aspectRatio(1, contentMode: .fit)
+            .frame(maxWidth: 260)
+            .frame(maxWidth: .infinity)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.largeTitle.weight(.bold))
+                    .foregroundStyle(Color("PrimaryText"))
+
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(Color("SecondaryText"))
+
+                Label("\(tracks.count) Songs", systemImage: "music.note.list")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Color("SecondaryText"))
+            }
+
+            Button {
+                player.play(tracks)
+                player.isPlayerPresented = true
+            } label: {
+                Label("Abspielen", systemImage: "play.fill")
+                    .font(.headline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(Color("SecondaryAccent"))
+            .disabled(tracks.isEmpty)
+            .accessibilityLabel("\(title) abspielen")
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 16)
+    }
+}
+
 private struct PlaylistTrackRow: View {
     let track: Track
     let number: Int

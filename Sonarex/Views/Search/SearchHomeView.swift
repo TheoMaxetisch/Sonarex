@@ -11,14 +11,19 @@ import SwiftData
 struct SearchHomeView: View {
     @Environment(PlayerController.self) private var player
     @Query(sort: \Track.title) private var tracks: [Track]
+    @Query(sort: \Playlist.createdAt, order: .reverse) private var playlists: [Playlist]
+    @Query(sort: \ServerProfile.createdAt) private var servers: [ServerProfile]
     @State private var searchText = ""
+    @State private var categories: [SearchCategory] = []
+    @State private var suggestedTrackIDs: [UUID] = []
+    @State private var suggestedPlaylistIDs: [UUID] = []
+    @State private var selectedPlaylist: Playlist?
+    @State private var isShowingSuggestedSongs = false
 
     private let columns = [
         GridItem(.flexible(), spacing: 14),
         GridItem(.flexible(), spacing: 14)
     ]
-
-    private let categories = SearchCategory.categories
 
     var body: some View {
         NavigationStack {
@@ -28,17 +33,7 @@ struct SearchHomeView: View {
                     searchField
 
                     if searchText.isEmpty {
-                        VStack(alignment: .leading, spacing: 14) {
-                            Text("Kategorien")
-                                .font(.title3.weight(.bold))
-                                .foregroundStyle(Color("PrimaryText"))
-
-                            LazyVGrid(columns: columns, spacing: 14) {
-                                ForEach(categories) { category in
-                                    SearchCategoryCardView(category: category)
-                                }
-                            }
-                        }
+                        startContent
                     } else if filteredTracks.isEmpty {
                         ContentUnavailableView.search(text: searchText)
                             .frame(maxWidth: .infinity)
@@ -60,7 +55,36 @@ struct SearchHomeView: View {
                 .padding(.bottom, 34)
             }
             .background(Color("AppBackground"))
+            .navigationDestination(item: $selectedPlaylist) { playlist in
+                PlaylistDetailView(playlist: playlist)
+            }
+            .navigationDestination(isPresented: $isShowingSuggestedSongs) {
+                TrackCollectionDetailView(
+                    title: "Song-Vorschläge",
+                    subtitle: "Zufällig aus deiner Bibliothek",
+                    tracks: suggestedTracks,
+                    artworkColors: TrackArtwork.palettes[0],
+                    artworkSymbol: "shuffle"
+                )
+            }
+            .task(id: activeServer?.id) {
+                await loadGenres()
+                refreshSuggestions(force: true)
+            }
+            .onAppear {
+                refreshSuggestions(force: true)
+            }
+            .onChange(of: trackIDs) {
+                refreshSuggestions(force: true)
+            }
+            .onChange(of: playlistIDs) {
+                refreshSuggestions(force: true)
+            }
         }
+    }
+
+    private var activeServer: ServerProfile? {
+        servers.first(where: \.isActive) ?? servers.first
     }
 
     private var filteredTracks: [Track] {
@@ -71,6 +95,93 @@ struct SearchHomeView: View {
                 || $0.artist.localizedCaseInsensitiveContains(query)
                 || $0.album.localizedCaseInsensitiveContains(query)
                 || ($0.genre?.localizedCaseInsensitiveContains(query) ?? false)
+        }
+    }
+
+    private var suggestedTracks: [Track] {
+        items(from: tracks, orderedBy: suggestedTrackIDs)
+    }
+
+    private var suggestedPlaylists: [Playlist] {
+        items(from: playlists, orderedBy: suggestedPlaylistIDs)
+    }
+
+    private var trackIDs: [UUID] {
+        tracks.map(\.id)
+    }
+
+    private var playlistIDs: [UUID] {
+        playlists.map(\.id)
+    }
+
+    private var startContent: some View {
+        VStack(alignment: .leading, spacing: 26) {
+            if !categories.isEmpty {
+                categoriesSection
+            }
+
+            if !suggestedTracks.isEmpty {
+                AlbumRowView(
+                    title: "Song-Vorschläge",
+                    subtitle: "Zufällig aus deiner Bibliothek",
+                    tracks: suggestedTracks,
+                    onSelectTrack: { track in
+                        player.play(track, in: suggestedTracks)
+                        player.isPlayerPresented = true
+                    },
+                    onShowAll: {
+                        isShowingSuggestedSongs = true
+                    }
+                )
+                .padding(.horizontal, -20)
+            }
+
+            if !suggestedPlaylists.isEmpty {
+                playlistsSection
+            }
+        }
+    }
+
+    private var categoriesSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Kategorien")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(Color("PrimaryText"))
+
+            LazyVGrid(columns: columns, spacing: 14) {
+                ForEach(categories) { category in
+                    SearchCategoryCardView(category: category) {
+                        searchText = category.title
+                    }
+                }
+            }
+        }
+    }
+
+    private var playlistsSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Playlist-Vorschläge")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(Color("PrimaryText"))
+
+                Text(playlistSuggestionSubtitle)
+                    .font(.caption)
+                    .foregroundStyle(Color("SecondaryText"))
+            }
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(alignment: .top, spacing: 14) {
+                    ForEach(suggestedPlaylists) { playlist in
+                        PlaylistSquareCardView(playlist: playlist) {
+                            selectedPlaylist = playlist
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+            }
+            .scrollClipDisabled()
+            .padding(.horizontal, -20)
         }
     }
 
@@ -116,10 +227,59 @@ struct SearchHomeView: View {
         .background(Color("GlassSurface"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .padding(.horizontal, 20)
     }
+
+    private func loadGenres() async {
+        guard let activeServer else {
+            categories = []
+            return
+        }
+
+        do {
+            let password = try KeychainCredentialStore.password(for: activeServer.id) ?? ""
+            let genres = try await NavidromeSearchService.genres(server: activeServer, password: password)
+            categories = genres.enumerated().map { index, genre in
+                SearchCategory(genre: genre, index: index)
+            }
+        } catch {
+            categories = []
+        }
+    }
+
+    private func refreshSuggestions(force: Bool = false) {
+        if force || suggestedTrackIDs.isEmpty {
+            suggestedTrackIDs = Array(tracks.shuffled().prefix(8)).map(\.id)
+        }
+
+        if force || suggestedPlaylistIDs.isEmpty {
+            suggestedPlaylistIDs = playlistSuggestions().map(\.id)
+        }
+    }
+
+    private func playlistSuggestions() -> [Playlist] {
+        let candidates = hasUsefulPlaylistCreationDates
+            ? playlists.sorted { $0.createdAt > $1.createdAt }
+            : playlists.shuffled()
+
+        return Array(candidates.prefix(8))
+    }
+
+    private var playlistSuggestionSubtitle: String {
+        hasUsefulPlaylistCreationDates ? "Zuletzt hinzugefügt" : "Zufällig aus deiner Bibliothek"
+    }
+
+    private var hasUsefulPlaylistCreationDates: Bool {
+        Set(playlists.map { $0.createdAt.timeIntervalSinceReferenceDate }).count > 1
+    }
+
+    private func items<Item: Identifiable>(from source: [Item], orderedBy ids: [Item.ID]) -> [Item] where Item.ID == UUID {
+        ids.compactMap { id in
+            source.first { $0.id == id }
+        }
+    }
 }
 
 struct SearchCategory: Identifiable {
-    let id = UUID()
+    let id: String
     let title: String
     let subtitle: String
     let systemImage: String
@@ -129,22 +289,39 @@ struct SearchCategory: Identifiable {
         LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
+    init(id: String, title: String, subtitle: String, systemImage: String, colors: [Color]) {
+        self.id = id
+        self.title = title
+        self.subtitle = subtitle
+        self.systemImage = systemImage
+        self.colors = colors
+    }
+
+    init(genre: NavidromeGenre, index: Int) {
+        id = genre.value
+        title = genre.value
+        subtitle = "\(genre.songCount) Songs"
+        systemImage = SearchCategory.symbols[index % SearchCategory.symbols.count]
+        colors = TrackArtwork.palettes[index % TrackArtwork.palettes.count]
+    }
+
     static let preview = SearchCategory(
+        id: "Pop",
         title: "Pop",
         subtitle: "Charts und Hooks",
         systemImage: "sparkles",
         colors: TrackArtwork.palettes[1]
     )
 
-    static let categories = [
-        SearchCategory(title: "Klassik", subtitle: "Piano, Streicher, Orchester", systemImage: "pianokeys", colors: TrackArtwork.palettes[6]),
-        SearchCategory(title: "Pop", subtitle: "Charts, Hooks und neue Stimmen", systemImage: "sparkles", colors: TrackArtwork.palettes[1]),
-        SearchCategory(title: "Gesang", subtitle: "Vocals, Chöre und Akustik", systemImage: "mic.fill", colors: TrackArtwork.palettes[4]),
-        SearchCategory(title: "Fokus", subtitle: "Ruhig, klar und konzentriert", systemImage: "headphones", colors: TrackArtwork.palettes[7]),
-        SearchCategory(title: "Electronic", subtitle: "Synths, Beats und Pulse", systemImage: "waveform", colors: TrackArtwork.palettes[0]),
-        SearchCategory(title: "Jazz", subtitle: "Grooves, Bass und Brass", systemImage: "music.note", colors: TrackArtwork.palettes[2]),
-        SearchCategory(title: "Indie", subtitle: "Gitarren und weiche Kanten", systemImage: "guitars", colors: TrackArtwork.palettes[3]),
-        SearchCategory(title: "Ambient", subtitle: "Flächen, Raum und Ruhe", systemImage: "cloud.fill", colors: TrackArtwork.palettes[8])
+    private static let symbols = [
+        "music.note",
+        "waveform",
+        "headphones",
+        "sparkles",
+        "guitars",
+        "pianokeys",
+        "mic.fill",
+        "cloud.fill"
     ]
 }
 
