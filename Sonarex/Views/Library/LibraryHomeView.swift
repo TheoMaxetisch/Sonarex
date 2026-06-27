@@ -68,13 +68,20 @@ struct LibraryHomeView: View {
             }
         }
     }
-
+    
     private var header: some View {
-        Text("Bibliothek")
-            .font(.largeTitle.weight(.bold))
-            .foregroundStyle(Color("PrimaryText"))
-        
+        HStack(spacing: 16) {
+            AppIconHeaderMark()
+
+            Text("Bibliothek")
+                .font(.largeTitle.weight(.bold))
+                .foregroundStyle(Color("PrimaryText"))
+                .lineLimit(1)
+
+            Spacer()
+        }
         .padding(.horizontal, 20)
-        .padding(.top, 16)
+        .padding(.top, 22)
+        .padding(.bottom, 4)
     }
 }

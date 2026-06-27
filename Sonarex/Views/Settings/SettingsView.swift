@@ -52,21 +52,7 @@ struct SettingsView: View {
 
     private var heroHeader: some View {
         HStack(spacing: 16) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [Color("SecondaryAccent"), Color("FeedMint"), Color("FeedRose")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-
-                Image(systemName: "slider.horizontal.3")
-                    .font(.title2.weight(.bold))
-                    .foregroundStyle(Color("InverseText"))
-            }
-            .frame(width: 58, height: 58)
+            AppIconHeaderMark()
 
             Text("Einstellungen")
                 .font(.largeTitle.weight(.bold))

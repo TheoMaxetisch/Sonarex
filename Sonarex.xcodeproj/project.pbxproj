@@ -12,7 +12,6 @@
 		1CCAF4A5FB16F39521EF793C /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08C9EC90671AB8B4F40EC20 /* RootTabView.swift */; };
 		4C9AF41DCCC316B944C86B92 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E871CD9359DF16461170B72C /* SettingsView.swift */; };
 		597BB23689E9112AB9045112 /* MailComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597BB23489E9112AB9045112 /* MailComposerView.swift */; };
-		597BB23789E9112AB9045112 /* SettingsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597BB23589E9112AB9045112 /* SettingsComponents.swift */; };
 		71923A409FB7E21EA82365E5 /* AGB.txt in Resources */ = {isa = PBXBuildFile; fileRef = D0057ADE666215143BAF9464 /* AGB.txt */; };
 		8AAA2792FB0F826AFB367B1F /* SonarexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59FEEF1D7939C861D53360A /* SonarexApp.swift */; };
 		A6E104BD2E2F4B8E9D6F3C11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6E104BC2E2F4B8E9D6F3C11 /* Assets.xcassets */; };
@@ -33,7 +32,6 @@
 		09DBCEA173CF4CBD3D4C054B /* Sonarex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sonarex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E8B9C7310C196100CF25204 /* Privacy.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Privacy.txt; sourceTree = "<group>"; };
 		597BB23489E9112AB9045112 /* MailComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailComposerView.swift; sourceTree = "<group>"; };
-		597BB23589E9112AB9045112 /* SettingsComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsComponents.swift; sourceTree = "<group>"; };
 		597BB23889E9112AB9045112 /* LegalContact.example.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LegalContact.example.txt; sourceTree = "<group>"; };
 		848E83CF3A6C7143E5188535 /* LegalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalTextView.swift; sourceTree = "<group>"; };
 		A6E104BC2E2F4B8E9D6F3C11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -67,6 +65,11 @@
 			path = Library;
 			sourceTree = "<group>";
 		};
+		0634661F2FEFC3DA00826595 /* Components */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Components;
+			sourceTree = "<group>";
+		};
 		A17C09D52FB2000000000001 /* Persistent */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Persistent;
@@ -93,7 +96,6 @@
 			children = (
 				848E83CF3A6C7143E5188535 /* LegalTextView.swift */,
 				597BB23489E9112AB9045112 /* MailComposerView.swift */,
-				597BB23589E9112AB9045112 /* SettingsComponents.swift */,
 				E871CD9359DF16461170B72C /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -160,6 +162,7 @@
 		9E3447A4B1111A4739FAB997 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				0634661F2FEFC3DA00826595 /* Components */,
 				0620BD5D2FB1BF2D0022D673 /* Library */,
 				0620BD522FB1BEB10022D673 /* Search */,
 				0620BD4D2FB1BE5C0022D673 /* Player */,
@@ -189,6 +192,7 @@
 				0620BD4D2FB1BE5C0022D673 /* Player */,
 				0620BD522FB1BEB10022D673 /* Search */,
 				0620BD5D2FB1BF2D0022D673 /* Library */,
+				0634661F2FEFC3DA00826595 /* Components */,
 				A17C09D52FB2000000000001 /* Persistent */,
 				A17C09D62FB2000000000002 /* Remote */,
 			);
@@ -266,7 +270,6 @@
 			files = (
 				1BF80E45054029D0CCAF08EF /* LegalTextView.swift in Sources */,
 				597BB23689E9112AB9045112 /* MailComposerView.swift in Sources */,
-				597BB23789E9112AB9045112 /* SettingsComponents.swift in Sources */,
 				1CCAF4A5FB16F39521EF793C /* RootTabView.swift in Sources */,
 				8AAA2792FB0F826AFB367B1F /* SonarexApp.swift in Sources */,
 				4C9AF41DCCC316B944C86B92 /* SettingsView.swift in Sources */,

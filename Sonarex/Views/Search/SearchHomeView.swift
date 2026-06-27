@@ -32,14 +32,12 @@ struct SearchHomeView: View {
                             Text("Kategorien")
                                 .font(.title3.weight(.bold))
                                 .foregroundStyle(Color("PrimaryText"))
-                                .padding(.horizontal, 20)
 
                             LazyVGrid(columns: columns, spacing: 14) {
                                 ForEach(categories) { category in
                                     SearchCategoryCardView(category: category)
                                 }
                             }
-                            .padding(.horizontal, 20)
                         }
                     } else if filteredTracks.isEmpty {
                         ContentUnavailableView.search(text: searchText)
@@ -57,7 +55,9 @@ struct SearchHomeView: View {
                         )
                     }
                 }
-                .padding(.bottom, 32)
+                .padding(.horizontal, 20)
+                .padding(.top, 18)
+                .padding(.bottom, 34)
             }
             .background(Color("AppBackground"))
         }
@@ -75,12 +75,17 @@ struct SearchHomeView: View {
     }
 
     private var header: some View {
-        Text("Suche")
-            .font(.largeTitle.weight(.bold))
-            .foregroundStyle(Color("PrimaryText"))
+        HStack(spacing: 16) {
+            AppIconHeaderMark()
 
-        .padding(.horizontal, 20)
-        .padding(.top, 16)
+            Text("Suche")
+                .font(.largeTitle.weight(.bold))
+                .foregroundStyle(Color("PrimaryText"))
+                .lineLimit(1)
+
+            Spacer()
+        }
+        .padding(.vertical, 4)
     }
 
     private var searchField: some View {
