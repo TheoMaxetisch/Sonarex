@@ -4,6 +4,7 @@ import MessageUI
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(PremiumAccessController.self) private var premium
     @AppStorage("prefersDarkMode") private var prefersDarkMode = false
     @Query private var serverProfiles: [ServerProfile]
 
@@ -23,6 +24,7 @@ struct SettingsView: View {
                 VStack(spacing: 22) {
                     heroHeader
                     appearanceGroup
+                    premiumGroup
                     serverGroup
                     legalGroup
                     contactGroup
@@ -116,6 +118,29 @@ struct SettingsView: View {
                     .disabled(activeServer == nil || isSyncingLibrary)
                     .accessibilityLabel("Bibliothek synchronisieren")
                 }
+            }
+        }
+    }
+
+    private var premiumGroup: some View {
+        SettingsGroup("Premium") {
+            SettingsRow(
+                title: "Sonarex Premium",
+                subtitle: premium.premiumStatusText,
+                systemImage: premium.hasPremiumAccess ? "sparkles" : "lock.fill",
+                tint: Color("SecondaryAccent")
+            ) {
+                Button {
+                    premium.requestedFeature = "Sonarex Premium"
+                    premium.isPaywallPresented = true
+                } label: {
+                    Image(systemName: premium.hasPremiumAccess ? "checkmark.seal.fill" : "cart.fill")
+                        .font(.headline.weight(.semibold))
+                        .foregroundStyle(Color("SecondaryAccent"))
+                        .frame(width: 40, height: 40)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Premium verwalten")
             }
         }
     }
@@ -318,4 +343,5 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
+        .environment(PremiumAccessController())
 }

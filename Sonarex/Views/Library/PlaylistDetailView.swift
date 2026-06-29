@@ -3,6 +3,7 @@ import SwiftData
 
 struct PlaylistDetailView: View {
     @Environment(PlayerController.self) private var player
+    @Environment(PremiumAccessController.self) private var premium
     let playlist: Playlist
 
     var body: some View {
@@ -71,7 +72,9 @@ struct PlaylistDetailView: View {
                 .accessibilityLabel("\(playlist.title) abspielen")
 
                 Button {
-                    playlist.isOwnedByUser.toggle()
+                    if premium.requirePremium(for: "Playlist-Likes") {
+                        playlist.isOwnedByUser.toggle()
+                    }
                 } label: {
                     Image(systemName: playlist.isOwnedByUser ? "heart.fill" : "heart")
                         .font(.headline.weight(.semibold))
@@ -244,6 +247,7 @@ struct TrackCollectionDetailView: View {
 }
 
 private struct PlaylistTrackRow: View {
+    @Environment(PremiumAccessController.self) private var premium
     let track: Track
     let number: Int
     let playAction: () -> Void
@@ -283,7 +287,9 @@ private struct PlaylistTrackRow: View {
             Spacer()
 
             Button {
-                toggleFavorite()
+                if premium.requirePremium(for: "Songs liken") {
+                    toggleFavorite()
+                }
             } label: {
                 Image(systemName: track.isFavorite ? "heart.fill" : "heart")
                     .font(.subheadline.weight(.semibold))

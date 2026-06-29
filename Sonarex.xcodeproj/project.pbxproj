@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0551F6FEB61584474F7B9AE9 /* SonarexModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC654866AF1A11BFB6FCED7 /* SonarexModelTests.swift */; };
+		0699777E2FF279DA00F2E479 /* Sonarex.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 0699777D2FF279DA00F2E479 /* Sonarex.storekit */; };
 		1BF80E45054029D0CCAF08EF /* LegalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E83CF3A6C7143E5188535 /* LegalTextView.swift */; };
 		1CCAF4A5FB16F39521EF793C /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08C9EC90671AB8B4F40EC20 /* RootTabView.swift */; };
 		4C9AF41DCCC316B944C86B92 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E871CD9359DF16461170B72C /* SettingsView.swift */; };
@@ -29,6 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0699777D2FF279DA00F2E479 /* Sonarex.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Sonarex.storekit; sourceTree = "<group>"; };
 		09DBCEA173CF4CBD3D4C054B /* Sonarex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sonarex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E8B9C7310C196100CF25204 /* Privacy.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Privacy.txt; sourceTree = "<group>"; };
 		597BB23489E9112AB9045112 /* MailComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailComposerView.swift; sourceTree = "<group>"; };
@@ -128,6 +130,7 @@
 				F59FEEF1D7939C861D53360A /* SonarexApp.swift */,
 				A6E104BC2E2F4B8E9D6F3C11 /* Assets.xcassets */,
 				0FC51F1F395B2E61483D4698 /* Resources */,
+				0699777D2FF279DA00F2E479 /* Sonarex.storekit */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -258,6 +261,7 @@
 				A6E104BD2E2F4B8E9D6F3C11 /* Assets.xcassets in Resources */,
 				71923A409FB7E21EA82365E5 /* AGB.txt in Resources */,
 				DD59E76EDF042F39019DA8B3 /* Privacy.txt in Resources */,
+				0699777E2FF279DA00F2E479 /* Sonarex.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

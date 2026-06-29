@@ -123,6 +123,39 @@ struct DemoMusicSeederTests {
     }
 }
 
+@MainActor
+struct PremiumAccessControllerTests {
+    @Test func trialStartsOnFirstLaunchAndGrantsAccess() {
+        let defaults = isolatedDefaults()
+        let premium = PremiumAccessController(defaults: defaults)
+
+        #expect(premium.isTrialActive)
+        #expect(premium.hasPremiumAccess)
+        #expect(premium.remainingTrialDays <= PremiumAccessController.trialDurationDays)
+        #expect(defaults.object(forKey: "premiumTrialStartedAt") as? Date != nil)
+    }
+
+    @Test func expiredTrialRequiresPurchase() {
+        let defaults = isolatedDefaults()
+        let expiredStart = Calendar.current.date(byAdding: .day, value: -15, to: .now)!
+        defaults.set(expiredStart, forKey: "premiumTrialStartedAt")
+
+        let premium = PremiumAccessController(defaults: defaults)
+
+        #expect(!premium.isTrialActive)
+        #expect(!premium.hasPremiumAccess)
+        #expect(premium.requirePremium(for: "Songs liken") == false)
+        #expect(premium.isPaywallPresented)
+    }
+
+    private func isolatedDefaults() -> UserDefaults {
+        let suiteName = "SonarexPremiumTests-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        return defaults
+    }
+}
+
 struct SubsonicRequestBuilderTests {
     @Test func urlContainsAuthenticationAndEndpointQueryItems() throws {
         let builder = SubsonicRequestBuilder(

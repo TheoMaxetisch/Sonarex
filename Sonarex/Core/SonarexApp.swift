@@ -5,6 +5,7 @@ import SwiftData
 struct SonarexApp: App {
     @AppStorage("prefersDarkMode") private var prefersDarkMode = false
     @State private var playerController = PlayerController()
+    @State private var premiumAccess = PremiumAccessController()
 
     let container: ModelContainer
 
@@ -34,6 +35,10 @@ struct SonarexApp: App {
                 .tint(Color("AccentColor"))
                 .preferredColorScheme(prefersDarkMode ? .dark : nil)
                 .environment(playerController)
+                .environment(premiumAccess)
+                .task {
+                    await premiumAccess.refresh()
+                }
         }
         .modelContainer(container)
     }

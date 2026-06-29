@@ -5,6 +5,7 @@ struct FullPlayerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(PlayerController.self) private var player
+    @Environment(PremiumAccessController.self) private var premium
     @Query(sort: \Playlist.title) private var playlists: [Playlist]
     @State private var isShowingPlaylistPicker = false
 
@@ -117,7 +118,9 @@ struct FullPlayerView: View {
             }
             Spacer(minLength: 12)
             Button {
-                isShowingPlaylistPicker = true
+                if premium.requirePremium(for: "Songs zu Playlists hinzufügen") {
+                    isShowingPlaylistPicker = true
+                }
             } label: {
                 Image(systemName: "text.badge.plus")
                     .font(.title2.weight(.semibold))
@@ -128,7 +131,9 @@ struct FullPlayerView: View {
             .accessibilityLabel("Zu Playlist hinzufügen")
 
             Button {
-                toggleFavorite(track)
+                if premium.requirePremium(for: "Songs liken") {
+                    toggleFavorite(track)
+                }
             } label: {
                 Image(systemName: track.isFavorite ? "heart.fill" : "heart")
                     .font(.title2.weight(.semibold))
