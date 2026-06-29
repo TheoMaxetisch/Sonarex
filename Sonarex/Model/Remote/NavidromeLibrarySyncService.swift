@@ -21,10 +21,11 @@ enum NavidromeLibrarySyncService {
 
         let client = SubsonicClient(baseURL: baseURL, username: server.username, password: password)
         let albumSummaries = try await client.albumList()
+        let playlistSummaries = try await client.playlists()
         let starredSongIDs = try await client.starredSongIDs()
         let existingPlaylists = server.playlists ?? []
         let existingTracks = server.tracks ?? []
-        let savedPlaylistIDs = Set(existingPlaylists.filter(\.isOwnedByUser).map(\.remoteID))
+        let savedPlaylistIDs = Set(existingPlaylists.filter { $0.isOwnedByUser && !$0.isEditableByUser }.map(\.remoteID))
 
         var importedPlaylists: [Playlist] = []
         var importedTracks: [Track] = []
@@ -59,6 +60,26 @@ enum NavidromeLibrarySyncService {
             }
 
             importedTracks.append(contentsOf: tracks)
+            importedPlaylists.append(playlist)
+        }
+
+        let tracksByRemoteID = Dictionary(uniqueKeysWithValues: importedTracks.map { ($0.remoteID, $0) })
+        for (playlistIndex, summary) in playlistSummaries.enumerated() {
+            let remotePlaylist = try await client.playlist(id: summary.id)
+            let tracks = remotePlaylist.songs.compactMap { tracksByRemoteID[$0.id] }
+            let playlist = Playlist(
+                remoteID: remotePlaylist.id,
+                title: remotePlaylist.name,
+                subtitle: remotePlaylist.comment ?? "Eigene Playlist",
+                playlistDescription: remotePlaylist.comment ?? "",
+                artworkStyle: (albumSummaries.count + playlistIndex) % TrackArtwork.palettes.count,
+                artworkSymbol: "music.note.list",
+                isOwnedByUser: true,
+                isEditableByUser: true
+            )
+            playlist.entries = tracks.enumerated().map { index, track in
+                PlaylistEntry(position: index, playlist: playlist, track: track)
+            }
             importedPlaylists.append(playlist)
         }
 
@@ -141,6 +162,19 @@ private struct SubsonicClient {
         return Set(response.subsonicResponse.starred2.song.map(\.id))
     }
 
+    func playlists() async throws -> [SubsonicPlaylistSummary] {
+        let response: PlaylistsResponse = try await get("getPlaylists", queryItems: [])
+        return response.subsonicResponse.playlists.playlist
+    }
+
+    func playlist(id: String) async throws -> SubsonicPlaylist {
+        let response: PlaylistResponse = try await get(
+            "getPlaylist",
+            queryItems: [URLQueryItem(name: "id", value: id)]
+        )
+        return response.subsonicResponse.playlist
+    }
+
     private func get<Response: Decodable>(
         _ endpoint: String,
         queryItems endpointQueryItems: [URLQueryItem]
@@ -199,6 +233,28 @@ private struct StarredResponse: Decodable, SubsonicEnvelopeProviding {
     }
 }
 
+private struct PlaylistsResponse: Decodable, SubsonicEnvelopeProviding {
+    let subsonicResponse: SubsonicPlaylistsEnvelope
+
+    var status: String { subsonicResponse.status }
+    var errorMessage: String? { subsonicResponse.error?.message }
+
+    enum CodingKeys: String, CodingKey {
+        case subsonicResponse = "subsonic-response"
+    }
+}
+
+private struct PlaylistResponse: Decodable, SubsonicEnvelopeProviding {
+    let subsonicResponse: SubsonicPlaylistEnvelope
+
+    var status: String { subsonicResponse.status }
+    var errorMessage: String? { subsonicResponse.error?.message }
+
+    enum CodingKeys: String, CodingKey {
+        case subsonicResponse = "subsonic-response"
+    }
+}
+
 private struct SubsonicAlbumListEnvelope: Decodable {
     let status: String
     let albumList2: SubsonicAlbumList
@@ -215,6 +271,61 @@ private struct SubsonicStarredEnvelope: Decodable {
     let status: String
     let starred2: SubsonicStarred
     let error: SubsonicError?
+}
+
+private struct SubsonicPlaylistsEnvelope: Decodable {
+    let status: String
+    let playlists: SubsonicPlaylists
+    let error: SubsonicError?
+}
+
+private struct SubsonicPlaylistEnvelope: Decodable {
+    let status: String
+    let playlist: SubsonicPlaylist
+    let error: SubsonicError?
+}
+
+private struct SubsonicPlaylists: Decodable {
+    let playlist: [SubsonicPlaylistSummary]
+
+    enum CodingKeys: String, CodingKey {
+        case playlist
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        playlist = try container.decodeIfPresent([SubsonicPlaylistSummary].self, forKey: .playlist) ?? []
+    }
+}
+
+private struct SubsonicPlaylistSummary: Decodable {
+    let id: String
+}
+
+private struct SubsonicPlaylist: Decodable {
+    let id: String
+    let name: String
+    let comment: String?
+    let songs: [SubsonicPlaylistSong]
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case comment
+        case songs = "entry"
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        comment = try container.decodeIfPresent(String.self, forKey: .comment)
+        songs = try container.decodeIfPresent([SubsonicPlaylistSong].self, forKey: .songs) ?? []
+    }
+}
+
+private struct SubsonicPlaylistSong: Decodable {
+    let id: String
 }
 
 private struct SubsonicStarred: Decodable {

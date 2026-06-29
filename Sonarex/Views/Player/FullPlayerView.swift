@@ -1,8 +1,12 @@
 import SwiftUI
+import SwiftData
 
 struct FullPlayerView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @Environment(PlayerController.self) private var player
+    @Query(sort: \Playlist.title) private var playlists: [Playlist]
+    @State private var isShowingPlaylistPicker = false
 
     var body: some View {
         Group {
@@ -10,6 +14,16 @@ struct FullPlayerView: View {
                 playerContent(track)
             } else {
                 ContentUnavailableView("Nichts wird abgespielt", systemImage: "music.note")
+            }
+        }
+        .sheet(isPresented: $isShowingPlaylistPicker) {
+            if let track = player.currentTrack {
+                AddToPlaylistSheet(
+                    track: track,
+                    playlists: editablePlaylists(for: track),
+                    onCreate: createPlaylist,
+                    onAdd: addTrack
+                )
             }
         }
     }
@@ -102,6 +116,17 @@ struct FullPlayerView: View {
                 Text(track.artist).foregroundStyle(Color("SecondaryText"))
             }
             Spacer(minLength: 12)
+            Button {
+                isShowingPlaylistPicker = true
+            } label: {
+                Image(systemName: "text.badge.plus")
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(Color("InverseText"))
+                    .frame(width: 46, height: 46)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Zu Playlist hinzufügen")
+
             Button {
                 toggleFavorite(track)
             } label: {
@@ -287,6 +312,53 @@ struct FullPlayerView: View {
         return "\(value / 60):\(String(format: "%02d", value % 60))"
     }
 
+    private func editablePlaylists(for track: Track) -> [Playlist] {
+        guard let serverID = track.server?.id else { return [] }
+        return playlists.filter { playlist in
+            playlist.isEditableByUser && playlist.server?.id == serverID
+        }
+    }
+
+    private func createPlaylist(named name: String, with track: Track) async throws {
+        let remotePlaylist = try await NavidromePlaylistSyncService.createPlaylist(named: name, containing: track)
+        let playlist = Playlist(
+            remoteID: remotePlaylist.id,
+            title: remotePlaylist.name,
+            subtitle: "Eigene Playlist",
+            playlistDescription: "",
+            artworkStyle: track.artworkStyle,
+            artworkSymbol: "music.note.list",
+            isOwnedByUser: true,
+            isEditableByUser: true,
+            server: track.server
+        )
+        let entry = PlaylistEntry(position: 0, playlist: playlist, track: track)
+        playlist.entries = [entry]
+
+        modelContext.insert(playlist)
+        modelContext.insert(entry)
+        if let server = track.server {
+            var serverPlaylists = server.playlists ?? []
+            serverPlaylists.append(playlist)
+            server.playlists = serverPlaylists
+        }
+        try modelContext.save()
+    }
+
+    private func addTrack(_ track: Track, to playlist: Playlist) async throws {
+        guard !playlist.tracks.contains(where: { $0.remoteID == track.remoteID }) else { return }
+        try await NavidromePlaylistSyncService.add(track, to: playlist)
+
+        let nextPosition = (playlist.entries ?? []).map(\.position).max().map { $0 + 1 } ?? 0
+        let entry = PlaylistEntry(position: nextPosition, playlist: playlist, track: track)
+        var entries = playlist.entries ?? []
+        entries.append(entry)
+        playlist.entries = entries
+        playlist.changedAt = .now
+        modelContext.insert(entry)
+        try modelContext.save()
+    }
+
     private func toggleFavorite(_ track: Track) {
         let nextValue = !track.isFavorite
         track.isFavorite = nextValue
@@ -299,6 +371,111 @@ struct FullPlayerView: View {
                     track.isFavorite.toggle()
                 }
             }
+        }
+    }
+}
+
+private struct AddToPlaylistSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let track: Track
+    let playlists: [Playlist]
+    let onCreate: @MainActor (String, Track) async throws -> Void
+    let onAdd: @MainActor (Track, Playlist) async throws -> Void
+
+    @State private var newPlaylistName = ""
+    @State private var statusMessage: String?
+    @State private var isWorking = false
+
+    private var trimmedName: String {
+        newPlaylistName.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section("Neue Playlist") {
+                    TextField("Name", text: $newPlaylistName)
+                        .textInputAutocapitalization(.words)
+
+                    Button {
+                        Task { await createPlaylist() }
+                    } label: {
+                        Label("Erstellen und hinzufügen", systemImage: "plus")
+                    }
+                    .disabled(trimmedName.isEmpty || isWorking)
+                }
+
+                Section("Playlists") {
+                    if playlists.isEmpty {
+                        ContentUnavailableView("Noch keine eigenen Playlists", systemImage: "music.note.list")
+                            .listRowBackground(Color.clear)
+                    } else {
+                        ForEach(playlists) { playlist in
+                            Button {
+                                Task { await add(to: playlist) }
+                            } label: {
+                                HStack(spacing: 12) {
+                                    Image(systemName: playlist.tracks.contains(where: { $0.remoteID == track.remoteID }) ? "checkmark.circle.fill" : "text.badge.plus")
+                                        .foregroundStyle(Color("SecondaryAccent"))
+                                        .frame(width: 24)
+
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(playlist.title)
+                                            .font(.body.weight(.semibold))
+                                            .foregroundStyle(Color("PrimaryText"))
+                                        Text(playlist.trackCountText)
+                                            .font(.caption)
+                                            .foregroundStyle(Color("SecondaryText"))
+                                    }
+                                }
+                            }
+                            .disabled(isWorking || playlist.tracks.contains(where: { $0.remoteID == track.remoteID }))
+                        }
+                    }
+                }
+
+                if let statusMessage {
+                    Section {
+                        Text(statusMessage)
+                            .font(.footnote)
+                            .foregroundStyle(Color.red)
+                    }
+                }
+            }
+            .navigationTitle("Zu Playlist")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Schließen") {
+                        dismiss()
+                    }
+                }
+            }
+            .disabled(isWorking)
+        }
+    }
+
+    private func createPlaylist() async {
+        await perform {
+            try await onCreate(trimmedName, track)
+        }
+    }
+
+    private func add(to playlist: Playlist) async {
+        await perform {
+            try await onAdd(track, playlist)
+        }
+    }
+
+    private func perform(_ operation: () async throws -> Void) async {
+        statusMessage = nil
+        isWorking = true
+        do {
+            try await operation()
+            dismiss()
+        } catch {
+            statusMessage = error.localizedDescription
+            isWorking = false
         }
     }
 }
