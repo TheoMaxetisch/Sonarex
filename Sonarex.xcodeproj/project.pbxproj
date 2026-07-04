@@ -20,6 +20,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		06D01B8D2FF8CB9D00170B44 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6DCDE41F7945CC5FD911F1A9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8E75C1A47F24765CD60B2176;
+			remoteInfo = Sonarex;
+		};
 		FAD46537F3F776434129FEA6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6DCDE41F7945CC5FD911F1A9 /* Project object */;
@@ -31,6 +38,7 @@
 
 /* Begin PBXFileReference section */
 		0699777D2FF279DA00F2E479 /* Sonarex.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Sonarex.storekit; sourceTree = "<group>"; };
+		06D01B872FF8CB9D00170B44 /* SonarexUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SonarexUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		09DBCEA173CF4CBD3D4C054B /* Sonarex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sonarex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E8B9C7310C196100CF25204 /* Privacy.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Privacy.txt; sourceTree = "<group>"; };
 		597BB23489E9112AB9045112 /* MailComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailComposerView.swift; sourceTree = "<group>"; };
@@ -72,6 +80,11 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		06D01B882FF8CB9D00170B44 /* SonarexUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SonarexUITests;
+			sourceTree = "<group>";
+		};
 		A17C09D52FB2000000000001 /* Persistent */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Persistent;
@@ -83,6 +96,16 @@
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		06D01B842FF8CB9D00170B44 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		0A5320C345E1DD8267223A8B /* SonarexTests */ = {
@@ -140,6 +163,7 @@
 			children = (
 				09DBCEA173CF4CBD3D4C054B /* Sonarex.app */,
 				CC56F07B9CD05B9E01F48521 /* SonarexTests.xctest */,
+				06D01B872FF8CB9D00170B44 /* SonarexUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -158,6 +182,7 @@
 			children = (
 				150116B8D7A0B1D7079B9263 /* Sonarex */,
 				0A5320C345E1DD8267223A8B /* SonarexTests */,
+				06D01B882FF8CB9D00170B44 /* SonarexUITests */,
 				4AD12ED55AAF6E6B93B01FBE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -179,6 +204,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		06D01B862FF8CB9D00170B44 /* SonarexUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 06D01B912FF8CB9D00170B44 /* Build configuration list for PBXNativeTarget "SonarexUITests" */;
+			buildPhases = (
+				06D01B832FF8CB9D00170B44 /* Sources */,
+				06D01B842FF8CB9D00170B44 /* Frameworks */,
+				06D01B852FF8CB9D00170B44 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				06D01B8E2FF8CB9D00170B44 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				06D01B882FF8CB9D00170B44 /* SonarexUITests */,
+			);
+			name = SonarexUITests;
+			packageProductDependencies = (
+			);
+			productName = SonarexUITests;
+			productReference = 06D01B872FF8CB9D00170B44 /* SonarexUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		8E75C1A47F24765CD60B2176 /* Sonarex */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8FBF13C293169CFB41AF6A5A /* Build configuration list for PBXNativeTarget "Sonarex" */;
@@ -231,7 +279,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 2660;
 				LastUpgradeCheck = 2650;
+				TargetAttributes = {
+					06D01B862FF8CB9D00170B44 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = 8E75C1A47F24765CD60B2176;
+					};
+				};
 			};
 			buildConfigurationList = 0496BD4194C7A9D248221387 /* Build configuration list for PBXProject "Sonarex" */;
 			developmentRegion = de;
@@ -249,11 +304,19 @@
 			targets = (
 				8E75C1A47F24765CD60B2176 /* Sonarex */,
 				ABB2004D8FEA39B21C736B3C /* SonarexTests */,
+				06D01B862FF8CB9D00170B44 /* SonarexUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		06D01B852FF8CB9D00170B44 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DB3C3F79A296B16C153638A9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -268,6 +331,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		06D01B832FF8CB9D00170B44 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		21EE76A6D7E0CF3433094A63 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -291,6 +361,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		06D01B8E2FF8CB9D00170B44 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8E75C1A47F24765CD60B2176 /* Sonarex */;
+			targetProxy = 06D01B8D2FF8CB9D00170B44 /* PBXContainerItemProxy */;
+		};
 		D568276D02A430EA9F6C0D37 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 8E75C1A47F24765CD60B2176 /* Sonarex */;
@@ -319,6 +394,60 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		06D01B8F2FF8CB9D00170B44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9WVJKUBJUA;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = wedel.dev.SonarexUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Sonarex;
+			};
+			name = Debug;
+		};
+		06D01B902FF8CB9D00170B44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9WVJKUBJUA;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = wedel.dev.SonarexUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Sonarex;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		839599DCD115A822EC2E90C1 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -516,6 +645,15 @@
 			buildConfigurations = (
 				D47AA85B2E387A6A819C203D /* Debug */,
 				839599DCD115A822EC2E90C1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		06D01B912FF8CB9D00170B44 /* Build configuration list for PBXNativeTarget "SonarexUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				06D01B8F2FF8CB9D00170B44 /* Debug */,
+				06D01B902FF8CB9D00170B44 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

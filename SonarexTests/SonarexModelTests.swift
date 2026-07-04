@@ -203,6 +203,42 @@ struct SubsonicRequestBuilderTests {
     }
 }
 
+struct SecurityTests {
+    @Test func serverURLValidationRejectsUnsafeOrIncompleteURLs() {
+        let validHTTPS = ServerProfile(name: "HTTPS", baseURL: "https://music.example.test")
+        let validHTTP = ServerProfile(name: "HTTP", baseURL: "http://localhost:4533")
+        let ftpServer = ServerProfile(name: "FTP", baseURL: "ftp://music.example.test")
+        let missingScheme = ServerProfile(name: "Missing Scheme", baseURL: "music.example.test")
+        let missingHost = ServerProfile(name: "Missing Host", baseURL: "https://")
+
+        #expect(validHTTPS.validatedBaseURL?.scheme == "https")
+        #expect(validHTTP.validatedBaseURL?.scheme == "http")
+        #expect(ftpServer.validatedBaseURL == nil)
+        #expect(missingScheme.validatedBaseURL == nil)
+        #expect(missingHost.validatedBaseURL == nil)
+    }
+
+    @Test func subsonicAuthenticationURLDoesNotExposePassword() throws {
+        let builder = SubsonicRequestBuilder(
+            baseURL: try #require(URL(string: "https://music.example.test")),
+            username: "michi",
+            password: "secret-password"
+        )
+
+        let url = try builder.url(for: "ping")
+        let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: false))
+        let queryItems = Dictionary(uniqueKeysWithValues: (components.queryItems ?? []).compactMap { item in
+            item.value.map { (item.name, $0) }
+        })
+
+        #expect(!url.absoluteString.contains("secret-password"))
+        #expect(queryItems["p"] == nil)
+        #expect(queryItems["t"]?.isEmpty == false)
+        #expect(queryItems["s"]?.isEmpty == false)
+        #expect(queryItems["t"]?.count == 32)
+    }
+}
+
 @MainActor
 struct PlayerControllerTests {
     @Test func repeatModeCyclesThroughAllStates() {

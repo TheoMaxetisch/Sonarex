@@ -40,6 +40,17 @@
                ReferencedContainer = "container:Sonarex.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "06D01B862FF8CB9D00170B44"
+               BuildableName = "SonarexUITests.xctest"
+               BlueprintName = "SonarexUITests"
+               ReferencedContainer = "container:Sonarex.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
