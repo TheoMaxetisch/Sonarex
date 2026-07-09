@@ -6,19 +6,22 @@ struct AlbumRowView: View {
     let tracks: [Track]
     let onSelectTrack: (Track) -> Void
     let onShowAll: (() -> Void)?
+    let onDelete: (() -> Void)?
 
     init(
         title: String,
         subtitle: String,
         tracks: [Track],
         onSelectTrack: @escaping (Track) -> Void,
-        onShowAll: (() -> Void)? = nil
+        onShowAll: (() -> Void)? = nil,
+        onDelete: (() -> Void)? = nil
     ) {
         self.title = title
         self.subtitle = subtitle
         self.tracks = tracks
         self.onSelectTrack = onSelectTrack
         self.onShowAll = onShowAll
+        self.onDelete = onDelete
     }
 
     var body: some View {
@@ -29,13 +32,17 @@ struct AlbumRowView: View {
                 } label: {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(title)
-                            .font(.title3.weight(.bold))
+                            .font(SonarexTypography.sectionTitle)
                             .foregroundStyle(Color("PrimaryText"))
+                            .lineLimit(1)
 
                         Text(subtitle)
-                            .font(.caption)
+                            .font(SonarexTypography.secondary)
                             .foregroundStyle(Color("SecondaryText"))
+                            .lineLimit(1)
                     }
+                    .frame(minHeight: 44, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .disabled(onShowAll == nil)
@@ -44,13 +51,31 @@ struct AlbumRowView: View {
 
                 Spacer()
 
+                if let onDelete {
+                    Menu {
+                        Button(role: .destructive, action: onDelete) {
+                            Label("Löschen", systemImage: "trash")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .font(SonarexTypography.action)
+                            .foregroundStyle(Color("SecondaryText"))
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("\(title) Optionen")
+                    .accessibilityHint("Öffnet Optionen für diese Playlist.")
+                }
+
                 Button {
                     onShowAll?()
                 } label: {
                     Image(systemName: "chevron.right")
-                        .font(.headline.weight(.semibold))
+                        .font(SonarexTypography.action)
                         .foregroundStyle(Color("SecondaryText"))
-                        .frame(width: 32, height: 32)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("\(title) anzeigen")

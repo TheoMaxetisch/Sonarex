@@ -17,12 +17,12 @@ struct MiniPlayerView: View {
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text(track.title)
-                                .font(.headline.weight(.semibold))
+                                .font(SonarexTypography.trackTitle)
                                 .foregroundStyle(Color("PrimaryText"))
                                 .lineLimit(1)
 
                             Text(track.artist)
-                                .font(.caption.weight(.medium))
+                                .font(SonarexTypography.trackArtist)
                                 .foregroundStyle(Color("SecondaryText"))
                                 .lineLimit(1)
                         }
@@ -38,7 +38,7 @@ struct MiniPlayerView: View {
 
                 Button(action: togglePlayback) {
                     Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                        .font(.headline.weight(.bold))
+                        .font(SonarexTypography.action)
                         .foregroundStyle(Color("FeedBlack"))
                         .frame(width: 44, height: 44)
                         .background(Color("InverseText"), in: Circle())
@@ -50,7 +50,7 @@ struct MiniPlayerView: View {
 
                 Button(action: stopPlayback) {
                     Image(systemName: "xmark")
-                        .font(.subheadline.weight(.bold))
+                        .font(SonarexTypography.action)
                         .foregroundStyle(Color("SecondaryText"))
                         .frame(width: 34, height: 44)
                 }
@@ -82,7 +82,7 @@ struct MiniPlayerView: View {
             .frame(width: 54, height: 54)
             .overlay {
                 Image(systemName: track.artworkSymbol)
-                    .font(.headline.weight(.semibold))
+                    .font(SonarexTypography.action)
                     .foregroundStyle(Color("InverseText").opacity(0.9))
                     .accessibilityHidden(true)
             }

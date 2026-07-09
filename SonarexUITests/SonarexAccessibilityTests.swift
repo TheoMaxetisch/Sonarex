@@ -14,7 +14,14 @@ final class SonarexAccessibilityTests: XCTestCase {
             var reportedIssues: [String] = []
 
             try app.performAccessibilityAudit { issue in
-                reportedIssues.append("\(issue.compactDescription): \(issue.detailedDescription)")
+                let elementDescription = issue.element?.debugDescription ?? "Kein Element"
+                reportedIssues.append(
+                    """
+                    Typ \(issue.auditType.rawValue): \(issue.compactDescription)
+                    \(issue.detailedDescription)
+                    \(elementDescription)
+                    """
+                )
                 return true
             }
 

@@ -52,6 +52,51 @@ enum NavidromePlaylistSyncService {
         }
     }
 
+    static func remove(_ entry: PlaylistEntry, from playlist: Playlist) async throws {
+        guard let server = playlist.server ?? entry.track?.server else {
+            throw PlaylistSyncError.missingServer
+        }
+        guard playlist.isEditableByUser else {
+            throw PlaylistSyncError.notEditable
+        }
+        guard let index = playlist.orderedEntries.firstIndex(where: { $0.id == entry.id }) else {
+            throw PlaylistSyncError.missingEntry
+        }
+
+        let decoded: PlaylistSyncResponse = try await request(
+            endpoint: "updatePlaylist",
+            server: server,
+            queryItems: [
+                URLQueryItem(name: "playlistId", value: playlist.remoteID),
+                URLQueryItem(name: "songIndexToRemove", value: "\(index)")
+            ]
+        )
+
+        guard decoded.subsonicResponse.status != "failed" else {
+            throw PlaylistSyncError.api(
+                decoded.subsonicResponse.error?.message
+                    ?? "Navidrome hat die Playlist-Aenderung abgelehnt."
+            )
+        }
+    }
+
+    static func delete(_ playlist: Playlist) async throws {
+        guard let server = playlist.server else {
+            throw PlaylistSyncError.missingServer
+        }
+        guard playlist.isEditableByUser else {
+            throw PlaylistSyncError.notEditable
+        }
+
+        let _: PlaylistSyncResponse = try await request(
+            endpoint: "deletePlaylist",
+            server: server,
+            queryItems: [
+                URLQueryItem(name: "id", value: playlist.remoteID)
+            ]
+        )
+    }
+
     private static func request<Response: Decodable>(
         endpoint: String,
         server: ServerProfile,
@@ -122,6 +167,7 @@ private enum PlaylistSyncError: LocalizedError {
     case missingPassword
     case serverUnavailable
     case notEditable
+    case missingEntry
     case api(String)
 
     var errorDescription: String? {
@@ -136,6 +182,8 @@ private enum PlaylistSyncError: LocalizedError {
             "Navidrome konnte nicht erreicht werden."
         case .notEditable:
             "Diese Playlist kann nicht bearbeitet werden."
+        case .missingEntry:
+            "Dieser Song wurde in der Playlist nicht gefunden."
         case .api(let message):
             message
         }

@@ -148,7 +148,7 @@ struct SearchHomeView: View {
     private var categoriesSection: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Kategorien")
-                .font(.title3.weight(.bold))
+                .font(SonarexTypography.sectionTitle)
                 .foregroundStyle(Color("PrimaryText"))
 
             LazyVGrid(columns: columns, spacing: 14) {
@@ -165,11 +165,11 @@ struct SearchHomeView: View {
         VStack(alignment: .leading, spacing: 14) {
             VStack(alignment: .leading, spacing: 3) {
                 Text("Playlist-Vorschläge")
-                    .font(.title3.weight(.bold))
+                    .font(SonarexTypography.sectionTitle)
                     .foregroundStyle(Color("PrimaryText"))
 
                 Text(playlistSuggestionSubtitle)
-                    .font(.caption)
+                    .font(SonarexTypography.secondary)
                     .foregroundStyle(Color("SecondaryText"))
             }
 
@@ -193,7 +193,7 @@ struct SearchHomeView: View {
             AppIconHeaderMark()
 
             Text("Suche")
-                .font(.largeTitle.weight(.bold))
+                .font(SonarexTypography.screenTitle)
                 .foregroundStyle(Color("PrimaryText"))
                 .lineLimit(1)
 
@@ -205,7 +205,7 @@ struct SearchHomeView: View {
     private var searchField: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .font(.headline.weight(.semibold))
+                .font(SonarexTypography.action)
                 .foregroundStyle(Color("SecondaryText"))
 
             TextField("Songs, Artists oder Kategorien", text: $searchText)
@@ -218,7 +218,7 @@ struct SearchHomeView: View {
                     searchText = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.headline)
+                        .font(SonarexTypography.action)
                         .foregroundStyle(Color("SecondaryText"))
                 }
                 .buttonStyle(.plain)

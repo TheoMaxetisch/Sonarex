@@ -28,6 +28,7 @@ struct RootTabView: View {
                 }
             }
         }
+        .tint(Color("PrimaryText"))
         .toolbarBackground(Color("AppBackground"), for: .tabBar)
         .toolbarBackground(.visible, for: .tabBar)
         .overlay(alignment: .top) {
@@ -142,20 +143,20 @@ private struct PremiumPaywallView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 10) {
             Image(systemName: "sparkles")
-                .font(.largeTitle.weight(.bold))
+                .font(SonarexTypography.screenTitle)
                 .foregroundStyle(Color("SecondaryAccent"))
 
             Text(premium.requestedFeature)
-                .font(.title.weight(.bold))
+                .font(SonarexTypography.sheetTitle)
                 .foregroundStyle(Color("PrimaryText"))
 
             Text("Nach der 14-taegigen Testphase brauchst du Premium fuer Likes, eigene Playlists und Playlist-Likes. Musik abspielen bleibt weiterhin moeglich.")
-                .font(.body)
+                .font(SonarexTypography.body)
                 .foregroundStyle(Color("SecondaryText"))
                 .fixedSize(horizontal: false, vertical: true)
 
             Text(premium.premiumStatusText)
-                .font(.subheadline.weight(.semibold))
+                .font(SonarexTypography.action)
                 .foregroundStyle(Color("SecondaryAccent"))
         }
     }
@@ -175,7 +176,7 @@ private struct PremiumPaywallView: View {
                 Task { await premium.purchasePremium() }
             } label: {
                 Label(purchaseButtonTitle, systemImage: "cart.fill")
-                    .font(.headline.weight(.semibold))
+                    .font(SonarexTypography.action)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
             }
@@ -187,7 +188,7 @@ private struct PremiumPaywallView: View {
                 Task { await premium.restorePurchases() }
             } label: {
                 Label("Käufe wiederherstellen", systemImage: "arrow.clockwise")
-                    .font(.subheadline.weight(.semibold))
+                    .font(SonarexTypography.secondaryEmphasis)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
             }
@@ -201,7 +202,7 @@ private struct PremiumPaywallView: View {
 
             if let errorMessage = premium.errorMessage {
                 Text(errorMessage)
-                    .font(.footnote)
+                    .font(SonarexTypography.secondary)
                     .foregroundStyle(Color.red)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -223,7 +224,7 @@ private struct PremiumFeatureRow: View {
     var body: some View {
         Label {
             Text(title)
-                .font(.subheadline.weight(.semibold))
+                .font(SonarexTypography.action)
                 .foregroundStyle(Color("PrimaryText"))
         } icon: {
             Image(systemName: symbol)

@@ -54,7 +54,7 @@ struct SettingsGroup<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title)
-                .font(.caption.weight(.bold))
+                .font(SonarexTypography.metadata)
                 .foregroundStyle(Color("SecondaryText"))
                 .textCase(.uppercase)
 
@@ -83,15 +83,14 @@ struct SettingsRow<Accessory: View>: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
-                    .font(.subheadline.weight(.semibold))
+                    .font(SonarexTypography.action)
                     .foregroundStyle(Color("PrimaryText"))
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Text(subtitle)
-                    .font(.caption)
+                    .font(SonarexTypography.secondary)
                     .foregroundStyle(Color("SecondaryText"))
                     .lineLimit(2)
-                    .minimumScaleFactor(0.82)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .layoutPriority(1)
@@ -121,7 +120,7 @@ struct SettingsSheetView<Content: View>: View {
                     SettingsIcon(systemImage: systemImage, tint: tint)
 
                     Text(title)
-                        .font(.title2.weight(.bold))
+                        .font(SonarexTypography.sheetTitle)
                         .foregroundStyle(Color("PrimaryText"))
 
                     Spacer()
@@ -140,7 +139,7 @@ struct SettingsSheetView<Content: View>: View {
                     Button("Fertig") {
                         dismiss()
                     }
-                    .font(.subheadline.weight(.semibold))
+                    .font(SonarexTypography.action)
                 }
             }
         }
@@ -154,7 +153,7 @@ struct SettingsEditorField<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.caption.weight(.bold))
+                .font(SonarexTypography.metadata)
                 .foregroundStyle(Color("SecondaryText"))
                 .textCase(.uppercase)
 
@@ -169,7 +168,7 @@ struct SettingsIcon: View {
 
     var body: some View {
         Image(systemName: systemImage)
-            .font(.headline.weight(.semibold))
+            .font(SonarexTypography.action)
             .foregroundStyle(Color("InverseText"))
             .frame(width: 38, height: 38)
             .background(tint, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -186,7 +185,7 @@ struct SettingsActionButton: View {
     var body: some View {
         Button(action: action) {
             Label(title, systemImage: systemImage)
-                .font(.caption.weight(.bold))
+                .font(SonarexTypography.metadata)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity)
                 .frame(height: 36)
@@ -202,7 +201,7 @@ struct SettingsStatusDot: View {
 
     var body: some View {
         Image(systemName: status.symbol)
-            .font(.caption.weight(.bold))
+            .font(SonarexTypography.metadata)
             .foregroundStyle(status.color)
             .frame(width: 22, height: 22)
             .accessibilityLabel(status.message)
@@ -214,7 +213,7 @@ struct SettingsStatusLabel: View {
 
     var body: some View {
         Label(status.message, systemImage: status.symbol)
-            .font(.caption)
+            .font(SonarexTypography.secondary)
             .foregroundStyle(status.color)
             .frame(maxWidth: .infinity, alignment: .leading)
             .fixedSize(horizontal: false, vertical: true)
@@ -224,7 +223,7 @@ struct SettingsStatusLabel: View {
 struct Chevron: View {
     var body: some View {
         Image(systemName: "chevron.right")
-            .font(.caption.weight(.bold))
+            .font(SonarexTypography.metadata)
             .foregroundStyle(Color("SecondaryText"))
             .accessibilityHidden(true)
     }
@@ -233,7 +232,7 @@ struct Chevron: View {
 extension View {
     func settingsFieldStyle() -> some View {
         self
-            .font(.subheadline)
+            .font(SonarexTypography.body)
             .foregroundStyle(Color("PrimaryText"))
             .padding(.horizontal, 12)
             .frame(height: 38)

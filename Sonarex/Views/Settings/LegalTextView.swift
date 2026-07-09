@@ -34,13 +34,12 @@ struct LegalTextView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.largeTitle.weight(.bold))
+                    .font(SonarexTypography.screenTitle)
                     .foregroundStyle(Color("PrimaryText"))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.8)
 
                 Text(subtitle)
-                    .font(.subheadline.weight(.medium))
+                    .font(SonarexTypography.secondaryEmphasis)
                     .foregroundStyle(Color("SecondaryText"))
                     .lineLimit(1)
             }
@@ -61,7 +60,7 @@ struct LegalTextView: View {
 
     private var legalBody: some View {
         Text(text)
-            .font(.body)
+            .font(SonarexTypography.body)
             .lineSpacing(5)
             .foregroundStyle(Color("PrimaryText"))
             .textSelection(.enabled)
@@ -79,11 +78,11 @@ struct LegalTextView: View {
             SettingsIcon(systemImage: "exclamationmark.triangle.fill", tint: Color("FeedRose"))
 
             Text("Text nicht gefunden")
-                .font(.headline.weight(.semibold))
+                .font(SonarexTypography.sectionTitle)
                 .foregroundStyle(Color("PrimaryText"))
 
             Text("Bitte lege `Resources/\(resource).txt` im App-Bundle an.")
-                .font(.subheadline)
+                .font(SonarexTypography.secondary)
                 .foregroundStyle(Color("SecondaryText"))
                 .fixedSize(horizontal: false, vertical: true)
         }

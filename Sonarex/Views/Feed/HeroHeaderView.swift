@@ -8,50 +8,47 @@ struct HeroHeaderView: View {
         ZStack(alignment: .bottomLeading) {
             RoundedRectangle(cornerRadius: 45)
                 .fill(featuredTrack.heroGradient)
+                .overlay {
+                    LinearGradient(
+                        colors: [
+                            Color("FeedBlack").opacity(0.38),
+                            Color("FeedBlack").opacity(0.88)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 45, style: .continuous))
+                }
 
             VStack(alignment: .leading, spacing: 18) {
                 Spacer()
 
                 VStack(alignment: .leading, spacing: 8) {
                     Label("Featured Track", systemImage: "sparkles")
-                        .font(.caption.weight(.bold))
+                        .font(SonarexTypography.metadata)
                         .textCase(.uppercase)
                         .foregroundStyle(Color("InverseText").opacity(0.78))
+                        .accessibilityHidden(true)
 
                     Text(featuredTrack.title)
-                        .font(.system(size: 38, weight: .bold, design: .rounded))
+                        .font(SonarexTypography.heroTitle)
                         .lineLimit(2)
-                        .minimumScaleFactor(0.78)
 
                     Text(featuredTrack.artist)
-                        .font(.headline)
+                        .font(SonarexTypography.heroSubtitle)
                         .foregroundStyle(Color("InverseText").opacity(0.82))
                 }
 
-                HStack(spacing: 12) {
-                    Button(action: playAction) {
-                        Label("Abspielen", systemImage: "play.fill")
-                            .font(.headline)
-                            .foregroundStyle(Color("FeedBlack"))
-                            .frame(height: 46)
-                            .padding(.horizontal, 18)
-                            .background(Color("InverseText"), in: Capsule())
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 12) {
+                        heroPlayButton
+                        heroAddButton
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("\(featuredTrack.title) von \(featuredTrack.artist) abspielen")
-                    .accessibilityHint("Startet den Featured Track.")
 
-                    Button {
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.headline.weight(.semibold))
-                            .foregroundStyle(Color("InverseText"))
-                            .frame(width: 46, height: 46)
-                            .background(Color("GlassSurfaceStrong"), in: Circle())
+                    VStack(alignment: .leading, spacing: 12) {
+                        heroPlayButton
+                        heroAddButton
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Zur Bibliothek hinzufügen")
-                    .accessibilityHint("Diese Aktion ist noch nicht verfügbar.")
                 }
             }
             .foregroundStyle(Color("InverseText"))
@@ -60,12 +57,43 @@ struct HeroHeaderView: View {
         .frame(height: 360)
         .overlay(alignment: .topTrailing) {
             Image(systemName: featuredTrack.artworkSymbol)
-                .font(.system(size: 86, weight: .bold))
+                .font(.system(size: 64, weight: .bold))
                 .foregroundStyle(Color("InverseText").opacity(0.22))
                 .padding(.top, 74)
                 .padding(.trailing, 24)
                 .accessibilityHidden(true)
         }
         .accessibilityElement(children: .contain)
+    }
+
+    private var heroPlayButton: some View {
+        Button(action: playAction) {
+            Label("Abspielen", systemImage: "play.fill")
+                .font(SonarexTypography.action)
+                .foregroundStyle(Color("FeedBlack"))
+                .frame(height: 46)
+                .padding(.horizontal, 18)
+                .background(Color("InverseText"), in: Capsule())
+                .accessibilityHidden(true)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(featuredTrack.title) von \(featuredTrack.artist) abspielen")
+        .accessibilityHint("Startet den Featured Track.")
+    }
+
+    private var heroAddButton: some View {
+        Button {
+        } label: {
+            Image(systemName: "plus")
+                .font(SonarexTypography.action)
+                .foregroundStyle(Color("InverseText"))
+                .frame(width: 46, height: 46)
+                .background(Color("FeedBlack"), in: Circle())
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Zur Bibliothek hinzufügen")
+        .accessibilityHint("Diese Aktion ist noch nicht verfügbar.")
     }
 }

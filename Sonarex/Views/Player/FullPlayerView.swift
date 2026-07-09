@@ -59,7 +59,7 @@ struct FullPlayerView: View {
                 dismiss()
             } label: {
                 Image(systemName: "chevron.down")
-                    .font(.title3.weight(.semibold))
+                    .font(SonarexTypography.action)
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(.plain)
@@ -69,17 +69,17 @@ struct FullPlayerView: View {
 
             VStack(spacing: 2) {
                 Text("Jetzt läuft")
-                    .font(.caption)
+                    .font(SonarexTypography.secondary)
                     .foregroundStyle(Color("SecondaryText"))
                 Text(track.album.isEmpty ? "Sonarex" : track.album)
-                    .font(.footnote.weight(.semibold))
+                    .font(SonarexTypography.secondaryEmphasis)
                     .lineLimit(1)
             }
 
             Spacer()
 
             Image(systemName: "ellipsis")
-                .font(.title3.weight(.semibold))
+                .font(SonarexTypography.action)
                 .frame(width: 44, height: 44)
                 .accessibilityHidden(true)
         }
@@ -92,12 +92,12 @@ struct FullPlayerView: View {
 
             VStack(spacing: 18) {
                 Image(systemName: track.artworkSymbol)
-                    .font(.system(size: 78, weight: .medium))
+                    .font(.system(size: 58, weight: .medium))
                     .accessibilityHidden(true)
                 VStack(spacing: 6) {
-                    Text("SONAREX").font(.headline.weight(.bold))
+                    Text("SONAREX").font(SonarexTypography.action)
                     Text(track.album.isEmpty ? track.title : track.album)
-                        .font(.subheadline)
+                        .font(SonarexTypography.secondary)
                         .foregroundStyle(Color("InverseText").opacity(0.78))
                 }
             }
@@ -113,8 +113,8 @@ struct FullPlayerView: View {
     private func trackInfo(_ track: Track) -> some View {
         HStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 6) {
-                Text(track.title).font(.title2.weight(.bold)).lineLimit(2)
-                Text(track.artist).foregroundStyle(Color("SecondaryText"))
+                Text(track.title).font(SonarexTypography.sheetTitle).lineLimit(2)
+                Text(track.artist).font(SonarexTypography.secondary).foregroundStyle(Color("SecondaryText"))
             }
             Spacer(minLength: 12)
             Button {
@@ -123,7 +123,7 @@ struct FullPlayerView: View {
                 }
             } label: {
                 Image(systemName: "text.badge.plus")
-                    .font(.title2.weight(.semibold))
+                    .font(SonarexTypography.action)
                     .foregroundStyle(Color("InverseText"))
                     .frame(width: 46, height: 46)
             }
@@ -136,7 +136,7 @@ struct FullPlayerView: View {
                 }
             } label: {
                 Image(systemName: track.isFavorite ? "heart.fill" : "heart")
-                    .font(.title2.weight(.semibold))
+                    .font(SonarexTypography.action)
                     .foregroundStyle(track.isFavorite ? Color("FavoriteColor") : Color("InverseText"))
                     .frame(width: 46, height: 46)
             }
@@ -163,7 +163,7 @@ struct FullPlayerView: View {
                 Spacer()
                 Text(track.durationText)
             }
-            .font(.caption.monospacedDigit())
+            .font(.system(size: 11, weight: .regular, design: .monospaced))
             .foregroundStyle(Color("SecondaryText"))
         }
     }
@@ -172,7 +172,7 @@ struct FullPlayerView: View {
     private var playbackError: some View {
         if let message = player.playbackError {
             Label(message, systemImage: "exclamationmark.triangle.fill")
-                .font(.caption.weight(.semibold))
+                .font(SonarexTypography.metadata)
                 .foregroundStyle(Color.red)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 12)
@@ -195,7 +195,7 @@ struct FullPlayerView: View {
 
             Button(action: player.togglePlayback) {
                 Image(systemName: player.isPlaying ? "pause.fill" : "play.fill")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(Color("FeedBlack"))
                     .frame(width: 74, height: 74)
                     .background(Color("InverseText"), in: Circle())
@@ -213,7 +213,7 @@ struct FullPlayerView: View {
             .accessibilityLabel("Wiederholen")
             .accessibilityValue(repeatModeAccessibilityValue)
         }
-        .font(.title2.weight(.semibold))
+        .font(SonarexTypography.action)
         .buttonStyle(.plain)
     }
 
@@ -234,17 +234,17 @@ struct FullPlayerView: View {
             Image(systemName: "speaker.wave.3.fill")
                 .accessibilityHidden(true)
         }
-        .font(.footnote)
+        .font(SonarexTypography.secondary)
         .foregroundStyle(Color("SecondaryText"))
     }
 
     private var upcomingQueue: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Als Nächstes").font(.headline)
+            Text("Als Nächstes").font(SonarexTypography.sectionTitle)
             VStack(spacing: 0) {
                 if upcomingTracks.isEmpty {
                     Label("Danach startet der Mix", systemImage: "sparkles")
-                        .font(.subheadline.weight(.semibold))
+                        .font(SonarexTypography.action)
                         .foregroundStyle(Color("SecondaryText"))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .frame(height: 58)
@@ -268,10 +268,10 @@ struct FullPlayerView: View {
         if !tracks.isEmpty {
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
-                    Text("Weiter im Mix").font(.headline)
+                    Text("Weiter im Mix").font(SonarexTypography.sectionTitle)
                     Spacer()
                     Image(systemName: "shuffle")
-                        .font(.subheadline.weight(.semibold))
+                        .font(SonarexTypography.action)
                         .foregroundStyle(Color("SecondaryAccent"))
                         .accessibilityHidden(true)
                 }
@@ -426,10 +426,10 @@ private struct AddToPlaylistSheet: View {
 
                                     VStack(alignment: .leading, spacing: 3) {
                                         Text(playlist.title)
-                                            .font(.body.weight(.semibold))
+                                            .font(SonarexTypography.bodyEmphasis)
                                             .foregroundStyle(Color("PrimaryText"))
                                         Text(playlist.trackCountText)
-                                            .font(.caption)
+                                            .font(SonarexTypography.secondary)
                                             .foregroundStyle(Color("SecondaryText"))
                                     }
                                 }
@@ -442,7 +442,7 @@ private struct AddToPlaylistSheet: View {
                 if let statusMessage {
                     Section {
                         Text(statusMessage)
-                            .font(.footnote)
+                            .font(SonarexTypography.secondary)
                             .foregroundStyle(Color.red)
                     }
                 }
@@ -500,8 +500,8 @@ private struct PlayerActionButton: View {
     var body: some View {
         Button {} label: {
             VStack(spacing: 8) {
-                Image(systemName: symbol).font(.headline)
-                Text(title).font(.caption.weight(.semibold))
+                Image(systemName: symbol).font(SonarexTypography.action)
+                Text(title).font(SonarexTypography.metadata)
             }
             .foregroundStyle(Color("InverseText"))
             .frame(maxWidth: .infinity)
@@ -527,11 +527,11 @@ private struct QueueRow: View {
                             .accessibilityHidden(true)
                     }
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(track.title).font(.subheadline.weight(.semibold)).lineLimit(1)
-                    Text(track.artist).font(.caption).foregroundStyle(Color("SecondaryText")).lineLimit(1)
+                    Text(track.title).font(SonarexTypography.trackTitle).lineLimit(1)
+                    Text(track.artist).font(SonarexTypography.trackArtist).foregroundStyle(Color("SecondaryText")).lineLimit(1)
                 }
                 Spacer()
-                Text(track.durationText).font(.caption.monospacedDigit()).foregroundStyle(Color("SecondaryText"))
+                Text(track.durationText).font(.system(size: 11, weight: .regular, design: .monospaced)).foregroundStyle(Color("SecondaryText"))
             }
             .frame(height: 58)
         }

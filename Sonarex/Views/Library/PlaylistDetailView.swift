@@ -4,6 +4,11 @@ import SwiftData
 struct PlaylistDetailView: View {
     @Environment(PlayerController.self) private var player
     @Environment(PremiumAccessController.self) private var premium
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    @State private var errorMessage: String?
+    @State private var isConfirmingPlaylistDeletion = false
+    @State private var isEditingPlaylist = false
     let playlist: Playlist
 
     var body: some View {
@@ -12,10 +17,17 @@ struct PlaylistDetailView: View {
                 header
 
                 VStack(spacing: 10) {
-                    ForEach(Array(playlist.tracks.enumerated()), id: \.element.id) { index, track in
-                        PlaylistTrackRow(track: track, number: index + 1) {
-                            player.play(track, in: playlist.tracks)
-                            player.isPlayerPresented = true
+                    ForEach(Array(playlist.orderedEntries.enumerated()), id: \.element.id) { index, entry in
+                        if let track = entry.track {
+                            PlaylistTrackRow(
+                                track: track,
+                                number: index + 1,
+                                isEditing: isEditingPlaylist,
+                                removeAction: playlist.isEditableByUser && isEditingPlaylist ? { remove(entry) } : nil
+                            ) {
+                                player.play(track, in: playlist.tracks)
+                                player.isPlayerPresented = true
+                            }
                         }
                     }
                 }
@@ -26,6 +38,23 @@ struct PlaylistDetailView: View {
         .background(Color("AppBackground"))
         .navigationTitle(playlist.title)
         .navigationBarTitleDisplayMode(.inline)
+        .confirmationDialog("Playlist löschen?", isPresented: $isConfirmingPlaylistDeletion, titleVisibility: .visible) {
+            Button("Playlist löschen", role: .destructive) {
+                deletePlaylist()
+            }
+
+            Button("Abbrechen", role: .cancel) {
+            }
+        } message: {
+            Text("Diese Playlist wird aus Sonarex und Navidrome gelöscht.")
+        }
+        .alert("Playlist konnte nicht geändert werden", isPresented: hasErrorMessage) {
+            Button("OK") {
+                errorMessage = nil
+            }
+        } message: {
+            Text(errorMessage ?? "")
+        }
     }
 
     private var header: some View {
@@ -35,7 +64,7 @@ struct PlaylistDetailView: View {
                     .fill(playlist.artworkGradient)
 
                 Image(systemName: playlist.artworkSymbol)
-                    .font(.system(size: 76, weight: .semibold))
+                    .font(SonarexTypography.largeArtworkSymbol)
                     .foregroundStyle(Color("InverseText").opacity(0.92))
             }
             .aspectRatio(1, contentMode: .fit)
@@ -44,17 +73,23 @@ struct PlaylistDetailView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Text(playlist.title)
-                    .font(.largeTitle.weight(.bold))
+                    .font(SonarexTypography.screenTitle)
                     .foregroundStyle(Color("PrimaryText"))
 
                 Text(playlist.playlistDescription)
-                    .font(.subheadline)
+                    .font(SonarexTypography.body)
                     .foregroundStyle(Color("SecondaryText"))
                     .fixedSize(horizontal: false, vertical: true)
 
                 Label("\(playlist.trackCountText) - \(playlist.totalDurationText)", systemImage: "music.note.list")
-                    .font(.caption.weight(.semibold))
+                    .font(SonarexTypography.metadata)
                     .foregroundStyle(Color("SecondaryText"))
+            }
+
+            if isEditingPlaylist {
+                Label("Bearbeiten aktiv", systemImage: "pencil")
+                    .font(SonarexTypography.metadata)
+                    .foregroundStyle(Color("SecondaryAccent"))
             }
 
             HStack(spacing: 12) {
@@ -63,7 +98,7 @@ struct PlaylistDetailView: View {
                     player.isPlayerPresented = true
                 } label: {
                     Label("Abspielen", systemImage: "play.fill")
-                        .font(.headline.weight(.semibold))
+                        .font(SonarexTypography.action)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                 }
@@ -77,17 +112,93 @@ struct PlaylistDetailView: View {
                     }
                 } label: {
                     Image(systemName: playlist.isOwnedByUser ? "heart.fill" : "heart")
-                        .font(.headline.weight(.semibold))
+                        .font(SonarexTypography.action)
                         .foregroundStyle(playlist.isOwnedByUser ? Color("FavoriteColor") : Color("PrimaryText"))
                         .frame(width: 48, height: 48)
                 }
                 .buttonStyle(.bordered)
                 .tint(Color("SecondaryAccent"))
                 .accessibilityLabel(playlist.isOwnedByUser ? "Playlist aus Bibliothek entfernen" : "Playlist in Bibliothek speichern")
+
+                if playlist.isEditableByUser {
+                    Menu {
+                        Button {
+                            isEditingPlaylist.toggle()
+                        } label: {
+                            Label(isEditingPlaylist ? "Fertig" : "Bearbeiten", systemImage: "pencil")
+                        }
+
+                        Button(role: .destructive) {
+                            isConfirmingPlaylistDeletion = true
+                        } label: {
+                            Label("Löschen", systemImage: "trash")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .font(SonarexTypography.action)
+                            .foregroundStyle(Color("PrimaryText"))
+                            .frame(width: 48, height: 48)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(Color("SecondaryAccent"))
+                    .accessibilityLabel("Weitere Optionen")
+                    .accessibilityHint("Öffnet Optionen für diese Playlist.")
+                }
             }
         }
         .padding(.horizontal, 20)
         .padding(.top, 16)
+    }
+
+    private var hasErrorMessage: Binding<Bool> {
+        Binding(
+            get: { errorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    errorMessage = nil
+                }
+            }
+        )
+    }
+
+    private func remove(_ entry: PlaylistEntry) {
+        guard premium.requirePremium(for: "Playlist bearbeiten") else { return }
+
+        Task {
+            do {
+                try await NavidromePlaylistSyncService.remove(entry, from: playlist)
+                var entries = playlist.entries ?? []
+                entries.removeAll { $0.id == entry.id }
+                playlist.entries = entries
+                for (position, remainingEntry) in playlist.orderedEntries.enumerated() {
+                    remainingEntry.position = position
+                }
+                playlist.changedAt = .now
+                modelContext.delete(entry)
+                try modelContext.save()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    private func deletePlaylist() {
+        guard premium.requirePremium(for: "Playlist löschen") else { return }
+
+        Task {
+            do {
+                try await NavidromePlaylistSyncService.delete(playlist)
+                if var serverPlaylists = playlist.server?.playlists {
+                    serverPlaylists.removeAll { $0.id == playlist.id }
+                    playlist.server?.playlists = serverPlaylists
+                }
+                modelContext.delete(playlist)
+                try modelContext.save()
+                dismiss()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
     }
 }
 
@@ -133,7 +244,7 @@ struct FavoriteSongsDetailView: View {
                     .fill(LinearGradient(colors: TrackArtwork.palettes[1], startPoint: .topLeading, endPoint: .bottomTrailing))
 
                 Image(systemName: "heart.fill")
-                    .font(.system(size: 76, weight: .semibold))
+                    .font(SonarexTypography.largeArtworkSymbol)
                     .foregroundStyle(Color("InverseText").opacity(0.92))
             }
             .aspectRatio(1, contentMode: .fit)
@@ -142,11 +253,11 @@ struct FavoriteSongsDetailView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("Favourite Songs")
-                    .font(.largeTitle.weight(.bold))
+                    .font(SonarexTypography.screenTitle)
                     .foregroundStyle(Color("PrimaryText"))
 
                 Label("\(favoriteTracks.count) Songs", systemImage: "heart.fill")
-                    .font(.caption.weight(.semibold))
+                    .font(SonarexTypography.metadata)
                     .foregroundStyle(Color("SecondaryText"))
             }
 
@@ -155,7 +266,7 @@ struct FavoriteSongsDetailView: View {
                 player.isPlayerPresented = true
             } label: {
                 Label("Abspielen", systemImage: "play.fill")
-                    .font(.headline.weight(.semibold))
+                    .font(SonarexTypography.action)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
             }
@@ -206,7 +317,7 @@ struct TrackCollectionDetailView: View {
                     .fill(LinearGradient(colors: artworkColors, startPoint: .topLeading, endPoint: .bottomTrailing))
 
                 Image(systemName: artworkSymbol)
-                    .font(.system(size: 76, weight: .semibold))
+                    .font(SonarexTypography.largeArtworkSymbol)
                     .foregroundStyle(Color("InverseText").opacity(0.92))
             }
             .aspectRatio(1, contentMode: .fit)
@@ -215,15 +326,15 @@ struct TrackCollectionDetailView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Text(title)
-                    .font(.largeTitle.weight(.bold))
+                    .font(SonarexTypography.screenTitle)
                     .foregroundStyle(Color("PrimaryText"))
 
                 Text(subtitle)
-                    .font(.subheadline)
+                    .font(SonarexTypography.body)
                     .foregroundStyle(Color("SecondaryText"))
 
                 Label("\(tracks.count) Songs", systemImage: "music.note.list")
-                    .font(.caption.weight(.semibold))
+                    .font(SonarexTypography.metadata)
                     .foregroundStyle(Color("SecondaryText"))
             }
 
@@ -232,7 +343,7 @@ struct TrackCollectionDetailView: View {
                 player.isPlayerPresented = true
             } label: {
                 Label("Abspielen", systemImage: "play.fill")
-                    .font(.headline.weight(.semibold))
+                    .font(SonarexTypography.action)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
             }
@@ -250,12 +361,28 @@ private struct PlaylistTrackRow: View {
     @Environment(PremiumAccessController.self) private var premium
     let track: Track
     let number: Int
+    let isEditing: Bool
+    let removeAction: (() -> Void)?
     let playAction: () -> Void
+
+    init(
+        track: Track,
+        number: Int,
+        isEditing: Bool = false,
+        removeAction: (() -> Void)? = nil,
+        playAction: @escaping () -> Void
+    ) {
+        self.track = track
+        self.number = number
+        self.isEditing = isEditing
+        self.removeAction = removeAction
+        self.playAction = playAction
+    }
 
     var body: some View {
         HStack(spacing: 12) {
             Text("\(number)")
-                .font(.caption.weight(.bold))
+                .font(SonarexTypography.metadata)
                 .foregroundStyle(Color("SecondaryText"))
                 .frame(width: 24)
                 .accessibilityLabel("Position \(number)")
@@ -265,7 +392,7 @@ private struct PlaylistTrackRow: View {
                     .fill(track.artworkGradient)
 
                 Image(systemName: track.artworkSymbol)
-                    .font(.headline.weight(.semibold))
+                    .font(SonarexTypography.action)
                     .foregroundStyle(Color("InverseText"))
                     .accessibilityHidden(true)
             }
@@ -274,12 +401,12 @@ private struct PlaylistTrackRow: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(track.title)
-                    .font(.subheadline.weight(.semibold))
+                    .font(SonarexTypography.trackTitle)
                     .foregroundStyle(Color("PrimaryText"))
                     .lineLimit(1)
 
                 Text(track.artist)
-                    .font(.caption)
+                    .font(SonarexTypography.trackArtist)
                     .foregroundStyle(Color("SecondaryText"))
                     .lineLimit(1)
             }
@@ -292,7 +419,7 @@ private struct PlaylistTrackRow: View {
                 }
             } label: {
                 Image(systemName: track.isFavorite ? "heart.fill" : "heart")
-                    .font(.subheadline.weight(.semibold))
+                    .font(SonarexTypography.action)
                     .foregroundStyle(track.isFavorite ? Color("FavoriteColor") : Color("SecondaryText"))
                     .frame(width: 32, height: 32)
             }
@@ -302,13 +429,13 @@ private struct PlaylistTrackRow: View {
             .accessibilityHint("Ändert den Favoritenstatus dieses Songs.")
 
             Text(track.durationText)
-                .font(.caption.weight(.semibold))
+                .font(SonarexTypography.metadata)
                 .foregroundStyle(Color("SecondaryText"))
                 .accessibilityLabel("Dauer \(track.durationText)")
 
             Button(action: playAction) {
                 Image(systemName: "play.fill")
-                    .font(.caption.weight(.bold))
+                    .font(SonarexTypography.metadata)
                     .foregroundStyle(Color("InverseText"))
                     .frame(width: 30, height: 30)
                     .background(Color("FeedBlack").opacity(0.22), in: Circle())
@@ -316,10 +443,30 @@ private struct PlaylistTrackRow: View {
             .buttonStyle(.plain)
             .accessibilityLabel("\(track.title) abspielen")
             .accessibilityValue("\(track.artist), \(track.durationText)")
+
+            if isEditing, let removeAction {
+                Button(role: .destructive, action: removeAction) {
+                    Image(systemName: "trash")
+                        .font(SonarexTypography.metadata)
+                        .foregroundStyle(Color("InverseText"))
+                        .frame(width: 30, height: 30)
+                        .background(Color.red.opacity(0.9), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("\(track.title) aus Playlist entfernen")
+            }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .background(Color("GlassSurface"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            if let removeAction {
+                Button(role: .destructive, action: removeAction) {
+                    Label("Entfernen", systemImage: "trash")
+                }
+                .accessibilityLabel("\(track.title) aus Playlist entfernen")
+            }
+        }
     }
 
     private func toggleFavorite() {

@@ -57,7 +57,7 @@ struct SettingsView: View {
             AppIconHeaderMark()
 
             Text("Einstellungen")
-                .font(.largeTitle.weight(.bold))
+                .font(SonarexTypography.screenTitle)
                 .foregroundStyle(Color("PrimaryText"))
                 .lineLimit(1)
 
@@ -109,7 +109,7 @@ struct SettingsView: View {
 
                     Button(action: syncLibrary) {
                         Image(systemName: isSyncingLibrary ? "hourglass" : "arrow.triangle.2.circlepath")
-                            .font(.headline.weight(.semibold))
+                            .font(SonarexTypography.action)
                             .foregroundStyle(Color("InverseText"))
                             .frame(width: 40, height: 40)
                             .background(Color("SecondaryAccent"), in: Circle())
@@ -135,7 +135,7 @@ struct SettingsView: View {
                     premium.isPaywallPresented = true
                 } label: {
                     Image(systemName: premium.hasPremiumAccess ? "checkmark.seal.fill" : "cart.fill")
-                        .font(.headline.weight(.semibold))
+                        .font(SonarexTypography.action)
                         .foregroundStyle(Color("SecondaryAccent"))
                         .frame(width: 40, height: 40)
                 }
@@ -223,7 +223,7 @@ struct SettingsView: View {
             SettingsRow(title: "E-Mail", subtitle: email, systemImage: "envelope.fill", tint: Color("FeedOrange")) {
                 Button(action: openMailComposer) {
                     Image(systemName: "paperplane.fill")
-                        .font(.headline.weight(.semibold))
+                        .font(SonarexTypography.action)
                         .foregroundStyle(Color("SecondaryAccent"))
                         .frame(width: 40, height: 40)
                 }

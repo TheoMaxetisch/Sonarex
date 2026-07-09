@@ -12,13 +12,13 @@ struct CardView: View {
                         .fill(track.artworkGradient)
 
                     Image(systemName: track.artworkSymbol)
-                        .font(.system(size: 42, weight: .semibold))
+                        .font(SonarexTypography.artworkSymbol)
                         .foregroundStyle(Color("InverseText").opacity(0.9))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .accessibilityHidden(true)
 
                     Label(track.durationText, systemImage: "play.fill")
-                        .font(.caption2.weight(.bold))
+                        .font(SonarexTypography.metadata)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 5)
                         .foregroundStyle(Color("InverseText"))
@@ -27,23 +27,25 @@ struct CardView: View {
                         .accessibilityHidden(true)
                 }
                 .aspectRatio(1, contentMode: .fit)
+                .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(track.title)
-                        .font(.subheadline.weight(.semibold))
+                        .font(SonarexTypography.trackTitle)
                         .foregroundStyle(Color("PrimaryText"))
                         .lineLimit(1)
 
                     Text(track.artist)
-                        .font(.caption)
+                        .font(SonarexTypography.trackArtist)
                         .foregroundStyle(Color("SecondaryText"))
                         .lineLimit(1)
                 }
             }
-            .frame(width: 148)
+            .frame(width: 148, alignment: .leading)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(track.title) von \(track.artist) abspielen")
         .accessibilityValue("\(track.album.isEmpty ? "Unbekanntes Album" : track.album), Dauer \(track.durationText)")
         .accessibilityHint("Öffnet den Player und startet diesen Song.")

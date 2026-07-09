@@ -3,10 +3,15 @@ import SwiftData
 
 struct LibraryHomeView: View {
     @Environment(PlayerController.self) private var player
+    @Environment(PremiumAccessController.self) private var premium
+    @Environment(\.modelContext) private var modelContext
     @Query(sort: \Playlist.title) private var playlists: [Playlist]
     @Query(sort: \Track.title) private var tracks: [Track]
     @State private var selectedPlaylist: Playlist?
     @State private var isShowingFavoriteSongs = false
+    @State private var playlistPendingDeletion: Playlist?
+    @State private var isConfirmingPlaylistDeletion = false
+    @State private var errorMessage: String?
 
     private var displayTracks: [Track] {
         let realTracks = tracks.filter { $0.server?.isDemo != true }
@@ -56,7 +61,11 @@ struct LibraryHomeView: View {
                             },
                             onShowAll: {
                                 selectedPlaylist = playlist
-                            }
+                            },
+                            onDelete: playlist.isEditableByUser ? {
+                                playlistPendingDeletion = playlist
+                                isConfirmingPlaylistDeletion = true
+                            } : nil
                         )
                     }
                 }
@@ -69,6 +78,26 @@ struct LibraryHomeView: View {
             .navigationDestination(isPresented: $isShowingFavoriteSongs) {
                 FavoriteSongsDetailView()
             }
+            .confirmationDialog("Playlist löschen?", isPresented: $isConfirmingPlaylistDeletion, titleVisibility: .visible) {
+                Button("Playlist löschen", role: .destructive) {
+                    if let playlistPendingDeletion {
+                        delete(playlistPendingDeletion)
+                    }
+                }
+
+                Button("Abbrechen", role: .cancel) {
+                    playlistPendingDeletion = nil
+                }
+            } message: {
+                Text("Diese Playlist wird aus Sonarex und Navidrome gelöscht.")
+            }
+            .alert("Playlist konnte nicht gelöscht werden", isPresented: hasErrorMessage) {
+                Button("OK") {
+                    errorMessage = nil
+                }
+            } message: {
+                Text(errorMessage ?? "")
+            }
         }
     }
     
@@ -77,7 +106,7 @@ struct LibraryHomeView: View {
             AppIconHeaderMark()
 
             Text("Bibliothek")
-                .font(.largeTitle.weight(.bold))
+                .font(SonarexTypography.screenTitle)
                 .foregroundStyle(Color("PrimaryText"))
                 .lineLimit(1)
 
@@ -86,5 +115,38 @@ struct LibraryHomeView: View {
         .padding(.horizontal, 20)
         .padding(.top, 22)
         .padding(.bottom, 4)
+    }
+
+    private var hasErrorMessage: Binding<Bool> {
+        Binding(
+            get: { errorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    errorMessage = nil
+                }
+            }
+        )
+    }
+
+    private func delete(_ playlist: Playlist) {
+        guard premium.requirePremium(for: "Playlist löschen") else { return }
+
+        Task {
+            do {
+                try await NavidromePlaylistSyncService.delete(playlist)
+                if selectedPlaylist?.id == playlist.id {
+                    selectedPlaylist = nil
+                }
+                if var serverPlaylists = playlist.server?.playlists {
+                    serverPlaylists.removeAll { $0.id == playlist.id }
+                    playlist.server?.playlists = serverPlaylists
+                }
+                modelContext.delete(playlist)
+                try modelContext.save()
+                playlistPendingDeletion = nil
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
     }
 }

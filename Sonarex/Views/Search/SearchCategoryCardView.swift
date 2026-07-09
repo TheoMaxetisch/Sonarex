@@ -16,7 +16,7 @@ struct SearchCategoryCardView: View {
                     .fill(category.gradient)
 
                 Image(systemName: category.systemImage)
-                    .font(.system(size: 46, weight: .semibold))
+                    .font(.system(size: 34, weight: .semibold))
                     .foregroundStyle(Color("InverseText").opacity(0.22))
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                     .padding(14)
@@ -24,12 +24,12 @@ struct SearchCategoryCardView: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(category.title)
-                        .font(.title3.weight(.bold))
+                        .font(SonarexTypography.sectionTitle)
                         .foregroundStyle(Color("InverseText"))
                         .lineLimit(1)
 
                     Text(category.subtitle)
-                        .font(.caption.weight(.semibold))
+                        .font(SonarexTypography.metadata)
                         .foregroundStyle(Color("InverseText").opacity(0.78))
                         .lineLimit(2)
                 }
