@@ -1,7 +1,6 @@
 import Foundation
 import SwiftData
 
-/// Verbindungstabelle zwischen Playlist und Track mit stabiler Reihenfolge.
 @Model
 final class PlaylistEntry {
     var id: UUID = UUID()

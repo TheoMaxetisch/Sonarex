@@ -1,10 +1,8 @@
 import Foundation
 
-/// Laedt Such-/Browse-Metadaten, die nicht direkt im Bibliothekssync enthalten sind.
 @MainActor
 enum NavidromeSearchService {
     static func genres(server: ServerProfile, password: String) async throws -> [NavidromeGenre] {
-        // Genres werden live vom aktiven Server gelesen und nicht dauerhaft gespeichert.
         guard let baseURL = server.validatedBaseURL else {
             throw SearchError.invalidServerURL
         }
@@ -48,7 +46,6 @@ struct NavidromeGenre: Decodable, Identifiable {
     }
 
     init(from decoder: any Decoder) throws {
-        // Navidrome kann Zaehler auslassen; fehlende Werte werden fuer stabile UI auf 0 gesetzt.
         let container = try decoder.container(keyedBy: CodingKeys.self)
         songCount = try container.decodeIfPresent(Int.self, forKey: .songCount) ?? 0
         albumCount = try container.decodeIfPresent(Int.self, forKey: .albumCount) ?? 0

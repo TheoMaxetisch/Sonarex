@@ -1,10 +1,8 @@
 import Foundation
 
-/// Spiegelt lokale Favoriten-Aenderungen an Navidrome.
 @MainActor
 enum NavidromeFavoriteSyncService {
     static func setFavorite(_ isFavorite: Bool, for track: Track) async throws {
-        // Star/Unstar ist serverseitig getrennt, lokal wird nur ein Boolean verwendet.
         guard let server = track.server else {
             throw FavoriteSyncError.missingServer
         }
@@ -16,7 +14,6 @@ enum NavidromeFavoriteSyncService {
         }
 
         let endpoint = isFavorite ? "star" : "unstar"
-        // Authentifizierung erfolgt wie bei allen Subsonic-Requests ueber den gemeinsamen RequestBuilder.
         let requestBuilder = SubsonicRequestBuilder(
             baseURL: baseURL,
             username: server.username,

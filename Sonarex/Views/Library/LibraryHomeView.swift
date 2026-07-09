@@ -1,7 +1,6 @@
 import SwiftUI
 import SwiftData
 
-/// Bibliotheksuebersicht fuer Favoriten und gespeicherte/eigene Playlists.
 struct LibraryHomeView: View {
     @Environment(PlayerController.self) private var player
     @Environment(PremiumAccessController.self) private var premium
@@ -15,7 +14,6 @@ struct LibraryHomeView: View {
     @State private var errorMessage: String?
 
     private var displayTracks: [Track] {
-        // Demo-Daten werden ausgeblendet, sobald echte Servertracks existieren.
         let realTracks = tracks.filter { $0.server?.isDemo != true }
         return realTracks.isEmpty ? tracks : realTracks
     }
@@ -26,7 +24,6 @@ struct LibraryHomeView: View {
     }
 
     private var savedPlaylists: [Playlist] {
-        // Nur bewusst gespeicherte oder selbst erstellte Playlists erscheinen in der Bibliothek.
         displayPlaylists.filter(\.isOwnedByUser)
     }
 
@@ -41,7 +38,6 @@ struct LibraryHomeView: View {
                     header
 
                     AlbumRowView(
-                        // Favoriten werden als virtuelle Playlist dargestellt.
                         title: "Favourite Songs",
                         subtitle: "\(favoriteTracks.count) Songs",
                         tracks: Array(favoriteTracks.prefix(4)),
@@ -67,7 +63,6 @@ struct LibraryHomeView: View {
                                 selectedPlaylist = playlist
                             },
                             onDelete: playlist.isEditableByUser ? {
-                                // Nur editierbare Navidrome-Playlists erhalten ein Loeschmenue.
                                 playlistPendingDeletion = playlist
                                 isConfirmingPlaylistDeletion = true
                             } : nil
@@ -83,7 +78,6 @@ struct LibraryHomeView: View {
             .navigationDestination(isPresented: $isShowingFavoriteSongs) {
                 FavoriteSongsDetailView()
             }
-            // Destruktives Playlist-Loeschen wird bestaetigt und erst dann synchronisiert.
             .confirmationDialog("Playlist löschen?", isPresented: $isConfirmingPlaylistDeletion, titleVisibility: .visible) {
                 Button("Playlist löschen", role: .destructive) {
                     if let playlistPendingDeletion {
@@ -139,7 +133,6 @@ struct LibraryHomeView: View {
 
         Task {
             do {
-                // Server und lokaler ModelContext werden gemeinsam aktualisiert.
                 try await NavidromePlaylistSyncService.delete(playlist)
                 if selectedPlaylist?.id == playlist.id {
                     selectedPlaylist = nil

@@ -1,6 +1,5 @@
 import XCTest
 
-/// Launch-Test mit Screenshot-Anhang fuer schnelle Sichtpruefung nach dem Start.
 final class SonarexUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
@@ -13,7 +12,6 @@ final class SonarexUITestsLaunchTests: XCTestCase {
 
     @MainActor
     func testLaunch() throws {
-        // Der Screenshot bleibt im Testbericht erhalten und hilft bei UI-/Startproblemen.
         let app = XCUIApplication()
         app.launch()
 

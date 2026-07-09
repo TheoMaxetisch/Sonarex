@@ -3,11 +3,9 @@ import SwiftData
 import Testing
 @testable import Sonarex
 
-// Die Model-Tests pruefen Kernlogik ohne UI: Persistenz, Formatierung, Auth-URLs und Player-Zustand.
 @MainActor
 struct MusicModelTests {
     private func makeContainer() throws -> ModelContainer {
-        // In-Memory-Container haelt Tests schnell und verhindert Schreibzugriffe auf echte App-Daten.
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         return try ModelContainer(
             for: ServerProfile.self, Track.self, Playlist.self, PlaylistEntry.self,
@@ -16,7 +14,6 @@ struct MusicModelTests {
     }
 
     @Test func serverURLValidationAcceptsHTTPAndHTTPSOnly() {
-        // Validierung verhindert, dass unbrauchbare URLs in Netzwerkrequests gelangen.
         let validServer = ServerProfile(name: "Home", baseURL: "https://music.example.test")
         let invalidServer = ServerProfile(name: "Broken", baseURL: "ftp://music.example.test")
         let incompleteServer = ServerProfile(name: "Incomplete", baseURL: "music.example.test")
@@ -33,7 +30,6 @@ struct MusicModelTests {
     }
 
     @Test func playlistOrdersTracksByEntryPosition() throws {
-        // Reihenfolge ist fachlich wichtig, weil Navidrome beim Entfernen mit Playlist-Indizes arbeitet.
         let container = try makeContainer()
         let context = container.mainContext
         let playlist = Playlist(remoteID: "playlist-1", title: "Ordered")
@@ -55,7 +51,6 @@ struct MusicModelTests {
     }
 
     @Test func playlistRelationshipDeletesEntriesWhenPlaylistIsDeleted() throws {
-        // Prueft die SwiftData-Cascade-Regel fuer PlaylistEntry.
         let container = try makeContainer()
         let context = container.mainContext
         let playlist = Playlist(remoteID: "playlist-1", title: "Temporary")
@@ -80,7 +75,6 @@ struct MusicModelTests {
 @MainActor
 struct DemoMusicSeederTests {
     private func makeContainer() throws -> ModelContainer {
-        // Demo-Seeding wird isoliert getestet, damit der echte Simulatorzustand keine Rolle spielt.
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         return try ModelContainer(
             for: ServerProfile.self, Track.self, Playlist.self, PlaylistEntry.self,
@@ -89,7 +83,6 @@ struct DemoMusicSeederTests {
     }
 
     @Test func seedCreatesDemoLibraryOnlyWhenStoreIsEmpty() throws {
-        // Mehrfacher Start der App darf keine doppelten Demo-Daten erzeugen.
         let container = try makeContainer()
         let context = container.mainContext
 
@@ -107,7 +100,6 @@ struct DemoMusicSeederTests {
     }
 
     @Test func seedMarksExistingGoldenHourServerAsDemo() throws {
-        // Migration fuer aeltere Installationen mit bereits vorhandenen Demo-Daten.
         let container = try makeContainer()
         let context = container.mainContext
         let server = ServerProfile(name: "Old Demo", baseURL: "https://navidrome.wedel.dev", isActive: true)
@@ -134,7 +126,6 @@ struct DemoMusicSeederTests {
 @MainActor
 struct PremiumAccessControllerTests {
     @Test func trialStartsOnFirstLaunchAndGrantsAccess() {
-        // UserDefaults-Suite wird isoliert, damit der Test reproduzierbar bleibt.
         let defaults = isolatedDefaults()
         let premium = PremiumAccessController(defaults: defaults)
 
@@ -145,7 +136,6 @@ struct PremiumAccessControllerTests {
     }
 
     @Test func expiredTrialRequiresPurchase() {
-        // Abgelaufene Testphase muss Premium-Aktionen blockieren und die Paywall oeffnen.
         let defaults = isolatedDefaults()
         let expiredStart = Calendar.current.date(byAdding: .day, value: -15, to: .now)!
         defaults.set(expiredStart, forKey: "premiumTrialStartedAt")
@@ -168,7 +158,6 @@ struct PremiumAccessControllerTests {
 
 struct SubsonicRequestBuilderTests {
     @Test func urlContainsAuthenticationAndEndpointQueryItems() throws {
-        // Der RequestBuilder kombiniert Authentifizierung und fachliche Query-Parameter.
         let builder = SubsonicRequestBuilder(
             baseURL: try #require(URL(string: "https://music.example.test")),
             username: "michi",
@@ -200,7 +189,6 @@ struct SubsonicRequestBuilderTests {
     }
 
     @Test func urlAddsJSONFormatByDefault() throws {
-        // JSON ist das Standardformat fuer alle normalen API-Antworten.
         let builder = SubsonicRequestBuilder(
             baseURL: try #require(URL(string: "https://music.example.test")),
             username: "michi",
@@ -217,7 +205,6 @@ struct SubsonicRequestBuilderTests {
 
 struct SecurityTests {
     @Test func serverURLValidationRejectsUnsafeOrIncompleteURLs() {
-        // Sicherheitsnaher Test fuer erlaubte URL-Schemata und vollstaendige Hosts.
         let validHTTPS = ServerProfile(name: "HTTPS", baseURL: "https://music.example.test")
         let validHTTP = ServerProfile(name: "HTTP", baseURL: "http://localhost:4533")
         let ftpServer = ServerProfile(name: "FTP", baseURL: "ftp://music.example.test")
@@ -232,7 +219,6 @@ struct SecurityTests {
     }
 
     @Test func subsonicAuthenticationURLDoesNotExposePassword() throws {
-        // Das Klartextpasswort darf weder als `p`-Parameter noch im String der URL auftauchen.
         let builder = SubsonicRequestBuilder(
             baseURL: try #require(URL(string: "https://music.example.test")),
             username: "michi",
@@ -256,14 +242,12 @@ struct SecurityTests {
 @MainActor
 struct PlayerControllerTests {
     @Test func repeatModeCyclesThroughAllStates() {
-        // Die UI schaltet Repeat ueber diese Reihenfolge weiter.
         #expect(RepeatMode.off.next == .all)
         #expect(RepeatMode.all.next == .one)
         #expect(RepeatMode.one.next == .off)
     }
 
     @Test func progressIsClampedBetweenZeroAndOne() {
-        // Progress muss fuer Slider und Mini-Player immer im Bereich 0...1 bleiben.
         let player = PlayerController()
         let track = Track(remoteID: "track-1", title: "Track", artist: "Artist", duration: 100)
 
@@ -276,7 +260,6 @@ struct PlayerControllerTests {
     }
 
     @Test func stopClearsPlaybackState() {
-        // Stop muss sichtbaren UI-Zustand, Queue und Now-Playing-Status zuruecksetzen.
         let player = PlayerController()
         let track = Track(remoteID: "track-1", title: "Track", artist: "Artist", duration: 100)
 

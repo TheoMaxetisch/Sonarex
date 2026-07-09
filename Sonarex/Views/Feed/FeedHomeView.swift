@@ -1,7 +1,6 @@
 import SwiftUI
 import SwiftData
 
-/// Startseite mit taeglichem Featured Track und Playlist-Reihen.
 struct FeedHomeView: View {
     @Environment(PlayerController.self) private var player
     @Query(sort: \Track.title) private var tracks: [Track]
@@ -19,7 +18,6 @@ struct FeedHomeView: View {
     }
 
     private var featuredTrack: Track? {
-        // Wenn der gespeicherte Featured Track nicht mehr existiert, wird der erste verfuegbare Track genutzt.
         displayTracks.first { $0.remoteID == featuredTrackID } ?? displayTracks.first
     }
 
@@ -73,7 +71,6 @@ struct FeedHomeView: View {
     }
 
     private func refreshFeaturedTrackIfNeeded(force: Bool = false) {
-        // Der Featured Track wird pro Tag stabil gehalten und nur bei Datenwechsel erneuert.
         guard !displayTracks.isEmpty else {
             featuredTrackID = ""
             featuredTrackDate = ""
@@ -90,7 +87,6 @@ struct FeedHomeView: View {
     }
 
     private func preferredItems<Item>(from items: [Item]) -> [Item] where Item: AnyObject {
-        // Echte Serverdaten haben Vorrang; Demo-Daten dienen nur als Fallback fuer leere Installationen.
         let realItems = items.filter { item in
             if let track = item as? Track {
                 return track.server?.isDemo != true

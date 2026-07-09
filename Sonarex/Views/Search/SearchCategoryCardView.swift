@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Visuelle Genre-Kachel; ein Tap uebernimmt den Kategorienamen in die Suche.
 struct SearchCategoryCardView: View {
     let category: SearchCategory
     let action: () -> Void
@@ -13,12 +12,10 @@ struct SearchCategoryCardView: View {
     var body: some View {
         Button(action: action) {
             ZStack(alignment: .bottomLeading) {
-                // Der Gradient macht Kategorien unterscheidbar, ohne externe Bildassets zu benoetigen.
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .fill(category.gradient)
 
                 Image(systemName: category.systemImage)
-                    // Grosses, blasses Symbol dient nur als Orientierung und wird von VoiceOver ignoriert.
                     .font(.system(size: 34, weight: .semibold))
                     .foregroundStyle(Color("InverseText").opacity(0.22))
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
@@ -26,7 +23,6 @@ struct SearchCategoryCardView: View {
                     .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 6) {
-                    // Titel und Songanzahl bleiben unten, damit sie auf allen Karten gleich scanbar sind.
                     Text(category.title)
                         .font(SonarexTypography.sectionTitle)
                         .foregroundStyle(Color("InverseText"))

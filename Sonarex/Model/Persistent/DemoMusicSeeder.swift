@@ -1,16 +1,13 @@
 import Foundation
 import SwiftData
 
-/// Erstellt lokale Demo-Daten, damit die App ohne Serverzugang sofort bewertbar ist.
 @MainActor
 enum DemoMusicSeeder {
     static func seedIfNeeded(in context: ModelContext) throws {
-        // Alte Demo-Installationen werden markiert, bevor entschieden wird, ob neue Daten noetig sind.
         try markExistingDemoProfiles(in: context)
 
         var descriptor = FetchDescriptor<ServerProfile>()
         descriptor.fetchLimit = 1
-        // Sobald irgendein Serverprofil existiert, wird nicht erneut geseedet.
         guard try context.fetch(descriptor).isEmpty else { return }
 
         let server = ServerProfile(
@@ -21,7 +18,6 @@ enum DemoMusicSeeder {
         )
 
         let tracks = [
-            // Die Demo-Tracks sind bewusst lokal und enthalten keine echten Audiodateien.
             Track(remoteID: "golden-hour-static", title: "Golden Hour Static", artist: "Mara Vale", album: "Late Signal", duration: 231, artworkStyle: 1, artworkSymbol: "waveform.path.ecg", server: server),
             Track(remoteID: "neon-harbor", title: "Neon Harbor", artist: "Toma Reed", album: "City Windows", duration: 198, artworkStyle: 0, artworkSymbol: "waveform", server: server),
             Track(remoteID: "north-line", title: "North Line", artist: "Mara Vale", album: "Late Signal", duration: 242, artworkStyle: 2, artworkSymbol: "music.note", server: server),
@@ -35,7 +31,6 @@ enum DemoMusicSeeder {
         ]
 
         let playlists = [
-            // Playlists demonstrieren die gleiche UI-Struktur wie echte Navidrome-Alben/Playlists.
             makePlaylist(remoteID: "late-night-coding", title: "Late Night Coding", subtitle: "Fokus, Bass und ruhige Synths", description: "Konzentrierte Tracks fuer lange Sessions, wenn alles etwas leiser und klarer werden soll.", style: 7, symbol: "keyboard", tracks: [tracks[7], tracks[8], tracks[9], tracks[5]], server: server),
             makePlaylist(remoteID: "morning-pulse", title: "Morning Pulse", subtitle: "Helle Tracks fuer den Start", description: "Ein kompakter Mix aus warmen Hooks, schnellen Drums und kleinen Energie-Schueben.", style: 4, symbol: "sun.max.fill", tracks: [tracks[0], tracks[4], tracks[2], tracks[6]], server: server),
             makePlaylist(remoteID: "city-windows", title: "City Windows", subtitle: "Elektronische Pop-Momente", description: "Songs fuer Bewegung: unterwegs, im Zug oder beim Blick aus grossen Fenstern.", style: 0, symbol: "building.2.fill", tracks: [tracks[1], tracks[3], tracks[4], tracks[5]], server: server)
@@ -48,7 +43,6 @@ enum DemoMusicSeeder {
     }
 
     private static func markExistingDemoProfiles(in context: ModelContext) throws {
-        // Migration fuer Installationen, die Demo-Daten vor dem isDemo-Flag bekommen haben.
         let servers = try context.fetch(FetchDescriptor<ServerProfile>())
         var didUpdate = false
 
@@ -74,7 +68,6 @@ enum DemoMusicSeeder {
         tracks: [Track],
         server: ServerProfile
     ) -> Playlist {
-        // PlaylistEntry speichert die Reihenfolge, statt nur Track-Arrays zu verwenden.
         let playlist = Playlist(remoteID: remoteID, title: title, subtitle: subtitle, playlistDescription: description, artworkStyle: style, artworkSymbol: symbol, server: server)
         playlist.entries = tracks.enumerated().map { index, track in
             PlaylistEntry(position: index, playlist: playlist, track: track)

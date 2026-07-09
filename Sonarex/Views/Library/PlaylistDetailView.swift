@@ -1,7 +1,6 @@
 import SwiftUI
 import SwiftData
 
-/// Detailansicht fuer Alben und Navidrome-Playlists inklusive Bearbeitung eigener Playlists.
 struct PlaylistDetailView: View {
     @Environment(PlayerController.self) private var player
     @Environment(PremiumAccessController.self) private var premium
@@ -17,7 +16,6 @@ struct PlaylistDetailView: View {
             VStack(alignment: .leading, spacing: 24) {
                 header
 
-                // Die PlaylistEntry-Reihenfolge ist verbindlich fuer Anzeige und Entfernen per Navidrome-Index.
                 VStack(spacing: 10) {
                     ForEach(Array(playlist.orderedEntries.enumerated()), id: \.element.id) { index, entry in
                         if let track = entry.track {
@@ -40,7 +38,6 @@ struct PlaylistDetailView: View {
         .background(Color("AppBackground"))
         .navigationTitle(playlist.title)
         .navigationBarTitleDisplayMode(.inline)
-        // Loeschen ist destruktiv und wird deshalb vor dem Server-Request bestaetigt.
         .confirmationDialog("Playlist löschen?", isPresented: $isConfirmingPlaylistDeletion, titleVisibility: .visible) {
             Button("Playlist löschen", role: .destructive) {
                 deletePlaylist()
@@ -62,7 +59,6 @@ struct PlaylistDetailView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 18) {
-            // Generiertes Artwork ersetzt fehlende echte Cover und bleibt konsistent mit Karten/Player.
             ZStack {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .fill(playlist.artworkGradient)
@@ -91,7 +87,6 @@ struct PlaylistDetailView: View {
             }
 
             if isEditingPlaylist {
-                // Sichtbarer Modus-Hinweis verhindert versehentliches Entfernen von Songs.
                 Label("Bearbeiten aktiv", systemImage: "pencil")
                     .font(SonarexTypography.metadata)
                     .foregroundStyle(Color("SecondaryAccent"))
@@ -126,7 +121,6 @@ struct PlaylistDetailView: View {
                 .accessibilityLabel(playlist.isOwnedByUser ? "Playlist aus Bibliothek entfernen" : "Playlist in Bibliothek speichern")
 
                 if playlist.isEditableByUser {
-                    // Nur selbst erstellte Navidrome-Playlists duerfen bearbeitet oder geloescht werden.
                     Menu {
                         Button {
                             isEditingPlaylist.toggle()
@@ -172,12 +166,10 @@ struct PlaylistDetailView: View {
 
         Task {
             do {
-                // Erst Server aktualisieren, danach lokalen SwiftData-Stand nachziehen.
                 try await NavidromePlaylistSyncService.remove(entry, from: playlist)
                 var entries = playlist.entries ?? []
                 entries.removeAll { $0.id == entry.id }
                 playlist.entries = entries
-                // Nach dem Entfernen werden Positionen neu vergeben, damit weitere Syncs korrekt bleiben.
                 for (position, remainingEntry) in playlist.orderedEntries.enumerated() {
                     remainingEntry.position = position
                 }
@@ -195,7 +187,6 @@ struct PlaylistDetailView: View {
 
         Task {
             do {
-                // Remote-Playlist und lokale SwiftData-Kopie werden gemeinsam entfernt.
                 try await NavidromePlaylistSyncService.delete(playlist)
                 if var serverPlaylists = playlist.server?.playlists {
                     serverPlaylists.removeAll { $0.id == playlist.id }
@@ -211,13 +202,11 @@ struct PlaylistDetailView: View {
     }
 }
 
-/// Spezialansicht fuer alle lokal als Favorit markierten Songs.
 struct FavoriteSongsDetailView: View {
     @Environment(PlayerController.self) private var player
     @Query(sort: \Track.title) private var tracks: [Track]
 
     private var displayTracks: [Track] {
-        // Demo-Daten werden nur genutzt, solange keine echten Serverdaten vorhanden sind.
         let realTracks = tracks.filter { $0.server?.isDemo != true }
         return realTracks.isEmpty ? tracks : realTracks
     }
@@ -291,7 +280,6 @@ struct FavoriteSongsDetailView: View {
     }
 }
 
-/// Wiederverwendbare Detailansicht fuer Such- oder Genre-Ergebnisse.
 struct TrackCollectionDetailView: View {
     @Environment(PlayerController.self) private var player
     let title: String
@@ -393,7 +381,6 @@ private struct PlaylistTrackRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Nummer, Mini-Artwork und Metadaten bilden eine kompakte, scannbare Track-Zeile.
             Text("\(number)")
                 .font(SonarexTypography.metadata)
                 .foregroundStyle(Color("SecondaryText"))
@@ -458,7 +445,6 @@ private struct PlaylistTrackRow: View {
             .accessibilityValue("\(track.artist), \(track.durationText)")
 
             if isEditing, let removeAction {
-                // Der sichtbare Trash-Button erscheint nur im Bearbeitungsmodus.
                 Button(role: .destructive, action: removeAction) {
                     Image(systemName: "trash")
                         .font(SonarexTypography.metadata)
@@ -474,7 +460,6 @@ private struct PlaylistTrackRow: View {
         .padding(.vertical, 10)
         .background(Color("GlassSurface"), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-            // Swipe-to-delete ist die schnelle iOS-typische Alternative zum sichtbaren Button.
             if let removeAction {
                 Button(role: .destructive, action: removeAction) {
                     Label("Entfernen", systemImage: "trash")
@@ -493,7 +478,6 @@ private struct PlaylistTrackRow: View {
                 try await NavidromeFavoriteSyncService.setFavorite(nextValue, for: track)
             } catch {
                 await MainActor.run {
-                    // Bei Sync-Fehlern wird die optimistische UI-Aenderung zurueckgenommen.
                     track.isFavorite.toggle()
                 }
             }

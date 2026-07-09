@@ -1,6 +1,5 @@
 import XCTest
 
-/// UI-Smoke-Tests fuer die wichtigsten Navigations- und Eingabepfade.
 final class SonarexUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -8,7 +7,6 @@ final class SonarexUITests: XCTestCase {
 
     @MainActor
     func testMainTabsAreReachable() throws {
-        // Stellt sicher, dass alle Hauptbereiche ueber die Tabbar erreichbar bleiben.
         let app = XCUIApplication()
         app.launch()
 
@@ -32,7 +30,6 @@ final class SonarexUITests: XCTestCase {
 
     @MainActor
     func testSearchFlowAcceptsInputAndCanBeCleared() throws {
-        // Prueft den zentralen Suchflow inklusive Loeschen des Suchtexts.
         let app = XCUIApplication()
         app.launch()
 
@@ -55,7 +52,6 @@ final class SonarexUITests: XCTestCase {
 
     @MainActor
     func testSettingsPremiumFlowOpensPaywall() throws {
-        // Der Premium-Einstieg ist wichtig, weil mehrere Funktionen darueber begrenzt werden.
         let app = XCUIApplication()
         app.launch()
 

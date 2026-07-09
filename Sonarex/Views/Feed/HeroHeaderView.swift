@@ -1,17 +1,14 @@
 import SwiftUI
 
-/// Grosser Einstieg im Feed mit taeglichem Featured Track und direkter Play-Aktion.
 struct HeroHeaderView: View {
     let featuredTrack: Track
     let playAction: () -> Void
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            // Das Hero-Artwork ist eine generierte Flaeche aus Track-Farben, nicht von Netzwerkbildern abhaengig.
             RoundedRectangle(cornerRadius: 45)
                 .fill(featuredTrack.heroGradient)
                 .overlay {
-                    // Dunkler Verlauf erhoeht den Textkontrast im unteren Bereich.
                     LinearGradient(
                         colors: [
                             Color("FeedBlack").opacity(0.38),
@@ -43,7 +40,6 @@ struct HeroHeaderView: View {
                 }
 
                 ViewThatFits(in: .horizontal) {
-                    // Auf schmalen Breiten stapeln sich die Aktionen automatisch.
                     HStack(spacing: 12) {
                         heroPlayButton
                         heroAddButton
@@ -60,7 +56,6 @@ struct HeroHeaderView: View {
         }
         .frame(height: 360)
         .overlay(alignment: .topTrailing) {
-            // Das grosse Symbol ist rein dekorativ und deshalb fuer Accessibility ausgeblendet.
             Image(systemName: featuredTrack.artworkSymbol)
                 .font(.system(size: 64, weight: .bold))
                 .foregroundStyle(Color("InverseText").opacity(0.22))
@@ -72,7 +67,6 @@ struct HeroHeaderView: View {
     }
 
     private var heroPlayButton: some View {
-        // Primaere Aktion startet den Track sofort und oeffnet danach den Player.
         Button(action: playAction) {
             Label("Abspielen", systemImage: "play.fill")
                 .font(SonarexTypography.action)
@@ -88,7 +82,6 @@ struct HeroHeaderView: View {
     }
 
     private var heroAddButton: some View {
-        // Platzhalter fuer spaetere Bibliotheksaktion; aktuell bewusst nicht funktional.
         Button {
         } label: {
             Image(systemName: "plus")

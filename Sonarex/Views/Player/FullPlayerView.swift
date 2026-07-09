@@ -1,7 +1,6 @@
 import SwiftUI
 import SwiftData
 
-/// Vollbildplayer mit Wiedergabe, Queue, Favoriten und Playlist-Aktionen.
 struct FullPlayerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -12,7 +11,6 @@ struct FullPlayerView: View {
 
     var body: some View {
         Group {
-            // Ohne aktiven Track zeigt der Player einen stabilen Leerzustand statt leerer Controls.
             if let track = player.currentTrack {
                 playerContent(track)
             } else {
@@ -33,7 +31,6 @@ struct FullPlayerView: View {
 
     private func playerContent(_ track: Track) -> some View {
         ZStack {
-            // Die Hintergrundfarbe orientiert sich am Artwork des aktuellen Songs.
             PlayerBackground(accent: track.artworkColors.first ?? Color("SecondaryAccent"))
 
             ScrollView(.vertical, showsIndicators: false) {
@@ -57,7 +54,6 @@ struct FullPlayerView: View {
 
     private func header(_ track: Track) -> some View {
         HStack {
-            // Schliessen blendet nur den Vollbildplayer aus; die Wiedergabe laeuft weiter.
             Button {
                 player.isPlayerPresented = false
                 dismiss()
@@ -90,7 +86,6 @@ struct FullPlayerView: View {
     }
 
     private func artwork(_ track: Track) -> some View {
-        // Das grosse Artwork ist generiert, weil Navidrome-Cover nicht dauerhaft lokal gespeichert werden.
         ZStack {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(track.artworkGradient)
@@ -117,7 +112,6 @@ struct FullPlayerView: View {
 
     private func trackInfo(_ track: Track) -> some View {
         HStack(spacing: 16) {
-            // Track-Metadaten und Premium-Aktionen bleiben in einer kompakten Kopfzeile.
             VStack(alignment: .leading, spacing: 6) {
                 Text(track.title).font(SonarexTypography.sheetTitle).lineLimit(2)
                 Text(track.artist).font(SonarexTypography.secondary).foregroundStyle(Color("SecondaryText"))
@@ -154,7 +148,6 @@ struct FullPlayerView: View {
 
     private func progress(_ track: Track) -> some View {
         VStack(spacing: 8) {
-            // Slider schreibt direkt in den PlayerController und aktualisiert AVPlayer/NowPlaying.
             Slider(
                 value: Binding(
                     get: { player.progress },
@@ -178,7 +171,6 @@ struct FullPlayerView: View {
     @ViewBuilder
     private var playbackError: some View {
         if let message = player.playbackError {
-            // Playback-Fehler werden inline gezeigt, damit die App nicht in der Konsole debuggt werden muss.
             Label(message, systemImage: "exclamationmark.triangle.fill")
                 .font(SonarexTypography.metadata)
                 .foregroundStyle(Color.red)
@@ -191,7 +183,6 @@ struct FullPlayerView: View {
 
     private var transportControls: some View {
         HStack(spacing: 30) {
-            // Die Transportleiste spiegelt zentrale PlayerController-Aktionen.
             Button { player.isShuffleEnabled.toggle() } label: {
                 Image(systemName: "shuffle")
                     .foregroundStyle(player.isShuffleEnabled ? Color("SecondaryAccent") : Color("InverseText").opacity(0.72))
@@ -228,7 +219,6 @@ struct FullPlayerView: View {
 
     private var volumeControl: some View {
         HStack(spacing: 14) {
-            // Lautstaerke wird lokal am AVPlayer gesetzt, nicht als Systemlautstaerke.
             Image(systemName: "speaker.fill")
                 .accessibilityHidden(true)
             Slider(
@@ -252,7 +242,6 @@ struct FullPlayerView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Als Nächstes").font(SonarexTypography.sectionTitle)
             VStack(spacing: 0) {
-                // Die sichtbare Queue zeigt nur echte Folgeelemente nach dem aktuellen Index.
                 if upcomingTracks.isEmpty {
                     Label("Danach startet der Mix", systemImage: "sparkles")
                         .font(SonarexTypography.action)
@@ -277,7 +266,6 @@ struct FullPlayerView: View {
     private var continuationPreview: some View {
         let tracks = player.continuationPreviewTracks
         if !tracks.isEmpty {
-            // Continuation Preview zeigt automatisch vorgeschlagene Folgetitel ausserhalb der Queue.
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
                     Text("Weiter im Mix").font(SonarexTypography.sectionTitle)
@@ -330,7 +318,6 @@ struct FullPlayerView: View {
     }
 
     private func editablePlaylists(for track: Track) -> [Playlist] {
-        // Songs koennen nur in eigene Playlists desselben Servers eingefuegt werden.
         guard let serverID = track.server?.id else { return [] }
         return playlists.filter { playlist in
             playlist.isEditableByUser && playlist.server?.id == serverID
@@ -338,7 +325,6 @@ struct FullPlayerView: View {
     }
 
     private func createPlaylist(named name: String, with track: Track) async throws {
-        // Erst Navidrome-Playlist erstellen, dann lokale SwiftData-Repraesentation speichern.
         let remotePlaylist = try await NavidromePlaylistSyncService.createPlaylist(named: name, containing: track)
         let playlist = Playlist(
             remoteID: remotePlaylist.id,
@@ -365,7 +351,6 @@ struct FullPlayerView: View {
     }
 
     private func addTrack(_ track: Track, to playlist: Playlist) async throws {
-        // Doppelte Songs in derselben Playlist werden lokal verhindert.
         guard !playlist.tracks.contains(where: { $0.remoteID == track.remoteID }) else { return }
         try await NavidromePlaylistSyncService.add(track, to: playlist)
 
@@ -388,7 +373,6 @@ struct FullPlayerView: View {
                 try await NavidromeFavoriteSyncService.setFavorite(nextValue, for: track)
             } catch {
                 await MainActor.run {
-                    // Optimistische Aenderung zuruecksetzen, falls Navidrome den Request ablehnt.
                     track.isFavorite.toggle()
                 }
             }
@@ -396,7 +380,6 @@ struct FullPlayerView: View {
     }
 }
 
-/// Sheet zum Erstellen eigener Playlists oder Hinzufuegen zu bestehenden eigenen Playlists.
 private struct AddToPlaylistSheet: View {
     @Environment(\.dismiss) private var dismiss
     let track: Track
@@ -490,7 +473,6 @@ private struct AddToPlaylistSheet: View {
     }
 
     private func perform(_ operation: () async throws -> Void) async {
-        // Gemeinsamer Fehlerpfad fuer Erstellen und Hinzufuegen.
         statusMessage = nil
         isWorking = true
         do {
@@ -506,7 +488,6 @@ private struct AddToPlaylistSheet: View {
 private struct PlayerBackground: View {
     let accent: Color
     var body: some View {
-        // Mehrstufiger Verlauf erzeugt Kontrast hinter Controls und Texten.
         LinearGradient(colors: [accent.opacity(0.72), Color("PlayerBackgroundMiddle"), Color("PlayerBackgroundBottom")], startPoint: .top, endPoint: .bottom)
             .ignoresSafeArea()
             .overlay { Color("FeedBlack").opacity(0.18).ignoresSafeArea() }
@@ -536,7 +517,6 @@ private struct QueueRow: View {
     let action: () -> Void
     var body: some View {
         Button(action: action) {
-            // Queue-Zeilen sind komplett antippbar und haben ein kombiniertes Accessibility-Label.
             HStack(spacing: 12) {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(track.artworkGradient)

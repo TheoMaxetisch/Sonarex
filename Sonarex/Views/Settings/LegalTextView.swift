@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Zeigt gebuendelte Rechtstexte aus dem App-Bundle an.
 struct LegalTextView: View {
     let title: String
     let resource: String
@@ -22,7 +21,6 @@ struct LegalTextView: View {
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            // Text wird einmalig nachgeladen, damit grosse Ressourcen nicht beim Init gelesen werden.
             guard !didLoadText else { return }
             text = loadResource(resource) ?? ""
             didLoadText = true
@@ -53,7 +51,6 @@ struct LegalTextView: View {
 
     @ViewBuilder
     private var content: some View {
-        // Fehlende Ressourcen werden sichtbar gemacht, statt still eine leere Seite zu zeigen.
         if text.isEmpty {
             emptyState
         } else {
@@ -62,7 +59,6 @@ struct LegalTextView: View {
     }
 
     private var legalBody: some View {
-        // Textauswahl hilft beim Pruefen/Kopieren einzelner Passagen.
         Text(text)
             .font(SonarexSettingsTypography.body)
             .lineSpacing(5)
@@ -129,7 +125,6 @@ struct LegalTextView: View {
     }
 
     private func loadResource(_ name: String) -> String? {
-        // Rechtstexte liegen als TXT-Dateien im Bundle und bleiben damit offline verfuegbar.
         guard let url = Bundle.main.url(forResource: name, withExtension: "txt") else {
             return nil
         }

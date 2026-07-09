@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Kompakter Player am unteren Bildschirmrand fuer schnellen Zugriff auf laufende Wiedergabe.
 struct MiniPlayerView: View {
     let track: Track
     let isPlaying: Bool
@@ -12,7 +11,6 @@ struct MiniPlayerView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 13) {
-                // Der linke Bereich oeffnet den Vollbildplayer, Controls bleiben separat bedienbar.
                 Button(action: openFullPlayer) {
                     HStack(spacing: 13) {
                         artwork
@@ -65,7 +63,6 @@ struct MiniPlayerView: View {
 
             progressBar
         }
-        // Material plus Farbtint hebt den Player vom Feed ab, ohne den Inhalt komplett zu verdecken.
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .background(containerTint, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
@@ -101,7 +98,6 @@ struct MiniPlayerView: View {
 
                 Rectangle()
                     .fill(accentColor)
-                    // Clamp schuetzt vor Layoutfehlern bei negativen oder zu grossen Progresswerten.
                     .frame(width: max(0, min(progress, 1)) * proxy.size.width)
             }
         }

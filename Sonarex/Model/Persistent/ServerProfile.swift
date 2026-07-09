@@ -1,7 +1,6 @@
 import Foundation
 import SwiftData
 
-/// Lokales Serverprofil fuer Navidrome/Subsonic inklusive Beziehungen zu importierten Daten.
 @Model
 final class ServerProfile {
     var id: UUID = UUID()
@@ -37,7 +36,6 @@ final class ServerProfile {
     }
 
     var validatedBaseURL: URL? {
-        // Nur HTTP(S)-URLs mit Host werden akzeptiert; andere Schemes werden nicht an Netzwerkcode weitergegeben.
         guard let url = URL(string: baseURL),
               let scheme = url.scheme?.lowercased(),
               ["http", "https"].contains(scheme),

@@ -1,7 +1,6 @@
 import Foundation
 import SwiftData
 
-/// Importiert Navidrome-Daten in SwiftData und ersetzt dabei den lokalen Server-Snapshot.
 @MainActor
 enum NavidromeLibrarySyncService {
     struct Result {
@@ -10,7 +9,6 @@ enum NavidromeLibrarySyncService {
     }
 
     static func sync(server: ServerProfile, password: String, context: ModelContext) async throws -> Result {
-        // Vor Netzwerkzugriffen werden Eingaben validiert, damit UI-Fehler klar gemeldet werden.
         guard let baseURL = server.validatedBaseURL else {
             throw SyncError.invalidServerURL
         }
@@ -27,14 +25,12 @@ enum NavidromeLibrarySyncService {
         let starredSongIDs = try await client.starredSongIDs()
         let existingPlaylists = server.playlists ?? []
         let existingTracks = server.tracks ?? []
-        // Manuell gespeicherte Alben bleiben auch nach einem erneuten Sync als gespeichert markiert.
         let savedPlaylistIDs = Set(existingPlaylists.filter { $0.isOwnedByUser && !$0.isEditableByUser }.map(\.remoteID))
 
         var importedPlaylists: [Playlist] = []
         var importedTracks: [Track] = []
 
         for (albumIndex, albumSummary) in albumSummaries.enumerated() {
-            // Alben werden als Playlists modelliert, damit die UI fuer Alben und Playlists identisch bleibt.
             let album = try await client.album(id: albumSummary.id)
             let tracks = album.songs.enumerated().map { trackIndex, song in
                 Track(
@@ -69,7 +65,6 @@ enum NavidromeLibrarySyncService {
 
         let tracksByRemoteID = Dictionary(uniqueKeysWithValues: importedTracks.map { ($0.remoteID, $0) })
         for (playlistIndex, summary) in playlistSummaries.enumerated() {
-            // Navidrome-Playlists referenzieren bereits importierte Tracks ueber ihre Remote-ID.
             let remotePlaylist = try await client.playlist(id: summary.id)
             let tracks = remotePlaylist.songs.compactMap { tracksByRemoteID[$0.id] }
             let playlist = Playlist(
@@ -110,7 +105,6 @@ enum NavidromeLibrarySyncService {
         server.playlists = importedPlaylists
         server.tracks = importedTracks
         server.isDemo = false
-        // Erst nach vollstaendigem Import wird gespeichert, damit halbe Sync-Zustaende vermieden werden.
         try context.save()
 
         return Result(albumCount: importedPlaylists.count, trackCount: importedTracks.count)
@@ -185,7 +179,6 @@ private struct SubsonicClient {
         _ endpoint: String,
         queryItems endpointQueryItems: [URLQueryItem]
     ) async throws -> Response {
-        // Gemeinsamer JSON-Request-Pfad fuer alle Subsonic-Endpunkte.
         let url = try requestBuilder.url(for: endpoint, queryItems: endpointQueryItems)
         let (data, response) = try await URLSession.shared.data(from: url)
         guard let httpResponse = response as? HTTPURLResponse,
@@ -247,7 +240,6 @@ private struct PlaylistsResponse: Decodable, SubsonicEnvelopeProviding {
     var errorMessage: String? { subsonicResponse.error?.message }
 
     enum CodingKeys: String, CodingKey {
-        // Subsonic verwendet Bindestriche im JSON-Key; Swift braucht deshalb ein explizites Mapping.
         case subsonicResponse = "subsonic-response"
     }
 }
@@ -302,7 +294,6 @@ private struct SubsonicPlaylists: Decodable {
 
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        // Leere Serverantworten werden als leeres Array behandelt, damit der Sync robust bleibt.
         playlist = try container.decodeIfPresent([SubsonicPlaylistSummary].self, forKey: .playlist) ?? []
     }
 }
@@ -321,7 +312,6 @@ private struct SubsonicPlaylist: Decodable {
         case id
         case name
         case comment
-        // Navidrome/Subsonic nennt Playlist-Songs `entry`.
         case songs = "entry"
     }
 
@@ -330,7 +320,6 @@ private struct SubsonicPlaylist: Decodable {
         id = try container.decode(String.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
         comment = try container.decodeIfPresent(String.self, forKey: .comment)
-        // Playlists ohne Songs sind erlaubt und sollen keine Decode-Fehler erzeugen.
         songs = try container.decodeIfPresent([SubsonicPlaylistSong].self, forKey: .songs) ?? []
     }
 }
@@ -348,7 +337,6 @@ private struct SubsonicStarred: Decodable {
 
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        // Keine Favoriten ist ein gueltiger Zustand.
         song = try container.decodeIfPresent([SubsonicStarredSong].self, forKey: .song) ?? []
     }
 }
@@ -379,7 +367,6 @@ private struct SubsonicAlbum: Decodable {
         case artist
         case year
         case coverArt
-        // Alben liefern Songs unter dem Key `song`.
         case songs = "song"
     }
 }
@@ -411,7 +398,6 @@ private enum SyncError: LocalizedError {
     case api(String)
 
     var errorDescription: String? {
-        // LocalizedError sorgt dafuer, dass UI-Alerts direkt verstaendliche Meldungen anzeigen.
         switch self {
         case .invalidServerURL:
             "Die Server-URL ist ungueltig. Bitte mit http:// oder https:// eintragen."

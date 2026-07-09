@@ -1,13 +1,11 @@
 import SwiftUI
 
-/// Hauptnavigation der App: vier Tabs plus globale Player- und Premium-Sheets.
 struct RootTabView: View {
     @Environment(PlayerController.self) private var player
     @Environment(PremiumAccessController.self) private var premium
 
     var body: some View {
         TabView {
-            // Jeder Tab wird in PlayerTabContent gewickelt, damit der Mini-Player appweit gleich sitzt.
             Tab("Feed", systemImage: "music.note.list") {
                 PlayerTabContent {
                     FeedHomeView()
@@ -66,7 +64,6 @@ private struct PlayerTabContent<Content: View>: View {
                 BottomContentFade()
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                // Der Mini-Player erscheint nur, wenn ein Track aktiv ist und der Vollbildplayer geschlossen ist.
                 if let track = player.currentTrack, !player.isPlayerPresented {
                     MiniPlayerView(
                         track: track,
@@ -85,7 +82,6 @@ private struct PlayerTabContent<Content: View>: View {
 private struct StatusBarScrim: View {
     var body: some View {
         GeometryReader { proxy in
-            // Deckt die Statusbar mit App-Hintergrund ab, damit ScrollViews nicht optisch hineinlaufen.
             Color("AppBackground")
                 .frame(height: proxy.safeAreaInsets.top)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -98,7 +94,6 @@ private struct StatusBarScrim: View {
 private struct BottomContentFade: View {
     var body: some View {
         GeometryReader { proxy in
-            // Der Verlauf verbessert die Lesbarkeit hinter dem Mini-Player.
             LinearGradient(
                 colors: [
                     Color("AppBackground").opacity(0),
@@ -177,7 +172,6 @@ private struct PremiumPaywallView: View {
 
     private var actions: some View {
         VStack(spacing: 12) {
-            // Kauf und Wiederherstellung laufen asynchron ueber StoreKit.
             Button {
                 Task { await premium.purchasePremium() }
             } label: {

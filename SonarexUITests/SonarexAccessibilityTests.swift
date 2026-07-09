@@ -1,6 +1,5 @@
 import XCTest
 
-/// Fuehrt Apples automatischen Accessibility-Audit aus und haengt die Befunde an den Testbericht.
 final class SonarexAccessibilityTests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -15,7 +14,6 @@ final class SonarexAccessibilityTests: XCTestCase {
             var reportedIssues: [String] = []
 
             try app.performAccessibilityAudit { issue in
-                // Der Audit soll alle Befunde sammeln, statt beim ersten Problem abzubrechen.
                 let elementDescription = issue.element?.debugDescription ?? "Kein Element"
                 reportedIssues.append(
                     """

@@ -4,7 +4,6 @@ import MediaPlayer
 import Observation
 import UIKit
 
-/// Wiederholungsmodus des Players; die Reihenfolge entspricht der UI-Umschaltung.
 enum RepeatMode: String, CaseIterable {
     case off
     case all
@@ -23,7 +22,6 @@ enum RepeatMode: String, CaseIterable {
     }
 }
 
-/// Steuert Streaming, Queue, Remote Commands und Now-Playing-Informationen.
 @MainActor
 @Observable
 final class PlayerController {
@@ -51,7 +49,6 @@ final class PlayerController {
     var playbackError: String?
 
     init() {
-        // Audio-Session und Sperrbildschirmsteuerung werden einmal zentral vorbereitet.
         configureAudioSession()
         configureRemoteCommands()
     }
@@ -66,7 +63,6 @@ final class PlayerController {
     }
 
     func play(_ track: Track, in tracks: [Track] = []) {
-        // Jeder neue Start ersetzt Queue-Status, setzt Statistikdaten und startet danach den Stream.
         configureAudioSession()
         queue = tracks.isEmpty ? [track] : tracks
         currentIndex = queue.firstIndex { $0.id == track.id } ?? 0
@@ -173,7 +169,6 @@ final class PlayerController {
 
     private func startStreaming(_ track: Track) {
         playbackTask?.cancel()
-        // URL-Erstellung und AVPlayer-Setup laufen asynchron, damit die SwiftUI-Oberflaeche reaktionsfaehig bleibt.
         playbackTask = Task { [weak self, track] in
             guard let self else { return }
             do {
@@ -205,7 +200,6 @@ final class PlayerController {
     private func refreshContinuationQueue(minimumCount: Int = 6) {
         guard continuationQueue.count < minimumCount else { return }
         let existingIDs = Set((queue + continuationQueue).map(\.id))
-        // Erst werden passende Songs aus Playlists gesucht, danach faellt die App auf die Bibliothek zurueck.
         let playlistCandidates = randomizedPlaylistCandidates(excluding: existingIDs)
 
         for track in playlistCandidates where continuationQueue.count < minimumCount {
@@ -242,7 +236,6 @@ final class PlayerController {
     private func configureAudioSession() {
         do {
             let session = AVAudioSession.sharedInstance()
-            // Playback erlaubt Musik auch bei gesperrtem Bildschirm und ueber System-Remote-Controls.
             try session.setCategory(.playback, mode: .default, options: [])
             try session.setActive(true)
             UIApplication.shared.beginReceivingRemoteControlEvents()
@@ -254,7 +247,6 @@ final class PlayerController {
     private func configureRemoteCommands() {
         let commandCenter = MPRemoteCommandCenter.shared()
 
-        // Alte Targets werden entfernt, damit bei mehrfacher Initialisierung keine Befehle doppelt feuern.
         commandCenter.playCommand.removeTarget(nil)
         commandCenter.pauseCommand.removeTarget(nil)
         commandCenter.togglePlayPauseCommand.removeTarget(nil)
@@ -323,7 +315,6 @@ final class PlayerController {
     }
 
     private func updateNowPlayingInfo(for track: Track, playbackRate: Double) {
-        // Diese Metadaten versorgen Sperrbildschirm, Kontrollzentrum und CarPlay-kompatible Anzeigen.
         let info: [String: Any] = [
             MPMediaItemPropertyTitle: track.title,
             MPMediaItemPropertyArtist: track.artist,
@@ -353,7 +344,6 @@ final class PlayerController {
     }
 
     private func streamURL(for track: Track) throws -> URL {
-        // Streaming nutzt die gespeicherten Keychain-Zugangsdaten des zugeordneten Servers.
         guard let server = track.server,
               let baseURL = server.validatedBaseURL else {
             throw PlaybackError.missingServer
@@ -382,7 +372,6 @@ final class PlayerController {
     }
 
     private func addPlaybackObservers(for player: AVPlayer, item: AVPlayerItem) {
-        // Beobachter synchronisieren AVPlayer-Zustand mit SwiftUI und Now-Playing-Status.
         playerItemStatusObservation = item.observe(\.status, options: [.initial, .new]) { [weak self, weak item] observedItem, _ in
             Task { @MainActor in
                 guard let self, let item, self.audioPlayer?.currentItem === item else { return }
@@ -448,7 +437,6 @@ final class PlayerController {
     }
 
     private func removePlaybackObservers() {
-        // Observer muessen vor Trackwechseln geloest werden, sonst entstehen doppelte Updates.
         if let timeObserver, let audioPlayer {
             audioPlayer.removeTimeObserver(timeObserver)
         }

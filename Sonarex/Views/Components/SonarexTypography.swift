@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Zentrale Typografie-Tokens, damit Schriftgroessen systemweit konsistent bleiben.
 enum SonarexTypography {
     static let screenTitle = Font.system(size: 25, weight: .bold)
     static let sheetTitle = Font.system(size: 22, weight: .bold)
@@ -19,7 +18,6 @@ enum SonarexTypography {
     static let largeArtworkSymbol = Font.system(size: 66, weight: .semibold)
 }
 
-/// Kleinere Typografie nur fuer die Einstellungsbereiche.
 enum SonarexSettingsTypography {
     static let screenTitle = Font.system(size: 22, weight: .bold)
     static let sheetTitle = Font.system(size: 19, weight: .bold)

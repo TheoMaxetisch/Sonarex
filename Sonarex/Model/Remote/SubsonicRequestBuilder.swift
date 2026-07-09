@@ -1,7 +1,6 @@
 import CryptoKit
 import Foundation
 
-/// Baut Subsonic-kompatible REST-URLs inklusive tokenbasierter Authentifizierung.
 struct SubsonicRequestBuilder {
     let baseURL: URL
     let username: String
@@ -28,7 +27,6 @@ struct SubsonicRequestBuilder {
 
     private func authenticationQueryItems(responseFormat: String?) -> [URLQueryItem] {
         let salt = UUID().uuidString.replacingOccurrences(of: "-", with: "")
-        // Subsonic nutzt MD5(password + salt) als Protokollvorgabe; das Klartextpasswort landet nicht in der URL.
         let token = Insecure.MD5.hash(data: Data((password + salt).utf8))
             .map { String(format: "%02hhx", $0) }
             .joined()
