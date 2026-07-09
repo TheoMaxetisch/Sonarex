@@ -2,6 +2,7 @@ import Foundation
 import Observation
 import StoreKit
 
+/// Kapselt Testphase, StoreKit-Kaufstatus und Paywall-Entscheidungen an einer Stelle.
 @MainActor
 @Observable
 final class PremiumAccessController {
@@ -21,6 +22,7 @@ final class PremiumAccessController {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+        // Die Testphase startet automatisch beim ersten App-Start und wird in UserDefaults gespeichert.
         startTrialIfNeeded()
         transactionUpdatesTask = listenForTransactionUpdates()
     }
@@ -62,7 +64,7 @@ final class PremiumAccessController {
             return "Premium aktiv"
         }
         if isTrialActive {
-            return "\(remainingTrialDays) Tage Testphase uebrig"
+            return "\(remainingTrialDays) Tage Testphase übrig"
         }
         return "Basisversion aktiv"
     }
@@ -126,6 +128,7 @@ final class PremiumAccessController {
     }
 
     func requirePremium(for feature: String) -> Bool {
+        // Views fragen diese Methode vor Premium-Aktionen ab und zeigen bei Bedarf die Paywall.
         guard hasPremiumAccess else {
             requestedFeature = feature
             isPaywallPresented = true
@@ -140,6 +143,7 @@ final class PremiumAccessController {
 
     private func refreshPurchasedPremium() async throws {
         var isPurchased = false
+        // CurrentEntitlements bildet den zuletzt verifizierten App-Store-Status ab.
         for await result in Transaction.currentEntitlements {
             let transaction = try verified(result)
             if transaction.productID == Self.productID {
@@ -150,6 +154,7 @@ final class PremiumAccessController {
     }
 
     private func listenForTransactionUpdates() -> Task<Void, Never> {
+        // StoreKit-Updates koennen auch nach dem Kaufdialog eintreffen und muessen dauerhaft beobachtet werden.
         Task { [weak self] in
             for await result in Transaction.updates {
                 guard let self else { return }

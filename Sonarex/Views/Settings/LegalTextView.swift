@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Zeigt gebuendelte Rechtstexte aus dem App-Bundle an.
 struct LegalTextView: View {
     let title: String
     let resource: String
@@ -21,6 +22,7 @@ struct LegalTextView: View {
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .task {
+            // Text wird einmalig nachgeladen, damit grosse Ressourcen nicht beim Init gelesen werden.
             guard !didLoadText else { return }
             text = loadResource(resource) ?? ""
             didLoadText = true
@@ -34,12 +36,12 @@ struct LegalTextView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(SonarexTypography.screenTitle)
+                    .font(SonarexSettingsTypography.screenTitle)
                     .foregroundStyle(Color("PrimaryText"))
                     .lineLimit(1)
 
                 Text(subtitle)
-                    .font(SonarexTypography.secondaryEmphasis)
+                    .font(SonarexSettingsTypography.rowSubtitleEmphasis)
                     .foregroundStyle(Color("SecondaryText"))
                     .lineLimit(1)
             }
@@ -51,6 +53,7 @@ struct LegalTextView: View {
 
     @ViewBuilder
     private var content: some View {
+        // Fehlende Ressourcen werden sichtbar gemacht, statt still eine leere Seite zu zeigen.
         if text.isEmpty {
             emptyState
         } else {
@@ -59,8 +62,9 @@ struct LegalTextView: View {
     }
 
     private var legalBody: some View {
+        // Textauswahl hilft beim Pruefen/Kopieren einzelner Passagen.
         Text(text)
-            .font(SonarexTypography.body)
+            .font(SonarexSettingsTypography.body)
             .lineSpacing(5)
             .foregroundStyle(Color("PrimaryText"))
             .textSelection(.enabled)
@@ -78,11 +82,11 @@ struct LegalTextView: View {
             SettingsIcon(systemImage: "exclamationmark.triangle.fill", tint: Color("FeedRose"))
 
             Text("Text nicht gefunden")
-                .font(SonarexTypography.sectionTitle)
+                .font(SonarexSettingsTypography.rowTitle)
                 .foregroundStyle(Color("PrimaryText"))
 
             Text("Bitte lege `Resources/\(resource).txt` im App-Bundle an.")
-                .font(SonarexTypography.secondary)
+                .font(SonarexSettingsTypography.rowSubtitle)
                 .foregroundStyle(Color("SecondaryText"))
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -125,6 +129,7 @@ struct LegalTextView: View {
     }
 
     private func loadResource(_ name: String) -> String? {
+        // Rechtstexte liegen als TXT-Dateien im Bundle und bleiben damit offline verfuegbar.
         guard let url = Bundle.main.url(forResource: name, withExtension: "txt") else {
             return nil
         }

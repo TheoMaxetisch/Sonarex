@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Wiederverwendbare Song-Karte fuer horizontale Reihen.
 struct CardView: View {
     let track: Track
     let action: () -> Void
@@ -27,6 +28,7 @@ struct CardView: View {
                         .accessibilityHidden(true)
                 }
                 .aspectRatio(1, contentMode: .fit)
+                // Die Karte erhaelt unten ein gemeinsames Accessibility-Label statt einzelner Zierelemente.
                 .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 3) {

@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 
+/// Lokal gespeicherter Song mit Navidrome-ID, Metadaten und UI-/Playback-Zustand.
 @Model
 final class Track {
     var id: UUID = UUID()
@@ -23,6 +24,7 @@ final class Track {
     var artworkSymbol: String = "music.note"
     var server: ServerProfile?
 
+    // Playlist-Mitgliedschaften werden ueber PlaylistEntry modelliert, damit Reihenfolgen erhalten bleiben.
     @Relationship(deleteRule: .nullify, inverse: \PlaylistEntry.track)
     var playlistEntries: [PlaylistEntry]? = []
 
@@ -49,6 +51,7 @@ final class Track {
     }
 
     var durationText: String {
+        // Anzeigeformat fuer kompakte UI-Stellen wie Karten, Player und Listen.
         "\(duration / 60):\(String(format: "%02d", duration % 60))"
     }
 }

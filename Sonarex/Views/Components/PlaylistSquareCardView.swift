@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Kompakte Playlist-Karte fuer Suche und Empfehlungen.
 struct PlaylistSquareCardView: View {
     let playlist: Playlist
     let action: () -> Void
@@ -8,6 +9,7 @@ struct PlaylistSquareCardView: View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 10) {
                 ZStack(alignment: .bottomLeading) {
+                    // Artwork und Metadaten entsprechen der Song-Karte, damit beide Grid-Typen vertraut wirken.
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
                         .fill(playlist.artworkGradient)
 
@@ -27,6 +29,7 @@ struct PlaylistSquareCardView: View {
                         .accessibilityHidden(true)
                 }
                 .aspectRatio(1, contentMode: .fit)
+                // Einzelne Artwork-Elemente sind dekorativ; die Karte beschreibt sich als Ganzes.
                 .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 3) {

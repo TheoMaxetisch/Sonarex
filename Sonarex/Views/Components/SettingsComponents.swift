@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Einheitlicher Status fuer Speichern, Sync und Fehlermeldungen in den Einstellungen.
 enum SettingsStatus {
     case working(String)
     case success(String)
@@ -13,6 +14,7 @@ enum SettingsStatus {
     }
 
     var symbol: String {
+        // Jedes Ergebnis bekommt ein vertrautes SF Symbol fuer schnelles visuelles Feedback.
         switch self {
         case .working:
             "hourglass"
@@ -24,6 +26,7 @@ enum SettingsStatus {
     }
 
     var color: Color {
+        // Farben sind bewusst semantisch: neutral, Erfolg, Fehler.
         switch self {
         case .working:
             Color("SecondaryText")
@@ -36,6 +39,7 @@ enum SettingsStatus {
 }
 
 enum SettingsSheet: String, Identifiable {
+    // Identifiable ermoeglicht `.sheet(item:)` fuer Server- und Login-Editor.
     case server
     case login
 
@@ -53,8 +57,9 @@ struct SettingsGroup<Content: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
+            // Gruppenueberschriften strukturieren die Settings ohne eigene Navigationsebene.
             Text(title)
-                .font(SonarexTypography.metadata)
+                .font(SonarexSettingsTypography.groupTitle)
                 .foregroundStyle(Color("SecondaryText"))
                 .textCase(.uppercase)
 
@@ -79,16 +84,17 @@ struct SettingsRow<Accessory: View>: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
+            // Links steht immer ein farbiges Icon, rechts ein frei waehlbares Accessory.
             SettingsIcon(systemImage: systemImage, tint: tint)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
-                    .font(SonarexTypography.action)
+                    .font(SonarexSettingsTypography.rowTitle)
                     .foregroundStyle(Color("PrimaryText"))
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Text(subtitle)
-                    .font(SonarexTypography.secondary)
+                    .font(SonarexSettingsTypography.rowSubtitle)
                     .foregroundStyle(Color("SecondaryText"))
                     .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -98,6 +104,7 @@ struct SettingsRow<Accessory: View>: View {
             Spacer(minLength: 12)
 
             accessory
+                // Accessory-Controls wie Toggle oder Buttons sollen nicht zusammengedrueckt werden.
                 .fixedSize(horizontal: true, vertical: false)
         }
         .padding(14)
@@ -115,12 +122,13 @@ struct SettingsSheetView<Content: View>: View {
 
     var body: some View {
         NavigationStack {
+            // Einheitlicher Sheet-Rahmen fuer Server- und Loginbearbeitung.
             VStack(alignment: .leading, spacing: 18) {
                 HStack(spacing: 12) {
                     SettingsIcon(systemImage: systemImage, tint: tint)
 
                     Text(title)
-                        .font(SonarexTypography.sheetTitle)
+                        .font(SonarexSettingsTypography.sheetTitle)
                         .foregroundStyle(Color("PrimaryText"))
 
                     Spacer()
@@ -139,7 +147,7 @@ struct SettingsSheetView<Content: View>: View {
                     Button("Fertig") {
                         dismiss()
                     }
-                    .font(SonarexTypography.action)
+                    .font(SonarexSettingsTypography.button)
                 }
             }
         }
@@ -152,8 +160,9 @@ struct SettingsEditorField<Content: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
+            // Editorfelder erhalten eigene Labels, damit Placeholder nicht die einzige Beschreibung sind.
             Text(title)
-                .font(SonarexTypography.metadata)
+                .font(SonarexSettingsTypography.groupTitle)
                 .foregroundStyle(Color("SecondaryText"))
                 .textCase(.uppercase)
 
@@ -167,8 +176,9 @@ struct SettingsIcon: View {
     let tint: Color
 
     var body: some View {
+        // Dekoratives Symbol; die eigentliche Accessibility kommt vom umgebenden Row-Text.
         Image(systemName: systemImage)
-            .font(SonarexTypography.action)
+            .font(SonarexSettingsTypography.icon)
             .foregroundStyle(Color("InverseText"))
             .frame(width: 38, height: 38)
             .background(tint, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -183,9 +193,10 @@ struct SettingsActionButton: View {
     let action: () -> Void
 
     var body: some View {
+        // Kapselt primaere Sheet-Aktionen mit einheitlicher Groesse und Farbe.
         Button(action: action) {
             Label(title, systemImage: systemImage)
-                .font(SonarexTypography.metadata)
+                .font(SonarexSettingsTypography.button)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity)
                 .frame(height: 36)
@@ -200,8 +211,9 @@ struct SettingsStatusDot: View {
     let status: SettingsStatus
 
     var body: some View {
+        // Kompakte Statusanzeige fuer Reihen, in denen kein langer Text Platz hat.
         Image(systemName: status.symbol)
-            .font(SonarexTypography.metadata)
+            .font(SonarexSettingsTypography.small)
             .foregroundStyle(status.color)
             .frame(width: 22, height: 22)
             .accessibilityLabel(status.message)
@@ -212,8 +224,9 @@ struct SettingsStatusLabel: View {
     let status: SettingsStatus
 
     var body: some View {
+        // Ausfuehrlicher Status fuer Editor-Sheets und Fehlermeldungen.
         Label(status.message, systemImage: status.symbol)
-            .font(SonarexTypography.secondary)
+            .font(SonarexSettingsTypography.rowSubtitle)
             .foregroundStyle(status.color)
             .frame(maxWidth: .infinity, alignment: .leading)
             .fixedSize(horizontal: false, vertical: true)
@@ -223,7 +236,7 @@ struct SettingsStatusLabel: View {
 struct Chevron: View {
     var body: some View {
         Image(systemName: "chevron.right")
-            .font(SonarexTypography.metadata)
+            .font(SonarexSettingsTypography.small)
             .foregroundStyle(Color("SecondaryText"))
             .accessibilityHidden(true)
     }
@@ -232,7 +245,7 @@ struct Chevron: View {
 extension View {
     func settingsFieldStyle() -> some View {
         self
-            .font(SonarexTypography.body)
+            .font(SonarexSettingsTypography.body)
             .foregroundStyle(Color("PrimaryText"))
             .padding(.horizontal, 12)
             .frame(height: 38)

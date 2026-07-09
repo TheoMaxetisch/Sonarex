@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Horizontale Playlist-/Albumreihe mit Vorschau-Tracks und optionalem Optionsmenue.
 struct AlbumRowView: View {
     let title: String
     let subtitle: String

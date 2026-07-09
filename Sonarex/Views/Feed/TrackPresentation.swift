@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Gemeinsame Farbpaletten fuer generierte Artwork-Flaechen in Feed, Player und Listen.
 enum TrackArtwork {
     static let palettes: [[Color]] = [
         [Color("FeedAqua"), Color("FeedBlue"), Color("FeedIndigo")],
@@ -14,6 +15,7 @@ enum TrackArtwork {
     ]
 
     static func colors(for style: Int) -> [Color] {
+        // Modulo verhindert Out-of-Bounds, wenn persistierte Styles aus alten Daten stammen.
         palettes[abs(style) % palettes.count]
     }
 }

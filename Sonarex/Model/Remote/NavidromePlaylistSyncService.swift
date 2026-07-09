@@ -1,5 +1,6 @@
 import Foundation
 
+/// Synchronisiert erstellte Playlists und Aenderungen direkt mit Navidrome.
 @MainActor
 enum NavidromePlaylistSyncService {
     struct RemotePlaylist {
@@ -8,6 +9,7 @@ enum NavidromePlaylistSyncService {
     }
 
     static func createPlaylist(named name: String, containing track: Track) async throws -> RemotePlaylist {
+        // Navidrome erstellt die Playlist serverseitig und liefert die Remote-ID zurueck.
         guard let server = track.server else {
             throw PlaylistSyncError.missingServer
         }
@@ -63,6 +65,7 @@ enum NavidromePlaylistSyncService {
             throw PlaylistSyncError.missingEntry
         }
 
+        // Subsonic entfernt Songs ueber den Index innerhalb der Playlist, nicht ueber die Song-ID.
         let decoded: PlaylistSyncResponse = try await request(
             endpoint: "updatePlaylist",
             server: server,
@@ -102,6 +105,7 @@ enum NavidromePlaylistSyncService {
         server: ServerProfile,
         queryItems: [URLQueryItem]
     ) async throws -> Response {
+        // Alle Playlist-Requests nutzen dieselbe Keychain-basierte Serverauthentifizierung.
         guard let baseURL = server.validatedBaseURL else {
             throw PlaylistSyncError.invalidServerURL
         }

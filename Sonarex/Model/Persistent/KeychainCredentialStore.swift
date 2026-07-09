@@ -1,6 +1,7 @@
 import Foundation
 import Security
 
+/// Speichert Navidrome-Passwoerter ausserhalb von SwiftData im iOS-Keychain.
 enum KeychainCredentialStore {
     private static let service = "com.cloudresiliencelab.msd.sonarex.server-credentials"
 
@@ -31,6 +32,7 @@ enum KeychainCredentialStore {
 
     static func savePassword(_ password: String, for serverID: UUID) throws {
         if password.isEmpty {
+            // Ein leeres Passwort bedeutet bewusstes Entfernen der gespeicherten Zugangsdaten.
             try deletePassword(for: serverID)
             return
         }
@@ -42,6 +44,7 @@ enum KeychainCredentialStore {
         ]
         let attributes: [String: Any] = [
             kSecValueData as String: Data(password.utf8),
+            // Dieses Geraet reicht fuer die App; das Passwort soll nicht auf andere Geraete migrieren.
             kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
         ]
 

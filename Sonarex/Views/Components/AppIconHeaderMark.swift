@@ -1,7 +1,9 @@
 import SwiftUI
 
+/// Wiederverwendbares App-Icon-Element fuer Header von Feed, Suche, Bibliothek und Settings.
 struct AppIconHeaderMark: View {
     var body: some View {
+        // Das Icon ist rein dekorativ; Screenreader bekommen die eigentliche Seitueberschrift.
         Image("AppIconHeader")
             .resizable()
             .scaledToFill()

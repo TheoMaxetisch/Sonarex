@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 import MessageUI
 
+/// Einstellungen fuer Darstellung, Premium, Navidrome-Zugang und rechtliche Informationen.
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(PremiumAccessController.self) private var premium
@@ -57,7 +58,7 @@ struct SettingsView: View {
             AppIconHeaderMark()
 
             Text("Einstellungen")
-                .font(SonarexTypography.screenTitle)
+                .font(SonarexSettingsTypography.screenTitle)
                 .foregroundStyle(Color("PrimaryText"))
                 .lineLimit(1)
 
@@ -83,6 +84,7 @@ struct SettingsView: View {
 
     private var serverGroup: some View {
         SettingsGroup("Navidrome") {
+            // Serverdaten und Login werden getrennt bearbeitet, damit Passwoerter nicht in SwiftData landen.
             Button {
                 presentedSheet = .server
             } label: {
@@ -109,7 +111,7 @@ struct SettingsView: View {
 
                     Button(action: syncLibrary) {
                         Image(systemName: isSyncingLibrary ? "hourglass" : "arrow.triangle.2.circlepath")
-                            .font(SonarexTypography.action)
+                            .font(SonarexSettingsTypography.icon)
                             .foregroundStyle(Color("InverseText"))
                             .frame(width: 40, height: 40)
                             .background(Color("SecondaryAccent"), in: Circle())
@@ -135,7 +137,7 @@ struct SettingsView: View {
                     premium.isPaywallPresented = true
                 } label: {
                     Image(systemName: premium.hasPremiumAccess ? "checkmark.seal.fill" : "cart.fill")
-                        .font(SonarexTypography.action)
+                        .font(SonarexSettingsTypography.icon)
                         .foregroundStyle(Color("SecondaryAccent"))
                         .frame(width: 40, height: 40)
                 }
@@ -175,6 +177,7 @@ struct SettingsView: View {
             }
 
             SettingsEditorField(title: "Passwort") {
+                // SecureField vermeidet sichtbare Passworteingabe; gespeichert wird spaeter im Keychain.
                 SecureField("Passwort", text: $serverPassword)
                     .textContentType(.password)
                     .settingsFieldStyle()
@@ -198,6 +201,7 @@ struct SettingsView: View {
 
     private var legalGroup: some View {
         SettingsGroup("Rechtliches") {
+            // Rechtstexte werden als Ressourcen gebundelt und lokal angezeigt.
             NavigationLink {
                 LegalTextView(title: "AGB", resource: "AGB")
             } label: {
@@ -223,7 +227,7 @@ struct SettingsView: View {
             SettingsRow(title: "E-Mail", subtitle: email, systemImage: "envelope.fill", tint: Color("FeedOrange")) {
                 Button(action: openMailComposer) {
                     Image(systemName: "paperplane.fill")
-                        .font(SonarexTypography.action)
+                        .font(SonarexSettingsTypography.icon)
                         .foregroundStyle(Color("SecondaryAccent"))
                         .frame(width: 40, height: 40)
                 }
@@ -238,10 +242,12 @@ struct SettingsView: View {
     }
 
     private var activeServer: ServerProfile? {
+        // Die App arbeitet immer mit genau einem aktiven Serverprofil.
         serverProfiles.first(where: \.isActive) ?? serverProfiles.first
     }
 
     private var serverURLBinding: Binding<String> {
+        // Bindings schreiben direkt ins SwiftData-Modell des aktiven Servers.
         Binding(
             get: { activeServer?.baseURL ?? "" },
             set: { activeServer?.baseURL = $0 }
@@ -271,6 +277,7 @@ struct SettingsView: View {
     }
 
     private func loadPassword() {
+        // Passwort wird bewusst aus dem Keychain geladen und nicht aus SwiftData.
         credentialMessage = nil
         guard let activeServer else {
             serverPassword = ""
@@ -288,6 +295,7 @@ struct SettingsView: View {
     private func saveCredentials() {
         guard let activeServer else { return }
         do {
+            // Benutzername/URL liegen im Modell; das Passwort geht separat in den Keychain.
             try KeychainCredentialStore.savePassword(serverPassword, for: activeServer.id)
             credentialMessage = .success(serverPassword.isEmpty ? "Passwort entfernt." : "Zugangsdaten gespeichert.")
         } catch {
@@ -302,6 +310,7 @@ struct SettingsView: View {
 
         Task {
             do {
+                // Vor dem Sync wird das aktuelle Passwort gespeichert, damit Stream und Sync denselben Stand nutzen.
                 try KeychainCredentialStore.savePassword(serverPassword, for: activeServer.id)
                 let result = try await NavidromeLibrarySyncService.sync(
                     server: activeServer,
@@ -317,6 +326,7 @@ struct SettingsView: View {
     }
 
     private func openMailComposer() {
+        // Wenn kein Mail-Account eingerichtet ist, faellt die App auf mailto: zurueck.
         if MFMailComposeViewController.canSendMail() {
             isMailComposerPresented = true
         } else {

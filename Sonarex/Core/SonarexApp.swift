@@ -11,6 +11,7 @@ struct SonarexApp: App {
 
     init() {
         do {
+            // Zentrale SwiftData-Konfiguration fuer alle dauerhaft gespeicherten App-Modelle.
             let schema = Schema([
                 ServerProfile.self, Track.self, Playlist.self, PlaylistEntry.self
             ])
@@ -21,6 +22,7 @@ struct SonarexApp: App {
             )
 
             let container = try ModelContainer(for: schema, configurations: configuration)
+            // Demo-Daten und Migrationen laufen beim Start, damit die App sofort vorfuehrbar bleibt.
             try DemoMusicSeeder.seedIfNeeded(in: container.mainContext)
             try LibraryStateMigration.resetAutoSavedPlaylistsIfNeeded(in: container.mainContext)
             self.container = container
@@ -34,6 +36,7 @@ struct SonarexApp: App {
             RootTabView()
                 .tint(Color("AccentColor"))
                 .preferredColorScheme(prefersDarkMode ? .dark : nil)
+                // Player und Premium-Status werden als Environment-Objekte appweit geteilt.
                 .environment(playerController)
                 .environment(premiumAccess)
                 .task {

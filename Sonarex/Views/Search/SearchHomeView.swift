@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 
+/// Suchseite mit lokaler Track-Suche, Genre-Kategorien und zufaelligen Vorschlaegen.
 struct SearchHomeView: View {
     @Environment(PlayerController.self) private var player
     @Query(sort: \Track.title) private var tracks: [Track]
@@ -14,6 +15,7 @@ struct SearchHomeView: View {
     @State private var isShowingSuggestedSongs = false
 
     private let columns = [
+        // Zwei flexible Spalten halten die Kategorie-Karten auf iPhone und iPad skalierbar.
         GridItem(.flexible(), spacing: 14),
         GridItem(.flexible(), spacing: 14)
     ]
@@ -26,6 +28,7 @@ struct SearchHomeView: View {
                     searchField
 
                     if searchText.isEmpty {
+                        // Ohne Suchtext zeigt die View Browse-Inhalte statt leerer Ergebnisse.
                         startContent
                     } else if filteredTracks.isEmpty {
                         ContentUnavailableView.search(text: searchText)
@@ -77,10 +80,12 @@ struct SearchHomeView: View {
     }
 
     private var activeServer: ServerProfile? {
+        // Kategorien werden nur fuer echte Server geladen; Demo-Server hat keine echte Genre-API.
         servers.first { $0.isActive && !$0.isDemo } ?? servers.first { !$0.isDemo }
     }
 
     private var displayTracks: [Track] {
+        // Echte Daten ersetzen Demo-Daten automatisch, sobald ein Sync erfolgreich war.
         let realTracks = tracks.filter { $0.server?.isDemo != true }
         return realTracks.isEmpty ? tracks : realTracks
     }
@@ -93,6 +98,7 @@ struct SearchHomeView: View {
     private var filteredTracks: [Track] {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return [] }
+        // Die lokale Suche durchsucht bewusst mehrere Felder fuer tolerantere Ergebnisse.
         return displayTracks.filter {
             $0.title.localizedCaseInsensitiveContains(query)
                 || $0.artist.localizedCaseInsensitiveContains(query)
@@ -238,6 +244,7 @@ struct SearchHomeView: View {
         }
 
         do {
+            // Das Passwort bleibt im Keychain und wird nur fuer den Request gelesen.
             let password = try KeychainCredentialStore.password(for: activeServer.id) ?? ""
             let genres = try await NavidromeSearchService.genres(server: activeServer, password: password)
             categories = genres.enumerated().map { index, genre in
@@ -249,6 +256,7 @@ struct SearchHomeView: View {
     }
 
     private func refreshSuggestions(force: Bool = false) {
+        // IDs werden gespeichert, damit Vorschlaege stabil bleiben, bis sich die Datenbasis aendert.
         if force || suggestedTrackIDs.isEmpty {
             suggestedTrackIDs = Array(displayTracks.shuffled().prefix(8)).map(\.id)
         }
@@ -259,6 +267,7 @@ struct SearchHomeView: View {
     }
 
     private func playlistSuggestions() -> [Playlist] {
+        // Wenn Importdaten echte Zeitpunkte haben, sind aktuelle Playlists relevanter als Zufall.
         let candidates = hasUsefulPlaylistCreationDates
             ? displayPlaylists.sorted { $0.createdAt > $1.createdAt }
             : displayPlaylists.shuffled()
@@ -301,6 +310,7 @@ struct SearchCategory: Identifiable {
     }
 
     init(genre: NavidromeGenre, index: Int) {
+        // API-Genres werden in visuelle Kacheln mit wiederverwendeten Paletten umgewandelt.
         id = genre.value
         title = genre.value
         subtitle = "\(genre.songCount) Songs"

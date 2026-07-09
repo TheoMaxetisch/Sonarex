@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 
+/// Sammlung von Songs; Alben und echte Navidrome-Playlists werden einheitlich dargestellt.
 @Model
 final class Playlist {
     var id: UUID = UUID()
@@ -17,6 +18,7 @@ final class Playlist {
     var isEditableByUser: Bool = false
     var server: ServerProfile?
 
+    // Cascade loescht Eintraege mit der Playlist, nicht aber automatisch die zugeordneten Tracks.
     @Relationship(deleteRule: .cascade, inverse: \PlaylistEntry.playlist)
     var entries: [PlaylistEntry]? = []
 
@@ -45,6 +47,7 @@ final class Playlist {
     }
 
     var orderedEntries: [PlaylistEntry] {
+        // Die explizite Position ist wichtig fuer Navidrome-Playlists und manuelles Entfernen.
         (entries ?? []).sorted { $0.position < $1.position }
     }
 

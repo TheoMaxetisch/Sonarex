@@ -1,6 +1,7 @@
 import MessageUI
 import SwiftUI
 
+/// SwiftUI-Wrapper fuer den UIKit-Mailcomposer.
 struct MailComposerView: UIViewControllerRepresentable {
     @Environment(\.dismiss) private var dismiss
 
@@ -8,6 +9,7 @@ struct MailComposerView: UIViewControllerRepresentable {
     let subject: String
 
     func makeUIViewController(context: Context) -> MFMailComposeViewController {
+        // MessageUI ist UIKit-basiert und wird ueber UIViewControllerRepresentable eingebunden.
         let controller = MFMailComposeViewController()
         controller.mailComposeDelegate = context.coordinator
         controller.setToRecipients([recipient])
@@ -18,6 +20,7 @@ struct MailComposerView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) {}
 
     func makeCoordinator() -> Coordinator {
+        // Der Coordinator uebernimmt Delegate-Callbacks aus UIKit.
         Coordinator(dismiss: dismiss)
     }
 
@@ -34,6 +37,7 @@ struct MailComposerView: UIViewControllerRepresentable {
             error: (any Error)?
         ) {
             let dismissAction = dismissAction
+            // Delegate-Callbacks koennen ausserhalb des SwiftUI-Kontexts eintreffen; Dismiss laeuft auf MainActor.
             Task { @MainActor in
                 dismissAction()
             }
